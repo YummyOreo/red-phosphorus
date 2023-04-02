@@ -1,4 +1,7 @@
+mod entity;
 mod redstone;
+
+pub use crate::block::entity::BlockEntity;
 
 pub trait Block {
     fn get_position(&self) -> (i32, i32);
@@ -25,8 +28,6 @@ pub trait Solid {
     fn get_powered_by(&self) -> Box<dyn Block>;
     fn set_powered_by(&mut self, powered_by: Box<dyn Block>);
 }
-
-pub trait BlockEntity {}
 
 #[derive(Clone)]
 pub enum Facing {
