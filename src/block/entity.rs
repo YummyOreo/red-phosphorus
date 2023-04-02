@@ -10,8 +10,7 @@ pub enum SlotName {
     Name(String),
 }
 
-#[allow(dead_code)]
 pub struct Slot {
-    item: String,
-    ammount: i32,
+    pub item: String,
+    pub ammount: i32,
 }
