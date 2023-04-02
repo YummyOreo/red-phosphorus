@@ -16,6 +16,10 @@ pub enum RedstoneComponent {
     TargetBlock(RedstoneTargetBlock),
     NoteBlock,
     Rail,
+    Lecturn(RedstoneLecturn),
+    Hopper(RedstoneHopper),
+    Door,
+    Trapdoor,
 }
 
 pub struct RedstoneDust {
@@ -44,6 +48,8 @@ pub struct RedstoneComparator {
     pub signal_in: i8,
     pub signal_left: i8,
     pub signal_right: i8,
+
+    pub output_strength: i8,
 }
 
 pub struct RedstoneButton {
@@ -70,15 +76,33 @@ pub struct RedstoneTargetBlock {
     pub delay: i16,
 
     pub caused_by_projectile: bool,
+
+    pub output_strength: i8,
 }
 
 impl RedstoneTargetBlock {
     pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 }
 
+pub struct RedstoneLecturn {
+    /// -1 represents not on
+    pub delay_left: i16,
+    /// Depends what hits it
+    pub delay: i16,
+
+    pub current_page: i16,
+    pub output_strength: i8,
+}
+
+pub struct RedstoneHopper {
+    pub locked: bool,
+
+    pub output_strength: i8,
+}
+
 pub enum UpdateDirection {
     /// From the source out
     FromSource,
     /// From last to source
-    AwaySource
+    AwaySource,
 }
