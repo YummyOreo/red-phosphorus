@@ -16,11 +16,11 @@ pub struct Block<'a> {
     is_solid: bool,
     power: i8,
     power_source: Option<&'a Block<'a>>,
-    redstone: Option<redstone::RedstoneComponent<'a>>,
+    redstone: Option<RedstoneComponent>,
 
     blockentity: Option<Box<dyn BlockEntity>>,
 
-    hitbox: String,
+    hitbox: Option<String>,
     sticky: bool,
     movable: bool,
 }
@@ -72,8 +72,8 @@ impl<'a> Block<'a> {
         old_power
     }
 
-    pub fn get_power_source(&self) -> &Option<&'a Block<'a>> {
-        &self.power_source
+    pub fn get_power_source(&self) -> Option<&'a Block<'a>> {
+        self.power_source
     }
     /// Sets new power, then returns the old power
     pub fn set_power_source(&mut self, power_source: &'a Block<'a>) -> Option<&'a Block<'a>> {
@@ -82,18 +82,20 @@ impl<'a> Block<'a> {
         old_power
     }
 
-    pub fn get_redstone(&self) -> &Option<RedstoneComponent<'a>> {
-        &self.redstone
+    pub fn get_redstone(&self) -> Option<&RedstoneComponent> {
+        self.redstone.as_ref()
     }
-    pub fn get_redstone_mut(&mut self) -> &mut Option<RedstoneComponent<'a>> {
-        &mut self.redstone
+    pub fn get_redstone_mut(&mut self) -> Option<&mut RedstoneComponent> {
+        self.redstone.as_mut()
     }
 
-    pub fn get_block_entity(&self) -> &Option<Box<dyn BlockEntity>> {
-        &self.blockentity
+    #[allow(clippy::borrowed_box)]
+    pub fn get_block_entity(&self) -> Option<&Box<dyn BlockEntity>> {
+        self.blockentity.as_ref()
     }
-    pub fn get_block_entity_mut(&mut self) -> &mut Option<Box<dyn BlockEntity>> {
-        &mut self.blockentity
+    #[allow(clippy::borrowed_box)]
+    pub fn get_block_entity_mut(&mut self) -> Option<&mut Box<dyn BlockEntity>> {
+        self.blockentity.as_mut()
     }
 
     pub fn is_sticky(&self) -> bool {
@@ -103,8 +105,8 @@ impl<'a> Block<'a> {
         self.movable
     }
 
-    pub fn get_hitbox(&self) -> &String {
-        &self.hitbox
+    pub fn get_hitbox(&self) -> Option<&String> {
+        self.hitbox.as_ref()
     }
 }
 
@@ -114,4 +116,6 @@ pub enum Facing {
     South,
     East,
     West,
+    Up,
+    Down,
 }
