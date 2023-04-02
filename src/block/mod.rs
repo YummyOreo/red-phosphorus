@@ -112,9 +112,13 @@ impl<'a> Block<'a> {
 
 #[derive(Clone)]
 pub enum Facing {
+    /// -Z
     North,
+    /// +Z
     South,
+    /// +X
     East,
+    /// -X
     West,
     Up,
     Down,
