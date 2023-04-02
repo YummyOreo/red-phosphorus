@@ -1,2 +1,6 @@
-// todo: impl this into duration
-pub fn seconds_to_ticks() {}
+use std::time::Duration;
+
+pub fn to_ticks(time: Duration) -> u128 {
+    let milis = time.as_millis();
+    milis / 50
+}
