@@ -15,7 +15,7 @@ pub enum RedstoneComponent {
     Lamp,
     TargetBlock(RedstoneTargetBlock),
     NoteBlock,
-    Rail,
+    Rail(RedstoneRail),
     Lecturn(RedstoneLecturn),
     Hopper(RedstoneHopper),
     Door,
@@ -80,7 +80,9 @@ pub struct RedstoneTargetBlock {
     pub output_strength: i8,
 }
 
-impl RedstoneTargetBlock {
+pub struct RedstoneRail;
+
+impl RedstoneRail {
     pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 }
 
