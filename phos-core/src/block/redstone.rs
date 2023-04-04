@@ -1,41 +1,41 @@
 use super::Facing;
 
-pub enum RedstoneComponent {
-    Dust(RedstoneDust),
+pub enum Component {
+    Dust(Dust),
     Block,
-    Tourch(RedstoneTourch),
-    Repeater(RedstoneRepeater),
-    Comparator(RedstoneRepeater),
+    Tourch(Tourch),
+    Repeater(Repeater),
+    Comparator(Repeater),
     Lever,
-    Button(RedstoneButton),
-    PressurePlate(RedstoneButton),
-    Piston(RedstonePiston),
-    StickyPiston(RedstonePiston),
+    Button(Button),
+    PressurePlate(Button),
+    Piston(Piston),
+    StickyPiston(Piston),
     Observer,
     Lamp,
-    TargetBlock(RedstoneTargetBlock),
+    TargetBlock(TargetBlock),
     NoteBlock,
-    Rail(RedstoneRail),
-    Lecturn(RedstoneLecturn),
-    Hopper(RedstoneHopper),
+    Rail(Rail),
+    Lecturn(Lecturn),
+    Hopper(Hopper),
     Door,
     Trapdoor,
 }
 
-pub struct RedstoneDust {
+pub struct Dust {
     pub power_direction: Vec<Facing>,
 }
 
-impl RedstoneDust {
+impl Dust {
     pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
 }
 
-pub struct RedstoneTourch {
+pub struct Tourch {
     pub power_direction: Vec<Facing>,
     pub is_burnt_out: bool,
 }
 
-pub struct RedstoneRepeater {
+pub struct Repeater {
     pub delay: i8,
     /// -1 represents not on
     pub delay_left: i8,
@@ -43,7 +43,7 @@ pub struct RedstoneRepeater {
     pub locked: bool,
 }
 
-pub struct RedstoneComparator {
+pub struct Comparator {
     pub subtract: bool,
     pub signal_in: i8,
     pub signal_left: i8,
@@ -52,13 +52,13 @@ pub struct RedstoneComparator {
     pub output_strength: i8,
 }
 
-pub struct RedstoneButton {
+pub struct Button {
     pub delay: i16,
     /// -1 represents not on
     pub delay_left: i16,
 }
 
-pub struct RedstonePiston {
+pub struct Piston {
     pub extent_phase: PistonPhase,
 }
 
@@ -69,7 +69,7 @@ pub enum PistonPhase {
     Retracting,
 }
 
-pub struct RedstoneTargetBlock {
+pub struct TargetBlock {
     /// -1 represents not on
     pub delay_left: i16,
     /// Depends what hits it
@@ -80,13 +80,13 @@ pub struct RedstoneTargetBlock {
     pub output_strength: i8,
 }
 
-pub struct RedstoneRail;
+pub struct Rail;
 
-impl RedstoneRail {
+impl Rail {
     pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 }
 
-pub struct RedstoneLecturn {
+pub struct Lecturn {
     /// -1 represents not on
     pub delay_left: i16,
     /// Depends what hits it
@@ -96,7 +96,7 @@ pub struct RedstoneLecturn {
     pub output_strength: i8,
 }
 
-pub struct RedstoneHopper {
+pub struct Hopper {
     pub locked: bool,
 
     pub output_strength: i8,

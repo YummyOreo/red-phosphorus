@@ -3,7 +3,7 @@ pub mod redstone;
 
 use std::mem::swap;
 
-use self::redstone::RedstoneComponent;
+use self::redstone::Component;
 use crate::block::entity::BlockEntity;
 
 #[allow(dead_code)]
@@ -15,7 +15,7 @@ pub struct Block<'a> {
     is_solid: bool,
     power: i8,
     power_source: Option<&'a Block<'a>>,
-    redstone: Option<RedstoneComponent>,
+    redstone: Option<Component>,
 
     blockentity: Option<Box<dyn BlockEntity>>,
 
@@ -81,10 +81,10 @@ impl<'a> Block<'a> {
         old_power
     }
 
-    pub fn get_redstone(&self) -> Option<&RedstoneComponent> {
+    pub fn get_redstone(&self) -> Option<&Component> {
         self.redstone.as_ref()
     }
-    pub fn get_redstone_mut(&mut self) -> Option<&mut RedstoneComponent> {
+    pub fn get_redstone_mut(&mut self) -> Option<&mut Component> {
         self.redstone.as_mut()
     }
 
