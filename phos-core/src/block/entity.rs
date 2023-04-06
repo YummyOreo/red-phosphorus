@@ -34,6 +34,10 @@ pub enum ItemType {
     OneStacbable,
 }
 
+impl ItemType {
+    pub const FullStackableMax: f32: 64;
+}
+
 /// Ulits functions for some block entities
 /// **You still have to make the block entities, these can just be used to help with the implementation**
 pub mod utils {
@@ -43,9 +47,9 @@ pub mod utils {
 
     pub fn calc_fullness(kind: &ItemType, ammount: f32) -> f32 {
         match *kind {
-            super::ItemType::FullStackable => ammount / 64_f32,
-            super::ItemType::FourthStackable => ammount / 16_f32,
-            super::ItemType::OneStacbable => ammount / 1_f32,
+            ItemType::FullStackable => ammount / 64_f32,
+            ItemType::FourthStackable => ammount / 16_f32,
+            ItemType::OneStacbable => ammount / 1_f32,
         }
     }
 
