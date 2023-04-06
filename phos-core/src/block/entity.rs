@@ -15,14 +15,14 @@ pub enum SlotName {
 }
 
 pub struct Slot {
-    pub item: (String, ItemType),
+    pub item: ItemType,
     pub ammount: i32,
 }
 
 impl Default for Slot {
     fn default() -> Self {
         Self {
-            item: (String::new(), ItemType::FullStackable),
+            item: ItemType::FullStackable,
             ammount: 0,
         }
     }
@@ -71,7 +71,7 @@ pub mod utils {
             let mut count = 0_f32;
             for (_, slot) in slots {
                 let slot = slot.unwrap_or_default();
-                count += calc_fullness(&slot.item.1, slot.ammount as f32);
+                count += calc_fullness(&slot.item, slot.ammount as f32);
             }
             count
         };
