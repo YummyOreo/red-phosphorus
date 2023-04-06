@@ -9,7 +9,8 @@ use crate::block::entity::BlockEntity;
 #[allow(dead_code)]
 pub struct Block<'a> {
     name: String,
-    position: (i32, i32),
+    /// X Y Z
+    position: (i32, i32, i32),
     rotation: Facing,
 
     is_solid: bool,
@@ -26,12 +27,14 @@ pub struct Block<'a> {
 
 // Getters and setters
 impl<'a> Block<'a> {
-    pub fn get_position(&self) -> (i32, i32) {
+    /// X Y Z
+    pub fn get_position(&self) -> (i32, i32, i32) {
         self.position
     }
 
     /// Sets new position, then returns the old position
-    pub fn set_position(&mut self, position: (i32, i32)) -> (i32, i32) {
+    /// X Y Z
+    pub fn set_position(&mut self, position: (i32, i32, i32)) -> (i32, i32, i32) {
         let mut old_position = position;
         swap(&mut self.position, &mut old_position);
         old_position
