@@ -9,11 +9,13 @@ pub trait BlockEntity {
     fn get_signal_strength(&self) -> i8;
 }
 
+#[derive(Clone)]
 pub enum SlotName {
     Num(i32),
     Name(String),
 }
 
+#[derive(Clone)]
 pub struct Slot {
     pub item: ItemType,
     pub ammount: i32,
@@ -28,6 +30,7 @@ impl Default for Slot {
     }
 }
 
+#[derive(Clone)]
 pub enum ItemType {
     FullStackable,
     FourthStackable,
@@ -43,7 +46,7 @@ impl ItemType {
 /// Ulits functions for some block entities
 /// **You still have to make the block entities, these can just be used to help with the implementation**
 pub mod utils {
-    use super::{BlockEntity, ItemType};
+    use super::{BlockEntity, ItemType, Slot};
 
     pub const MAX_MID_CONTAINER: i8 = 27;
 
@@ -53,6 +56,27 @@ pub mod utils {
             ItemType::FourthStackable => ammount / ItemType::FOURTH_STACKABLE_MAX,
             ItemType::SingleStacbable => ammount / ItemType::SINGAL_STACKABLE_MAX,
         }
+    }
+
+    fn get_fullness(slots: Vec<Option<Slot>>) -> f32 {
+        // Calculate 'fullness'
+        // fullness is the just present items/max items
+        let mut fullness = 0_f32;
+        for slot in slots {
+            let slot = slot.unwrap_or_default();
+            fullness += calc_fullness(&slot.item, slot.ammount as f32);
+        }
+        fullness
+    }
+
+    fn calc_strength(fullness: f32, max_slots: f32) -> i8 {
+        // Some wierd math from minecraft!
+        // casting to i8 should work bc strengths should never go over 15
+        #[allow(clippy::cast_possible_truncation)]
+        let sum = (fullness / max_slots).mul_add(14_f32, 1_f32).floor();
+        let sum = if sum > 15_f32 { 15_i8 } else { sum as i8 };
+
+        return sum;
     }
 
     /// Calculates the signal strength from a given block entity
@@ -65,21 +89,12 @@ pub mod utils {
         let slots = block.get_all();
         let max_slots: f32 = slots.len().checked_sub(1)? as f32;
 
-        // Calculate 'fullness'
-        // fullness is the just present items/max items
-        let fullness: f32 = {
-            let mut count = 0_f32;
-            for (_, slot) in slots {
-                let slot = slot.unwrap_or_default();
-                count += calc_fullness(&slot.item, slot.ammount as f32);
-            }
-            count
-        };
-        // Some wierd math from minecraft!
-        // casting to i8 should work bc strengths should never go over 15
-        #[allow(clippy::cast_possible_truncation)]
-        let sum = (fullness / max_slots).mul_add(14_f32, 1_f32).floor();
-        let sum = if sum > 15_f32 { 15_i8 } else { sum as i8 };
-        Some(sum)
+        let slots = slots
+            .iter()
+            .map(|slot| slot.clone().1)
+            .collect::<Vec<Option<Slot>>>();
+
+        let fullness: f32 = get_fullness(slots);
+        Some(calc_strength(fullness, max_slots))
     }
 }
