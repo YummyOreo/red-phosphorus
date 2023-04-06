@@ -31,11 +31,13 @@ impl Default for Slot {
 pub enum ItemType {
     FullStackable,
     FourthStackable,
-    OneStacbable,
+    SingleStacbable,
 }
 
 impl ItemType {
-    pub const FullStackableMax: f32: 64;
+    pub const FULL_STACKABLE_MAX: f32 = 64_f32;
+    pub const FOURTH_STACKABLE_MAX: f32 = 18_f32;
+    pub const SINGAL_STACKABLE_MAX: f32 = 1_f32;
 }
 
 /// Ulits functions for some block entities
@@ -47,9 +49,9 @@ pub mod utils {
 
     pub fn calc_fullness(kind: &ItemType, ammount: f32) -> f32 {
         match *kind {
-            ItemType::FullStackable => ammount / 64_f32,
-            ItemType::FourthStackable => ammount / 16_f32,
-            ItemType::OneStacbable => ammount / 1_f32,
+            ItemType::FullStackable => ammount / ItemType::FULL_STACKABLE_MAX,
+            ItemType::FourthStackable => ammount / ItemType::FOURTH_STACKABLE_MAX,
+            ItemType::SingleStacbable => ammount / ItemType::SINGAL_STACKABLE_MAX,
         }
     }
 
