@@ -73,10 +73,14 @@ pub mod utils {
         // Some wierd math from minecraft!
         // casting to i8 should work bc strengths should never go over 15
         #[allow(clippy::cast_possible_truncation)]
-        let sum = (fullness / max_slots).mul_add(14_f32, 1_f32).floor();
-        let sum = if sum > 15_f32 { 15_i8 } else { sum as i8 };
-
-        return sum;
+        {
+            let sum = (fullness / max_slots).mul_add(14_f32, 1_f32).floor();
+            if sum > 15_f32 {
+                15_i8
+            } else {
+                sum as i8
+            }
+        }
     }
 
     /// Calculates the signal strength from a given block entity
