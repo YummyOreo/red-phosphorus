@@ -18,7 +18,8 @@ pub enum Component {
     Rail(Rail),
     Lecturn(Lecturn),
     Hopper(Hopper),
-    Door,
+    DoorUpper,
+    DoorLower,
     Trapdoor,
 }
 
