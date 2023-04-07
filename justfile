@@ -2,7 +2,8 @@ default:
     just --list
 
 test: fmt clippy
-    cargo test
+    @echo -e "\033[1mTesting all...\033[0m"
+    @cargo test
 
 # Do: `just clippy` for just linting OR `just clippy fmt` for both linting and formatting
 clippy fmt="":
