@@ -11,6 +11,7 @@ pub mod block;
 pub mod utils;
 pub mod world;
 
+#[derive(Default)]
 pub struct Redstone {
     verson: Version,
 }
@@ -18,7 +19,7 @@ pub struct Redstone {
 impl Redstone {
     pub fn new() -> Self {
         Self {
-            verson: Default::default(),
+            ..Default::default()
         }
     }
 
