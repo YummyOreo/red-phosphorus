@@ -11,6 +11,9 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - [ ] Full parity w/ sculk sensors
 - [ ] Work on 1.12
 
+## Structure plans
+![](/docs/Structure.drawio.svg)
+
 # Currently Implemented
 - Some calcs for calculating the power output of containers.
 > Still need to do the edge cases.
