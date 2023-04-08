@@ -16,9 +16,11 @@ pub trait Block<'a> {
     fn is_sticky(&self) -> bool;
 
     fn get_power(&self) -> (&i8, Option<&'a dyn Block<'a>>);
+    fn get_power_mut(&mut self) -> (&i8, Option<&'a mut dyn Block<'a>>);
     fn set_power(&mut self, level: i8, source: Option<&'a dyn Block<'a>>);
 
     fn get_kind(&self) -> &Kind;
+    fn get_kind_mut(&mut self) -> &mut Kind;
 
     fn get_hitbox(&self) -> &str;
 
