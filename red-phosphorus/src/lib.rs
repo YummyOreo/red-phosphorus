@@ -1,14 +1,20 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use phos_version::Version;
+
+#[derive(Default)]
+pub struct Redstone {
+    verson: Version,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl Redstone {
+    pub fn new() -> Self {
+        Redstone::default()
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    pub fn get_version(&self) -> &Version {
+        &self.verson
+    }
+
+    pub fn set_version(&mut self, version: Version) {
+        self.verson = version;
     }
 }
