@@ -18,9 +18,7 @@ pub struct Redstone {
 
 impl Redstone {
     pub fn new() -> Self {
-        Self {
-            ..Default::default()
-        }
+        Redstone::default()
     }
 
     pub fn get_version(&self) -> &Version {
