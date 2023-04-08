@@ -6,8 +6,3 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-phos-version = { path = "../phos-version", version = "0.1.0", default-features = false }
-
-[features]
-default = ["1_19"]
-1_19 = ["phos-version/1_19"]
