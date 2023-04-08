@@ -26,6 +26,7 @@ pub trait Block<'a> {
 }
 
 pub enum Kind {
+    Block,
     BlockEntity(Box<dyn BlockEntity>),
     Component(Component),
 }
