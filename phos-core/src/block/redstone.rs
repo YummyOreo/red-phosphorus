@@ -10,7 +10,9 @@ pub enum Component {
     Button(Button),
     PressurePlate(Button),
     Piston(Piston),
+    PistonHead,
     StickyPiston(Piston),
+    SticyPistonHead,
     Observer,
     Lamp,
     TargetBlock(TargetBlock),
@@ -18,7 +20,8 @@ pub enum Component {
     Rail(Rail),
     Lecturn(Lecturn),
     Hopper(Hopper),
-    Door,
+    DoorUpper,
+    DoorLower,
     Trapdoor,
 }
 
