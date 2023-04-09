@@ -10,6 +10,7 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - [ ] Full parity with current version (without sculk sensors)
 - [ ] Full parity w/ sculk sensors
 - [ ] Work on 1.12
+- [ ] Make a "plugin" system for allowing additions of new redstone components without forking
 
 ## Structure plans
 ![](/docs/Structure.drawio.svg)

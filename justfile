@@ -1,9 +1,9 @@
 default:
     just --list
 
-test: fmt clippy
-    @echo -e "\033[1mTesting all...\033[0m"
-    @cargo test
+test pkg="all": fmt clippy
+    @echo -e "\033[1mTesting {{pkg}}...\033[0m"
+    @if [ "{{pkg}}" == "all" ]; then cargo test; else cargo test -p {{pkg}}; fi
 
 # Do: `just clippy` for just linting OR `just clippy fmt` for both linting and formatting
 clippy fmt="":
