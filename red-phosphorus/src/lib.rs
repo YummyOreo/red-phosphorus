@@ -17,4 +17,8 @@ impl Redstone {
     pub fn set_version(&mut self, version: Version) {
         self.verson = version;
     }
+
+    pub fn tick(&mut self) {
+        todo!()
+    }
 }
