@@ -1,18 +1,7 @@
 #![allow(clippy::cast_precision_loss)]
 #[allow(clippy::module_name_repetitions)]
 pub trait BlockEntity {
-    fn set_slot(&mut self, slot_name: SlotName, slot_content: Option<Slot>);
-    fn get_slot(&self, slot_name: SlotName) -> Option<Slot>;
-
-    fn get_all(&self) -> Vec<(SlotName, Option<Slot>)>;
-
     fn get_signal_strength(&self) -> i8;
-}
-
-#[derive(Clone, Debug)]
-pub enum SlotName {
-    Num(i32),
-    Name(String),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -49,7 +38,7 @@ pub enum ItemType {
 /// Ulits functions for some block entities
 /// **You still have to make the block entities, these can just be used to help with the implementation**
 pub mod utils {
-    use super::{BlockEntity, ItemType, Slot};
+    use super::{ItemType, Slot};
 
     pub const MAX_MID_CONTAINER: i8 = 27;
 
@@ -97,17 +86,45 @@ pub mod utils {
     ///
     /// There are some exeptions that will have their own functions
     /// See [the wiki](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
-    pub fn calc_signal_strength<T: BlockEntity>(block: &T) -> Option<i8> {
-        let slots = block.get_all();
+    pub fn calc_signal_strength(slots: Vec<Option<Slot>>) -> Option<i8> {
         let max_slots: f32 = slots.len().checked_sub(1)? as f32;
-
-        let slots = slots
-            .iter()
-            .map(|slot| slot.clone().1)
-            .collect::<Vec<Option<Slot>>>();
 
         let fullness: f32 = get_fullness(slots);
         Some(calc_strength(fullness, max_slots))
+    }
+
+    pub fn calc_strength_cake(slices: i8) -> i8 {
+        slices * 2_i8
+    }
+
+    pub fn calc_strength_jukebox(disk_name: Option<&str>) -> Option<i8> {
+        if let Some(name) = disk_name {
+            return match name.to_lowercase().as_str() {
+                "13" => Some(1),
+                "cat" => Some(2),
+                "blocks" => Some(3),
+                "chirp" => Some(4),
+                "far" => Some(5),
+                "mall" => Some(6),
+                "mellohi" => Some(7),
+                "stal" => Some(8),
+                "strad" => Some(9),
+                "ward" => Some(10),
+                "11" => Some(11),
+                "wait" => Some(12),
+                "pigstep" => Some(13),
+                "5" => Some(15),
+                _ => None,
+            };
+        }
+        Some(0)
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn calc_strength_lectern(pages: i32, current_page: i32) -> i8 {
+        ((current_page - 1) as f32 / (pages - 1) as f32)
+            .mul_add(14_f32, 1_f32)
+            .floor() as i8
     }
 
     #[cfg(test)]
