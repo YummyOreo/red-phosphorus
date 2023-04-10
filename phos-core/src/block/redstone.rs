@@ -19,7 +19,6 @@ pub enum Component {
     NoteBlock,
     Rail(Rail),
     Lecturn(Lecturn),
-    Hopper(Hopper),
     DoorUpper,
     DoorLower,
     Trapdoor,
@@ -94,13 +93,6 @@ pub struct Lecturn {
     pub delay_left: i16,
     /// Depends what hits it
     pub delay: i16,
-
-    pub current_page: i16,
-    pub output_strength: i8,
-}
-
-pub struct Hopper {
-    pub locked: bool,
 
     pub output_strength: i8,
 }
