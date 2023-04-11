@@ -52,14 +52,8 @@ jobs:
           target
         key: ${ runner.os }-cargo-debug-${{ hashFiles('**/Cargo.lock') }}
 
-    - name: Run cargo test (red-phosphorus)
-      run: cargo test -p red-phosphorus
-
-    - name: Run cargo test (phos-core)
-      run: cargo test -p phos-core
-
-    - name: Run cargo test (phos-version)
-      run: cargo test -p phos-version
+    - name: Run cargo test
+      run: cargo test
 
   clippy:
     runs-on: ubuntu-latest
