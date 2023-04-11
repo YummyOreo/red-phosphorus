@@ -1,4 +1,6 @@
-use phos_version::Version;
+pub mod types;
+pub mod version;
+use self::version::Version;
 
 #[derive(Default)]
 pub struct Redstone {
