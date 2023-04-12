@@ -1,8 +1,7 @@
 pub mod entity;
 pub mod redstone;
 
-use self::redstone::Component;
-use crate::block::entity::BlockEntity;
+use self::{entity::BlockEntity, redstone::Component};
 
 pub trait Block<'a> {
     fn get_name(&self) -> &'a str;
