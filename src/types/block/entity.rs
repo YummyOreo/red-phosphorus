@@ -132,8 +132,6 @@ pub mod utils {
         use super::{get_fullness, ItemType, Slot};
         use crate::types::block::entity::utils::calc_strength;
 
-        // use super::{utils::calc_strength, ItemType, Slot};
-
         #[test]
         fn test_fullness() {
             let slots = vec![
