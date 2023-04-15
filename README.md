@@ -13,7 +13,7 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - [ ] Make a "plugin" system for allowing additions of new redstone components without forking
 
 ## Structure plans
-![](/docs/Structure.drawio.svg)
+![](/Structure.drawio.svg)
 
 # Currently Implemented
 - Some calcs for calculating the power output of containers.
