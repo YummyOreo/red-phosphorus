@@ -3,29 +3,57 @@ pub mod redstone;
 
 use self::{entity::BlockEntity, redstone::Component};
 
+/// Base trait for a block
 pub trait Block<'a> {
+    /// Get the name of the block
     fn get_name(&self) -> &'a str;
 
+    /// Get the position of the block in 3d space
     fn get_position(&self) -> &'a (i32, i32, i32);
+    /// Set the position of block
+    /// used for when a piston is pushing a block
     fn set_position(&mut self, position: (i32, i32, i32));
 
-    fn get_facing(&self) -> Vec<&'a Facing>;
+    /// Get the `Facing` of a block
+    /// Sometimes this can be modifired (see rail), but this should be done by you
+    ///
+    /// See more info in the `Facing` enum
+    fn get_facing(&self) -> Vec<Facing>;
 
+    /// Get if the block is solid
     fn is_solid(&self) -> bool;
-    fn is_sticky(&self) -> bool;
 
+    /// Get the power level and the block that is powering the block
     fn get_power(&self) -> (&i8, Option<&'a dyn Block<'a>>);
+    /// Get the power level and **a mutable refrence to** the block that is powering the block
     fn get_power_mut(&mut self) -> (&i8, Option<&'a mut dyn Block<'a>>);
-    fn set_power(&mut self, level: i8, source: Option<&'a dyn Block<'a>>);
+    /// Set the power level and source
+    fn set_power(&mut self, level: i8, source: Option<&'a mut dyn Block<'a>>);
 
+    /// Get the "kind of the block"
+    /// See more in the enum `Kind`
     fn get_kind(&self) -> &Kind;
+    /// Get the "kind of the block"
+    /// Useful for modifying a redstone component
+    ///
+    /// See more in the enum `Kind`
     fn get_kind_mut(&mut self) -> &mut Kind;
 
-    fn get_hitbox(&self) -> &str;
-
-    fn get_movable(&self) -> Vec<Movable>;
+    /// Get if the block is movable and how
+    /// If it is immuvable, return `None` or a empty list
+    /// See more in the enum `Movable`
+    fn get_movable(&self) -> Option<Vec<Movable>>;
 }
 
+/// The "kind of the block"
+/// A block (in terms of redstone) can be 3 types:
+/// - Just a regular block
+/// - A block `BlockEntity`
+/// - A redstone `Component`
+///
+/// `Block`: takes nothing
+/// `BlockEntity`: Takes a struct implementity the trait `BlockEntity`
+/// `Component`: Takes a enum variant from `Component`
 pub enum Kind {
     Block,
     BlockEntity(Box<dyn BlockEntity>),
