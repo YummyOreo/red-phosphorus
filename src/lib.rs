@@ -1,15 +1,20 @@
 pub mod types;
 pub mod version;
+use types::world::World;
+
 use self::version::Version;
 
-#[derive(Default)]
-pub struct Redstone {
+pub struct Redstone<'a> {
     verson: Version,
+    world: &'a mut dyn World,
 }
 
-impl Redstone {
-    pub fn new() -> Self {
-        Redstone::default()
+impl<'a> Redstone<'a> {
+    pub fn new(world: &'a mut dyn World) -> Self {
+        Redstone {
+            world,
+            verson: Default::default(),
+        }
     }
 
     pub fn get_version(&self) -> &Version {
@@ -22,5 +27,9 @@ impl Redstone {
 
     pub fn tick(&mut self) {
         todo!()
+    }
+
+    pub fn set_world(&mut self, world: &'a mut dyn World) {
+        self.world = world;
     }
 }
