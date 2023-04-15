@@ -70,11 +70,13 @@ pub enum Kind {
 /// ```rust
 /// use red_phosphorus::types::block::Movable;
 ///
-/// let fully_movable: Vec<Movable> = vec![Movable::SlimePushable, Movable::PistonPushable];
+/// let fully_movable: Vec<Movable> = vec![Movable::SlimePullable, Movable::PistonPushable];
 /// let immovable: Vec<Movable> = vec![];
 /// ```
 pub enum Movable {
-    SlimePushable,
+    /// Can be pulled by slimeblocks
+    SlimePullable,
+    /// Can be pushed by pistons
     PistonPushable,
 }
 
