@@ -9,7 +9,7 @@ pub trait Block<'a> {
     fn get_position(&self) -> &'a (i32, i32, i32);
     fn set_position(&mut self, position: (i32, i32, i32));
 
-    fn get_facing(&self) -> &'a Facing;
+    fn get_facing(&self) -> Vec<&'a Facing>;
 
     fn is_solid(&self) -> bool;
     fn is_sticky(&self) -> bool;
@@ -32,21 +32,43 @@ pub enum Kind {
     Component(Component),
 }
 
+#[derive(Clone)]
+/// The way that a block is moveable
+/// Some blocks can't be moved any ways, some only directly by pistons, and some by both pistons
+/// and slime blocks, so this should also be stored in a vector. A empty vectior should be seen as
+/// immuvable
+///
+/// # Examples:
+/// ```rust
+/// use red_phosphorus::types::block::Movable;
+///
+/// let fully_movable: Vec<Movable> = vec![Movable::SlimePushable, Movable::PistonPushable];
+/// let immovable: Vec<Movable> = vec![];
+/// ```
 pub enum Movable {
     SlimePushable,
     PistonPushable,
 }
 
 #[derive(Clone)]
+/// Defining a direction that a block is facing
+/// Some blocks may be facing multiple directions (such as rail). So it should be stored in a
+/// vector
+/// # Examples:
+/// ```rust
+/// use red_phosphorus::types::block::Facing;
+///
+/// let facing: Vec<Facing> = vec![Facing::NegativeY];
+/// let facing: Vec<Facing> = vec![Facing::NegativeY, Facing::NegativeZ];
+/// ```
 pub enum Facing {
-    /// -Z
-    North,
-    /// +Z
-    South,
-    /// +X
-    East,
-    /// -X
-    West,
-    Up,
-    Down,
+    NegativeZ,
+    PositiveZ,
+
+    PositiveX,
+    NegativeX,
+    /// Up
+    PositiveY,
+    /// Down
+    NegativeY,
 }
