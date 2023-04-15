@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Technical Mc Docs',
+    title: 'Red-Phosphorus Tech Mc Docs',
     tagline: 'Documentation on redstone technical mc that is used in this project! (Made so I don\'t forget stuff)',
     favicon: 'img/favicon.ico',
 
