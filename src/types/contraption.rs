@@ -25,10 +25,12 @@ impl<'a> Contraption<'a> {
         self.blocks
     }
 
+    /// Get the MC version for the contraption
     pub fn get_version(&self) -> &Version {
         &self.verson
     }
 
+    /// Set the MC version for the contraption
     pub fn set_version(&mut self, version: Version) {
         self.verson = version;
     }
