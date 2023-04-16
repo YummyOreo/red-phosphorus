@@ -55,10 +55,9 @@ pub enum ItemType {
 /// Ulits functions for some block entities
 /// **You still have to make the block entities, these can just be used to help with the implementation**
 ///
-/// There are some providided functions for Calculating strength
+/// There are some provided functions for calculating strength
 ///
-///
-/// but there are some exeptions that will have their own functions
+/// but there are some exceptions that will have their own functions
 /// See [the wiki](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
 /// Some have been providid in the utils, others are too simple to be implemented here.
 pub mod utils {
