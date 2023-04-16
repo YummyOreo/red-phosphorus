@@ -1,6 +1,5 @@
-use crate::version::Version;
-
 use super::block::Block;
+use crate::version::Version;
 
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
@@ -15,7 +14,7 @@ impl<'a> Contraption<'a> {
     pub fn new(blocks: &'a mut Vec<&'a mut dyn Block<'a>>) -> Self {
         Self {
             blocks,
-            verson: Default::default(),
+            verson: Version::default(),
         }
     }
 
@@ -34,6 +33,7 @@ impl<'a> Contraption<'a> {
         self.verson = version;
     }
 
+    #[allow(clippy::missing_panics_doc)]
     /// To be called each tick
     pub fn tick(&mut self) {
         todo!()

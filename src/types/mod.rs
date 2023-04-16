@@ -6,5 +6,5 @@
 )]
 
 pub mod block;
-pub mod utils;
 pub mod contraption;
+pub mod utils;
