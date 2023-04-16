@@ -1,4 +1,5 @@
 #![allow(clippy::cast_precision_loss)]
+
 #[allow(clippy::module_name_repetitions)]
 /// Block Entity trait
 pub trait BlockEntity {
@@ -35,13 +36,20 @@ impl Slot {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 /// The type of the item (or slot). Just the max items that can be on the slot
+///
+/// # Example:
+/// ```rust
+/// use red_phosphorus::types::block::entity::ItemType;
+/// // Upto 64 items
+/// let kind: ItemType = ItemType::FullStackable;
+/// ```
 pub enum ItemType {
     /// Up to 64
     FullStackable,
     /// Up to 16
     FourthStackable,
     /// Up to 1
-    SingleStacbable,
+    SingleStackable,
 }
 
 /// Ulits functions for some block entities
@@ -54,12 +62,56 @@ pub mod utils {
     pub const ITEM_SLOT_MAX: f32 = 64_f32;
 
     /// Converts any slot type to full stack.
-    /// Ie. (Fouth Stackable) 16 -> 64
+    /// > This will not check if `ammount` is above 64 (this should be impossible in vanilla mc)
+    ///
+    /// `FullStackable` * 1
+    /// `FourthStackable` * 4
+    /// `SingleStackable` * 64
+    ///
+    /// # Example:
+    /// ## `SingleStackable`
+    /// Should times `ammount` by `64`
+    /// `(ammount) * 64`
+    /// ```rust
+    /// use red_phosphorus::types::block::entity::{
+    ///     ItemType, utils::get_fullstack_equiv
+    /// };
+    ///
+    /// let item_kind: ItemType = ItemType::SingleStackable;
+    /// let equiv: f32 = get_fullstack_equiv(&item_kind, 1_f32);
+    /// assert_eq!(64_f32, equiv);
+    /// ```
+    ///
+    /// ## `FourthStackable`
+    /// Should times the given `ammount` by 4
+    /// `(ammount) * 4`
+    /// ```rust
+    /// use red_phosphorus::types::block::entity::{
+    ///     ItemType, utils::get_fullstack_equiv
+    /// };
+    ///
+    /// let item_kind: ItemType = ItemType::FourthStackable;
+    /// let equiv: f32 = get_fullstack_equiv(&item_kind, 10_f32);
+    /// assert_eq!(40_f32, equiv);
+    /// ```
+    ///
+    /// ## `FullStackable`
+    /// Should times the given `ammount` by 1
+    /// `(ammount) * 1`
+    /// ```rust
+    /// use red_phosphorus::types::block::entity::{
+    ///     ItemType, utils::get_fullstack_equiv
+    /// };
+    ///
+    /// let item_kind: ItemType = ItemType::FullStackable;
+    /// let equiv: f32 = get_fullstack_equiv(&item_kind, 1_f32);
+    /// assert_eq!(1_f32, equiv);
+    /// ```
     pub fn get_fullstack_equiv(kind: &ItemType, ammount: f32) -> f32 {
         match *kind {
             ItemType::FullStackable => ammount,
-            ItemType::FourthStackable => ammount * 16_f32,
-            ItemType::SingleStacbable => ammount * 64_f32,
+            ItemType::FourthStackable => ammount * 4_f32,
+            ItemType::SingleStackable => ammount * 64_f32,
         }
     }
 
@@ -145,7 +197,7 @@ pub mod utils {
         fn test_fullness() {
             let slots = vec![
                 Some(Slot::new(ItemType::FullStackable, 64)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
                 Some(Slot::new(ItemType::FourthStackable, 0)),
             ];
             let expected = 128_f32 / 64_f32;
@@ -159,7 +211,7 @@ pub mod utils {
             let slots = vec![
                 Some(Slot::new(ItemType::FullStackable, 5)),
                 Some(Slot::new(ItemType::FullStackable, 0)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
                 Some(Slot::new(ItemType::FourthStackable, 0)),
                 Some(Slot::new(ItemType::FourthStackable, 0)),
             ];
@@ -173,10 +225,10 @@ pub mod utils {
                 Some(Slot::new(ItemType::FullStackable, 64)),
                 Some(Slot::new(ItemType::FullStackable, 64)),
                 Some(Slot::new(ItemType::FullStackable, 64)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
-                Some(Slot::new(ItemType::SingleStacbable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
+                Some(Slot::new(ItemType::SingleStackable, 1)),
                 Some(Slot::new(ItemType::FourthStackable, 16)),
                 Some(Slot::new(ItemType::FourthStackable, 16)),
             ];
