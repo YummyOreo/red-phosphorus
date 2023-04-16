@@ -54,6 +54,13 @@ pub enum ItemType {
 
 /// Ulits functions for some block entities
 /// **You still have to make the block entities, these can just be used to help with the implementation**
+///
+/// There are some providided functions for Calculating strength
+///
+///
+/// but there are some exeptions that will have their own functions
+/// See [the wiki](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
+/// Some have been providid in the utils, others are too simple to be implemented here.
 pub mod utils {
     use super::{ItemType, Slot};
 
@@ -149,10 +156,7 @@ pub mod utils {
     /// Make sure that all slots are "registered"
     /// You can do this by making a slot with `None` as the slot
     ///
-    /// There are some exeptions that will have their own functions
-    /// See [the wiki](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
-    ///
-    /// Some have been providid in the utils, others are too simple to be implemented here
+    /// Everything except the expectations [listed here](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
     pub fn calc_signal_strength(slots: Vec<Option<Slot>>) -> Option<i8> {
         let max_slots: f32 = slots.len().checked_sub(1)? as f32;
 
