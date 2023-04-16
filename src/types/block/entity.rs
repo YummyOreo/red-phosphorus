@@ -129,6 +129,8 @@ pub mod utils {
     }
 
     /// Calculate strength based on given fullness of a container and the max slots (not full slots)
+    ///
+    /// `1 + ((fullness) / (max_slots)) * 14`
     fn calc_strength(fullness: f32, max_slots: f32) -> i8 {
         // Some wierd math from minecraft!
         // casting to i8 should work bc strengths should never go over 15
