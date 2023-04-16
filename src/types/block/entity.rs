@@ -63,9 +63,20 @@ pub enum ItemType {
 pub mod utils {
     use super::{ItemType, Slot};
 
+    /// Double chest
+    pub const MAX_BIG_CONTAINER: i8 = 54;
+    /// Chest, shulker box, or barrel
     pub const MAX_MID_CONTAINER: i8 = 27;
+    /// Dropper and dispenser
+    pub const MAX_SMALL_CONTAINER: i8 = 9;
+    /// Hopper, brewing stand
+    pub const MAX_TINY_CONTAINER: i8 = 5;
+    /// Furnaces
+    pub const MAX_FURNACE_CONTAINER: i8 = 3;
 
-    pub const ITEM_SLOT_MAX: f32 = 64_f32;
+    pub const FULL_STACKABLE_MAX: f32 = 64_f32;
+    pub const FOURTH_STACKABLE_MAX: f32 = 16_f32;
+    pub const SINGLE_STACKABLE_MAX: f32 = 1_f32;
 
     /// Converts any slot type to full stack.
     /// > This will not check if `ammount` is above 64 (this should be impossible in vanilla mc)
@@ -131,7 +142,7 @@ pub mod utils {
             let slot = slot.unwrap_or_default();
             fullness += get_fullstack_equiv(&slot.item, slot.ammount as f32);
         }
-        fullness / ITEM_SLOT_MAX
+        fullness / FULL_STACKABLE_MAX
     }
 
     /// Calculate strength based on given fullness of a container and the max slots (not full slots)
