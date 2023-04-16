@@ -3,10 +3,9 @@ pub mod redstone;
 
 use self::{entity::BlockEntity, redstone::Component};
 
-
 /// Base trait for a block
 ///
-/// For BlockEntitys or Redstone Components, specify this in as a `Kind`. See `use
+/// For `BlockEntitys` or Redstone Components, specify this in as a `Kind`. See `use
 /// red_phosphorus::types::block::Kind`
 pub trait Block<'a> {
     /// Get the name of the block
