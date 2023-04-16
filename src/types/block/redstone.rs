@@ -1,17 +1,11 @@
 use super::Facing;
 
 pub enum Component {
-    /// Redstone dust
     Dust(Dust),
-    /// Block of redstone
     Block,
-    /// Redstone tourch
     Tourch(Tourch),
-    /// Redstone repeater
     Repeater(Repeater),
-    /// Redstone comparator
     Comparator(Repeater),
-    /// Redstone lever
     Lever,
     /// Redstone buttons
     /// Change the delay of the button based on the type of button
@@ -22,22 +16,17 @@ pub enum Component {
     // TODO: different types, some are different based on ammount of entities
     PressurePlate(Button),
     Piston(Piston),
-    /// Head of piston when extented
     PistonHead,
     StickyPiston(Piston),
-    /// A sticky piston head when extended
     SticyPistonHead,
     Observer,
-    /// Redstone lamp
     Lamp,
     TargetBlock(TargetBlock),
     NoteBlock,
     /// All rails that can be activated
     Rail(Rail),
     Lecturn(Lecturn),
-    /// Top of door
     DoorUpper,
-    /// Bottem of door
     DoorLower,
     Trapdoor,
 }
