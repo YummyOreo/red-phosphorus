@@ -44,11 +44,11 @@ impl Slot {
 /// let kind: ItemType = ItemType::FullStackable;
 /// ```
 pub enum ItemType {
-    /// Up to 64
+    /// Max of 64
     FullStackable,
-    /// Up to 16
+    /// Max of 16
     FourthStackable,
-    /// Up to 1
+    /// Max of 1
     SingleStackable,
 }
 
