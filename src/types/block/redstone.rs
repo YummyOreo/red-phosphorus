@@ -7,7 +7,13 @@ pub enum Component {
     Repeater(Repeater),
     Comparator(Repeater),
     Lever,
+    /// Redstone buttons
+    /// Change the delay of the button based on the type of button
+    ///
+    /// Wooden: 30 ticks (15 redstone ticks)
+    /// Stone: 20 ticks (10 redstone ticks)
     Button(Button),
+    // TODO: different types, some are different based on ammount of entities
     PressurePlate(Button),
     Piston(Piston),
     PistonHead,
@@ -17,6 +23,7 @@ pub enum Component {
     Lamp,
     TargetBlock(TargetBlock),
     NoteBlock,
+    /// All rails that can be activated
     Rail(Rail),
     Lecturn(Lecturn),
     DoorUpper,
