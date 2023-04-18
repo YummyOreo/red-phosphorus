@@ -31,6 +31,8 @@ pub trait Block<'a> {
     /// Get the power level and **a mutable refrence to** the block that is powering the block
     fn get_power_mut(&mut self) -> (&i8, Option<&'a mut dyn Block<'a>>);
     /// Set the power level and source
+    ///
+    /// Also called when the block is powered
     fn set_power(&mut self, level: i8, source: Option<&'a mut dyn Block<'a>>);
 
     /// Get the "kind of the block"
@@ -46,6 +48,9 @@ pub trait Block<'a> {
     /// If it is immuvable, return `None` or a empty list
     /// See more in the enum `Movable`
     fn get_movable(&self) -> Option<Vec<Movable>>;
+
+    /// Called when the block is updated
+    fn update(&self);
 }
 
 /// The "kind of the block"
