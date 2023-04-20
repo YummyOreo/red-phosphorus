@@ -1,8 +1,56 @@
 use super::Facing;
 
 pub struct DelayState {
-    pub delay: i8,
-    pub delay_left: i8,
+    max_delay: i8,
+    /// If the component is not powered, then this should be set to -1
+    delay_left: i8,
+}
+
+impl DelayState {
+    pub fn new(max_delay: i8) -> Self {
+        Self {
+            max_delay,
+            delay_left: -1,
+        }
+    }
+
+    pub fn set_delay_left(&mut self, delay: i8) {
+        self.delay_left = delay;
+    }
+
+    pub fn get_delay(&self) -> i8 {
+        self.max_delay
+    }
+
+    pub fn get_delay_left(&self) -> Option<i8> {
+        if self.delay_left.is_negative() {
+            return None;
+        }
+        Some(self.delay_left)
+    }
+
+    /// Will set the delay to the max delay
+    pub fn power(&mut self) {
+        self.delay_left = self.max_delay;
+    }
+
+    /// Will set the delay to off
+    pub fn reset_delay(&mut self) {
+        self.delay_left = -1;
+    }
+
+    /// Will decrement the delay by 1 tick
+    /// Will return the ammount of delay left after operations
+    ///
+    /// If the block is not powered or the delay is not active. Then it will set it to the max
+    /// delay
+    pub fn decrement_delay(&mut self) -> i8 {
+        if self.delay_left.is_negative() || self.delay_left == 0 {
+            self.delay_left = self.max_delay + 1;
+        }
+        self.delay_left -= 1;
+        self.delay_left
+    }
 }
 
 pub enum Component {
@@ -81,6 +129,7 @@ pub enum UpdateDirection {
 
 pub mod utils {
     use super::UpdateDirection;
+
     pub const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
     pub const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 
