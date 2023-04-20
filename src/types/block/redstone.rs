@@ -141,7 +141,6 @@ pub enum UpdateDirection {
 }
 
 pub mod utils {
-
     /// Input # of entities. If none, then just supplie 0
     pub fn calc_gold_plate(entities: i16) -> i8 {
         entities.clamp(0, 15) as i8
