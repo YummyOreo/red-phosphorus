@@ -1,5 +1,8 @@
 use super::Facing;
 
+const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
+const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
+
 pub struct DelayState {
     max_delay: i8,
     /// If the component is not powered, then this should be set to -1
@@ -106,6 +109,16 @@ pub enum Component {
     Trapdoor,
 }
 
+impl Component {
+    pub fn get_update_direction(&self) -> Option<UpdateDirection> {
+        match self {
+            Self::Rail => Some(RAIL_UPDATE_DIRECTION),
+            Self::Dust { .. } => Some(DUST_UPDATE_DIRECTION),
+            _ => None,
+        }
+    }
+}
+
 pub trait WeightedPressurePlate {
     /// Calculate the signal strength based on number of entities on it
     ///
@@ -128,10 +141,6 @@ pub enum UpdateDirection {
 }
 
 pub mod utils {
-    use super::UpdateDirection;
-
-    pub const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
-    pub const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 
     /// Input # of entities. If none, then just supplie 0
     pub fn calc_gold_plate(entities: i16) -> i8 {
