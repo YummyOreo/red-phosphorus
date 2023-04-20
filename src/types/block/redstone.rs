@@ -1,5 +1,10 @@
 use super::Facing;
 
+pub struct DelayState {
+    pub delay: i8,
+    pub delay_left: i8,
+}
+
 pub enum Component {
     Dust(Dust),
     Block,
@@ -56,11 +61,8 @@ pub struct Repeater {
 
 pub struct Comparator {
     pub subtract: bool,
-    pub signal_in: i8,
-    pub signal_left: i8,
-    pub signal_right: i8,
-
-    pub output_strength: i8,
+    /// Left, Middle (back), Right
+    pub signal_in: (i8, i8, i8),
 }
 
 pub struct Button {
@@ -94,8 +96,6 @@ pub struct TargetBlock {
     pub delay: i16,
 
     pub caused_by_projectile: bool,
-
-    pub output_strength: i8,
 }
 
 pub struct Rail;
@@ -109,8 +109,6 @@ pub struct Lecturn {
     pub delay_left: i16,
     /// Depends what hits it
     pub delay: i16,
-
-    pub output_strength: i8,
 }
 
 pub enum UpdateDirection {
