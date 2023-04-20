@@ -6,69 +6,56 @@ pub struct DelayState {
 }
 
 pub enum Component {
-    Dust(Dust),
+    Dust {
+        power_direction: Vec<Facing>,
+    },
     Block,
-    Tourch(Tourch),
-    Repeater(Repeater),
-    Comparator(Repeater),
+    Tourch {
+        power_direction: Vec<Facing>,
+        burnt_out: bool,
+    },
+    Repeater {
+        delay: DelayState,
+        locked: bool,
+    },
+    Comparator {
+        subtract: bool,
+        /// Left, Middle (back), Right
+        signal_in: (i8, i8, i8),
+    },
     Lever,
     /// Redstone buttons
     /// Change the delay of the button based on the type of button
     ///
     /// Wooden: 30 ticks (15 redstone ticks)
     /// Stone: 20 ticks (10 redstone ticks)
-    Button(Button),
+    Button {
+        delay: DelayState,
+    },
     /// Iron and Gold pressure plates
     WeightedPressurePlate(Box<dyn WeightedPressurePlate>),
     /// Wooden pressure plates
     PressurePlate,
-    Piston(Piston),
+    Piston {
+        extent_phase: PistonPhase,
+    },
     PistonHead,
-    StickyPiston(Piston),
+    StickyPiston {
+        extent_phase: PistonPhase,
+    },
     SticyPistonHead,
     Observer,
     Lamp,
-    TargetBlock(TargetBlock),
+    TargetBlock {
+        delay: DelayState,
+    },
     NoteBlock,
     /// All rails that can be activated
-    Rail(Rail),
-    Lecturn(Lecturn),
+    Rail,
+    Lecturn,
     DoorUpper,
     DoorLower,
     Trapdoor,
-}
-
-pub struct Dust {
-    pub power_direction: Vec<Facing>,
-}
-
-impl Dust {
-    pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
-}
-
-pub struct Tourch {
-    pub power_direction: Vec<Facing>,
-    pub is_burnt_out: bool,
-}
-
-pub struct Repeater {
-    pub delay: i8,
-    /// -1 represents not on
-    pub delay_left: i8,
-
-    pub locked: bool,
-}
-
-pub struct Comparator {
-    pub subtract: bool,
-    /// Left, Middle (back), Right
-    pub signal_in: (i8, i8, i8),
-}
-
-pub struct Button {
-    pub delay: i16,
-    /// -1 represents not on
-    pub delay_left: i16,
 }
 
 pub trait WeightedPressurePlate {
@@ -78,37 +65,11 @@ pub trait WeightedPressurePlate {
     fn calc(&self) -> i8;
 }
 
-pub struct Piston {
-    pub extent_phase: PistonPhase,
-}
-
 pub enum PistonPhase {
     Retracted,
     Extenting,
     Extended,
     Retracting,
-}
-
-pub struct TargetBlock {
-    /// -1 represents not on
-    pub delay_left: i16,
-    /// Depends what hits it
-    pub delay: i16,
-
-    pub caused_by_projectile: bool,
-}
-
-pub struct Rail;
-
-impl Rail {
-    pub const UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
-}
-
-pub struct Lecturn {
-    /// -1 represents not on
-    pub delay_left: i16,
-    /// Depends what hits it
-    pub delay: i16,
 }
 
 pub enum UpdateDirection {
@@ -119,6 +80,10 @@ pub enum UpdateDirection {
 }
 
 pub mod utils {
+    use super::UpdateDirection;
+    pub const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
+    pub const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
+
     /// Input # of entities. If none, then just supplie 0
     pub fn calc_gold_plate(entities: i16) -> i8 {
         entities.clamp(0, 15) as i8
