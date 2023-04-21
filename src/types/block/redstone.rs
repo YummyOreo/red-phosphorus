@@ -1,79 +1,12 @@
-use super::Facing;
-
 const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
 const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 
-pub struct DelayState {
-    max_delay: i8,
-    /// If the component is not powered, then this should be set to -1
-    delay_left: i8,
-}
-
-impl DelayState {
-    pub fn new(max_delay: i8) -> Self {
-        Self {
-            max_delay,
-            delay_left: -1,
-        }
-    }
-
-    pub fn set_delay_left(&mut self, delay: i8) {
-        self.delay_left = delay;
-    }
-
-    pub fn get_delay(&self) -> i8 {
-        self.max_delay
-    }
-
-    pub fn get_delay_left(&self) -> Option<i8> {
-        if self.delay_left.is_negative() {
-            return None;
-        }
-        Some(self.delay_left)
-    }
-
-    /// Will set the delay to the max delay
-    pub fn power(&mut self) {
-        self.delay_left = self.max_delay;
-    }
-
-    /// Will set the delay to off
-    pub fn reset_delay(&mut self) {
-        self.delay_left = -1;
-    }
-
-    /// Will decrement the delay by 1 tick
-    /// Will return the ammount of delay left after operations
-    ///
-    /// If the block is not powered or the delay is not active. Then it will set it to the max
-    /// delay
-    pub fn decrement_delay(&mut self) -> i8 {
-        if self.delay_left.is_negative() || self.delay_left == 0 {
-            self.delay_left = self.max_delay + 1;
-        }
-        self.delay_left -= 1;
-        self.delay_left
-    }
-}
-
 pub enum Component {
-    Dust {
-        power_direction: Vec<Facing>,
-    },
+    Dust,
     Block,
-    Tourch {
-        power_direction: Vec<Facing>,
-        burnt_out: bool,
-    },
-    Repeater {
-        delay: DelayState,
-        locked: bool,
-    },
-    Comparator {
-        subtract: bool,
-        /// Left, Middle (back), Right
-        signal_in: (i8, i8, i8),
-    },
+    Tourch,
+    Repeater,
+    Comparator,
     Lever,
     /// Redstone buttons
     /// Change the delay of the button based on the type of button
@@ -81,25 +14,19 @@ pub enum Component {
     /// Wooden: 30 ticks (15 redstone ticks)
     /// Stone: 20 ticks (10 redstone ticks)
     Button {
-        delay: DelayState,
+        delay: i8,
     },
     /// Iron and Gold pressure plates
-    WeightedPressurePlate(Box<dyn WeightedPressurePlate>),
+    WeightedPressurePlate,
     /// Wooden pressure plates
     PressurePlate,
-    Piston {
-        extent_phase: PistonPhase,
-    },
+    Piston,
     PistonHead,
-    StickyPiston {
-        extent_phase: PistonPhase,
-    },
+    StickyPiston,
     SticyPistonHead,
     Observer,
     Lamp,
-    TargetBlock {
-        delay: DelayState,
-    },
+    TargetBlock,
     NoteBlock,
     /// All rails that can be activated
     Rail,
@@ -117,20 +44,6 @@ impl Component {
             _ => None,
         }
     }
-}
-
-pub trait WeightedPressurePlate {
-    /// Calculate the signal strength based on number of entities on it
-    ///
-    /// See `utils` for imlps of this
-    fn calc(&self) -> i8;
-}
-
-pub enum PistonPhase {
-    Retracted,
-    Extenting,
-    Extended,
-    Retracting,
 }
 
 pub enum UpdateDirection {
