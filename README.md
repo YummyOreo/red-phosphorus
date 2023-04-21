@@ -1,5 +1,6 @@
 # red-phosphorus
 A redstone emulator aimed at speed and ease of use. Currently it is still in the developement phase, but plans to go into beta in a bit!
+This will compile the build down staticly. Adding blocks will require a rebuild.
 
 Takes insparation from [MCHPRS](https://github.com/MCHPR/MCHPRS). This is different because it provides almost every redstone compenent.
 > The only exepction (for now) is sulk sensors
