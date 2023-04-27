@@ -17,7 +17,6 @@
 		{"type":"text","text":"Example: rail updates from back to front","id":"191905af4c888fee","x":-170,"y":-724,"width":250,"height":60,"color":"5"},
 		{"type":"text","text":"When updating a thing, it will do block updates, move on to the block if needed, then do shape update. ","id":"264cf80e8ee14d44","x":-549,"y":-998,"width":250,"height":118,"color":"2"},
 		{"type":"text","text":"Example: You have 2 rails next to each other, one has 2 observers facing it, the other has 1:\noo\nr r o","id":"7098e3f910ee1b90","x":-217,"y":-1054,"width":250,"height":174,"color":"5"},
-		{"type":"link","url":"https://youtu.be/LqnhblSbpo0?t=345","id":"3d8333a4775db4d4","x":-1120,"y":-157,"width":640,"height":357},
 		{"type":"text","text":"Rail 2 updates","id":"7b53ba026092b4e0","x":55,"y":-954,"width":250,"height":60,"color":"5"},
 		{"type":"text","text":"Rail 2 triggers block shape change","id":"c6d641c8386ab327","x":55,"y":-832,"width":250,"height":60,"color":"5"},
 		{"type":"text","text":"Rail one updates (block update)","id":"cee870b442b7c70d","x":99,"y":-1084,"width":250,"height":60,"color":"5"},
@@ -32,7 +31,16 @@
 		{"type":"text","text":"\\- *Z*","id":"74cd354d76a0575e","x":873,"y":-235,"width":198,"height":51,"color":"2"},
 		{"type":"text","text":"\\- *Y*","id":"ff3a20da7047cb45","x":1148,"y":-235,"width":198,"height":51,"color":"2"},
 		{"type":"text","text":"\\- X","id":"8af4923e32b71e9a","x":581,"y":-235,"width":198,"height":51,"color":"2"},
-		{"type":"text","text":"","id":"ee576462d4736cf4","x":510,"y":-235,"width":50,"height":282,"color":"6"}
+		{"type":"text","text":"","id":"ee576462d4736cf4","x":510,"y":-235,"width":50,"height":282,"color":"6"},
+		{"type":"text","text":"## Tile Tick","id":"c8be3c43ec285fa2","x":1840,"y":-363,"width":250,"height":60,"color":"1"},
+		{"type":"text","text":"#### Lower Priority:\nWill be executed first","id":"e2fec81a43dc8a30","x":2920,"y":-540,"width":250,"height":80,"color":"2"},
+		{"id":"3401829026be09b0","x":2540,"y":-796,"width":250,"height":102,"color":"2","type":"text","text":"#### Same Priority:\nExecuted the same order as created"},
+		{"id":"ec0426cb818bfc29","x":2920,"y":-917,"width":250,"height":345,"color":"5","type":"text","text":"Example:\n`Repeaters` has lower than `Observers` and `Comparators`\n\nThis means that `Repeaters` will always be executed before the others. (If scheduled in the same tick)\n\n**But** `Comparators` and `Observers` have the same, so they are executed as they where created"},
+		{"id":"ff27e98f8f3c16ca","x":3000,"y":-363,"width":250,"height":60,"color":"4","type":"text","text":"## *\\* Exceptions*"},
+		{"id":"8afbd1482738c126","x":3476,"y":-365,"width":250,"height":225,"type":"text","text":"If a `Repeater` is being powered by another `Repeater` or `Comparator`, then its priority will change from `-1` to `-3`.\n\n*\\* This does not happen through blocks*\n"},
+		{"type":"link","url":"https://youtu.be/LqnhblSbpo0?t=345","id":"3d8333a4775db4d4","x":-1064,"y":23,"width":640,"height":357},
+		{"id":"b43acbc9f6a42832","x":1840,"y":-490,"width":250,"height":60,"color":"4","type":"text","text":"Todo: Read more about these"},
+		{"id":"bc1622510ba753a6","x":2415,"y":-375,"width":250,"height":85,"color":"3","type":"text","text":"## Each  Tile tick has different priorities."}
 	],
 	"edges":[
 		{"id":"6a0c1d36dc8b8370","fromNode":"bc1163938a8992cf","fromSide":"bottom","toNode":"15e7f906e8dfd642","toSide":"top"},
@@ -65,6 +73,15 @@
 		{"id":"b8d160f8fc351459","fromNode":"e7b0f5dd41df1035","fromSide":"right","toNode":"85984f91445d6634","toSide":"left"},
 		{"id":"2260ebc12a6c4a21","fromNode":"85984f91445d6634","fromSide":"bottom","toNode":"971f2389f0e6c779","toSide":"top"},
 		{"id":"f7aa0ae8d27b0d5b","fromNode":"971f2389f0e6c779","fromSide":"right","toNode":"0250cbabd3b30f97","toSide":"left"},
-		{"id":"2e9ebdc9fddec6cc","fromNode":"3d8333a4775db4d4","fromSide":"top","toNode":"accb9a1baf760ceb","toSide":"left","fromEnd":"arrow"}
+		{"id":"2e9ebdc9fddec6cc","fromNode":"3d8333a4775db4d4","fromSide":"top","toNode":"accb9a1baf760ceb","toSide":"left","fromEnd":"arrow","color":"5"},
+		{"id":"2ecd3b0a677f6841","fromNode":"c8be3c43ec285fa2","fromSide":"right","toNode":"bc1622510ba753a6","toSide":"left"},
+		{"id":"ee8540b27f7bf1df","fromNode":"bc1622510ba753a6","fromSide":"top","toNode":"3401829026be09b0","toSide":"bottom"},
+		{"id":"10454075abe0c9cd","fromNode":"bc1622510ba753a6","fromSide":"top","toNode":"e2fec81a43dc8a30","toSide":"left"},
+		{"id":"3ce6469e62845642","fromNode":"3401829026be09b0","fromSide":"right","toNode":"ec0426cb818bfc29","toSide":"left"},
+		{"id":"f38a4d2e297b590a","fromNode":"e2fec81a43dc8a30","fromSide":"top","toNode":"ec0426cb818bfc29","toSide":"bottom"},
+		{"id":"d7cfef839d4ed06b","fromNode":"bc1622510ba753a6","fromSide":"right","toNode":"ff27e98f8f3c16ca","toSide":"left"},
+		{"id":"8212abca1a66e5d4","fromNode":"ff27e98f8f3c16ca","fromSide":"right","toNode":"8afbd1482738c126","toSide":"left"},
+		{"id":"f20b3402848b034e","fromNode":"c8be3c43ec285fa2","fromSide":"bottom","toNode":"3d8333a4775db4d4","toSide":"right","fromEnd":"arrow","color":"5"},
+		{"id":"e867e4e0482bd11f","fromNode":"c8be3c43ec285fa2","fromSide":"top","toNode":"b43acbc9f6a42832","toSide":"bottom"}
 	]
 }
