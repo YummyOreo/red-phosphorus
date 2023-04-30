@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 pub enum Version {
     #[cfg(target_feature = "1_19")]
     Verson1_19,
