@@ -7,3 +7,4 @@
 
 pub mod block;
 pub mod contraption;
+pub mod compiler;
