@@ -1,23 +1,26 @@
+pub struct BasicState<'a> {
+    pub power: i8,
+    pub connections: Vec<&'a mut Tree<'a>>,
+}
+
 pub enum Tree<'a> {
     PowerSource {
-        power: i8,
-        connections: Vec<&'a mut Tree<'a>>,
+        basic_state: BasicState<'a>,
     },
     Block {
-        power: i8,
-        connections: Vec<&'a mut Tree<'a>>,
+        basic_state: BasicState<'a>,
     },
     Air,
 
     Dust {
-        power: i8,
-        connections: Vec<&'a mut Tree<'a>>,
+        basic_state: BasicState<'a>,
     },
     Repeater {
-        power: i8,
         delay: i8,
         locked: bool,
-        connections: Vec<&'a mut Tree<'a>>,
+        basic_state: BasicState<'a>,
+    },
+    Lamp {
+        basic_state: BasicState<'a>,
     },
 }
-
