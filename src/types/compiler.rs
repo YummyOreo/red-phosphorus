@@ -29,9 +29,19 @@ impl Node {
         }
     }
 }
-
 pub struct Graph {
     pub root: NodeCell,
 
     pub index: HashSet<(u32, u32, u32), NodeCell>,
+}
+
+#[derive(Default)]
+pub struct State {
+    pub tree: Option<Graph>,
+}
+
+impl State {
+    pub fn new() -> Self {
+        State::default()
+    }
 }
