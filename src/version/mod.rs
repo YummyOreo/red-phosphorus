@@ -6,13 +6,12 @@ pub enum Version {
 impl Default for Version {
     cfg_if::cfg_if! {
         if #[cfg(feature = "1_19")] {
+            #[inline(always)]
             fn default() -> Self {
                 Self::Verson1_19
             }
        } else {
-           fn default() -> Self {
-                compile_error!("You must have at least one feature enabled");
-           }
+            compile_error!("You must have at least one feature enabled");
        }
     }
 }
