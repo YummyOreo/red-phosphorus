@@ -1,28 +1,32 @@
 use super::block::Block;
 use crate::version::Version;
 
+pub trait World<'a> {
+    fn get_block(&self, pos: (i8, i8, i8)) -> &'a dyn Block<'a>;
+    fn get_block_mut(&mut self, pos: (i8, i8, i8)) -> &'a mut dyn Block<'a>;
+}
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
 /// contraption. This allows for you to use multi-threading
-pub struct Contraption<'a> {
-    /// The blocks of the redstone contraption that you want to emulate
-    blocks: &'a mut Vec<&'a mut dyn Block<'a>>,
+pub struct Contraption<'a, T: World<'a>> {
+    world: &'a mut T,
     verson: Version,
 }
 
-impl<'a> Contraption<'a> {
-    pub fn new(blocks: &'a mut Vec<&'a mut dyn Block<'a>>) -> Self {
+impl<'a, T: World<'a>> Contraption<'a, T> {
+    pub fn new(world: &'a mut T) -> Self {
         Self {
-            blocks,
+            world,
             verson: Version::default(),
         }
     }
 
-    pub fn get_world(&self) -> &[&'a mut dyn Block<'a>] {
-        self.blocks
+    pub fn get_world(&'a self) -> &'a T {
+        self.world
     }
-    pub fn get_world_mut(&mut self) -> &mut Vec<&'a mut dyn Block<'a>> {
-        self.blocks
+
+    pub fn get_world_mut(&'a mut self) -> &'a mut T {
+        self.world
     }
 
     /// Get the MC version for the contraption
