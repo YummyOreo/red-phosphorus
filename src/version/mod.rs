@@ -9,7 +9,7 @@ impl Default for Version {
         Self::Verson1_19
     }
 
-    #[not(default)]
+    #[cfg(not(default))]
     fn default() -> Self {
         panic!("You must have at least one version feature enabled")
     }
