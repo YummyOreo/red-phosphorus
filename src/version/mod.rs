@@ -4,14 +4,16 @@ pub enum Version {
 }
 
 impl Default for Version {
-    #[cfg(feature = "1_19")]
-    fn default() -> Self {
-        Self::Verson1_19
-    }
-
-    #[cfg(not(default))]
-    fn default() -> Self {
-        panic!("You must have at least one version feature enabled")
+    cfg_if::cfg_if! {
+        if #[cfg(feature = "1_19")] {
+            fn default() -> Self {
+                Self::Verson1_19
+            }
+       } else {
+           fn default() -> Self {
+                compile_error!("You must have at least one feature enabled");
+           }
+       }
     }
 }
 
@@ -20,7 +22,6 @@ impl ToString for Version {
         match self {
             #[cfg(feature = "1_19")]
             Self::Verson1_19 => String::from("1.19.*"),
-            _ => panic!("You must have at least one version feature enabled"),
         }
     }
 }
