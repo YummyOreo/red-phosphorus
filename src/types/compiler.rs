@@ -1,49 +1,37 @@
-pub struct BasicState<'a> {
-    pub power: i8,
-    pub connections: Vec<&'a mut Tree<'a>>,
-}
+use std::cell::RefCell;
+use std::collections::HashSet;
+use std::rc::Rc;
 
-pub enum Tree<'a> {
-    PowerSource {
-        basic_state: BasicState<'a>,
-    },
-    Block {
-        basic_state: BasicState<'a>,
-    },
+pub enum NodeKind {
+    PowerSource,
+    Block,
     Air,
 
-    Dust {
-        basic_state: BasicState<'a>,
-    },
-    Repeater {
-        delay: i8,
-        locked: bool,
-        basic_state: BasicState<'a>,
-    },
-    Lamp {
-        basic_state: BasicState<'a>,
-    },
+    Dust,
+    Repeater { delay: i8, locked: bool },
+    Lamp,
 }
 
-impl<'a> Tree<'a> {
-    pub fn get_basic_state(&self) -> Option<&BasicState<'a>> {
-        match self {
-            Self::Air => None,
-            Self::PowerSource { basic_state }
-            | Self::Block { basic_state }
-            | Self::Dust { basic_state }
-            | Self::Repeater { basic_state, .. }
-            | Self::Lamp { basic_state } => Some(basic_state),
+pub type NodeCell = Rc<RefCell<Node>>;
+
+pub struct Node {
+    pub kind: NodeKind,
+    pub power: i8,
+    pub edges: Vec<NodeCell>,
+}
+
+impl Node {
+    pub fn new(kind: NodeKind) -> Self {
+        Self {
+            kind,
+            power: 0,
+            edges: Vec::new(),
         }
     }
-    pub fn get_basic_state_mut(&mut self) -> Option<&mut BasicState<'a>> {
-        match self {
-            Self::Air => None,
-            Self::PowerSource { basic_state }
-            | Self::Block { basic_state }
-            | Self::Dust { basic_state }
-            | Self::Repeater { basic_state, .. }
-            | Self::Lamp { basic_state } => Some(basic_state),
-        }
-    }
+}
+
+pub struct Graph {
+    pub root: NodeCell,
+
+    pub index: HashSet<(u32, u32, u32), NodeCell>,
 }
