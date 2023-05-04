@@ -2,7 +2,7 @@
 name: Parity Issue
 about: Create a report to help us improve
 title: ''
-labels: Breaking Change, bug, help wanted, Parity
+labels: bug, help wanted, Parity
 assignees: ''
 
 ---
