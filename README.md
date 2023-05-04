@@ -23,5 +23,5 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - Some calcs for calculating the power output of containers.
 
 # Contributing
-[See contributing.md](/contributing.md)
+[See contributing.md](/CONTRIBUTING.md)
 
