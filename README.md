@@ -23,7 +23,8 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - Some calcs for calculating the power output of containers.
 
 # Contributing
-
+## Commits
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) as a format for commit messages. You *dont* have to use this format in your pr as we will fix it when we squash and commit it into main! (this also means mege commits are fine)
 ## Requirements
 We use [just](https://github.com/casey/just) to run commands, run `just fmt clippy` before pushing to format and lint your code.
 
