@@ -1,7 +1,7 @@
 use super::{block::Block, compiler::Graph};
 use crate::version::Version;
 
-pub type Position = (u16, u16, u16);
+pub type Position = (i32, i32, i32);
 
 pub trait World<'a> {
     fn get_block(&'a self, pos: Position) -> &'a Block;
