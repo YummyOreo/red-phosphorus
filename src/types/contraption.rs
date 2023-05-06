@@ -12,6 +12,7 @@ pub trait World<'a> {
 
     fn bounds(&self) -> (Position, Position);
 }
+
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
 /// contraption. This allows for you to use multi-threading

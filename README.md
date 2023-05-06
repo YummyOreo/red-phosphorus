@@ -23,10 +23,5 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 - Some calcs for calculating the power output of containers.
 
 # Contributing
-
-## Requirements
-We use [just](https://github.com/casey/just) to run commands, run `just fmt clippy` before pushing to format and lint your code.
-
-## Testing:
-To run the tests you can just run `just test`!
+[See contributing.md](/CONTRIBUTING.md)
 
