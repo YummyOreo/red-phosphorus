@@ -1,18 +1,18 @@
 use crate::{
-    types::{compiler::State, contraption::World},
+    types::{compiler::Graph, contraption::World},
     Contraption,
 };
 
-pub fn complie<'a, T: World<'a>>(contraption: &'a mut Contraption<'a, T>) {
-    let mut state = State::new();
+mod graph;
 
-    if contraption.get_world().get_has_updated() || !contraption.has_graph() {
-        // Recompiling the graph
-        println!("Recompiling");
-    } else if contraption.get_world().get_has_state_updated() {
+pub fn complie<'a, W: World<'a>>(contraption: &'a mut Contraption<'a, W>) -> Option<Graph> {
+    let has_graph = contraption.has_graph();
+    let world = contraption.get_world_mut();
+    if world.get_has_updated() || !has_graph {
+        return Some(graph::full_compile(world));
+    } else if world.get_has_state_updated() {
         // update state
         println!("Updating state");
-    } else {
-        state.graph = Some(contraption.get_graph().unwrap());
     }
+    None
 }
