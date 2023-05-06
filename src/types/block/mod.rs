@@ -1,7 +1,8 @@
 pub mod entity;
 pub mod redstone;
 
-use self::redstone::Component;
+use self::{entity::BlockEntity, redstone::Component};
+use super::{contraption::Position, PowerLevel};
 
 #[derive(Clone, Default)]
 /// Basic struct for a block

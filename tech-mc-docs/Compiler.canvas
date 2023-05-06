@@ -1,0 +1,28 @@
+{
+	"nodes":[
+		{"type":"text","text":"# Tick\nThis takes in a `contraption`\nThis holds the current compiler tree and the world.","id":"07afaa005c1b1e50","x":-300,"y":-200,"width":250,"height":140},
+		{"type":"text","text":"### Check if one of 2 things are true:\n- The tree is empty\n- There has been new blocks added\n> If any of these are true, then there needs to be a full recompile","id":"cb6ef5b785f1b617","x":244,"y":-200,"width":250,"height":280},
+		{"type":"text","text":"## Compile","id":"ffbf031b289efe5d","x":726,"y":-253,"width":250,"height":60},
+		{"type":"text","text":"One is true","id":"01a37e5c1d3003fa","x":560,"y":-155,"width":120,"height":50},
+		{"type":"text","text":"Check for indicated state changes","id":"11e933dc3afd88f5","x":726,"y":20,"width":250,"height":60},
+		{"type":"text","text":"None are true","id":"454bf4e2e70b249f","x":550,"y":-30,"width":140,"height":50},
+		{"type":"text","text":"Goes through each block and populates the graph","id":"e64cc88330443f4b","x":1160,"y":-253,"width":250,"height":60},
+		{"type":"text","text":"If so: update the state in the graph","id":"1d453e4e4724a7fe","x":1160,"y":-105,"width":250,"height":60},
+		{"type":"text","text":"Sim Tick","id":"dec729fab4211707","x":1480,"y":20,"width":250,"height":60},
+		{"id":"bdacf2f4cf91f145","x":1160,"y":20,"width":100,"height":60,"type":"text","text":"If not"},
+		{"id":"26aa2e151b455b6c","x":1880,"y":20,"width":250,"height":60,"type":"text","text":"Get and return diff"},
+		{"id":"6721f0d94b1b7459","x":1573,"y":-267,"width":250,"height":60,"type":"text","text":"Optimize graph"}
+	],
+	"edges":[
+		{"id":"3ecf07596803e95b","fromNode":"07afaa005c1b1e50","fromSide":"right","toNode":"cb6ef5b785f1b617","toSide":"left"},
+		{"id":"4abb2cc337985233","fromNode":"cb6ef5b785f1b617","fromSide":"right","toNode":"ffbf031b289efe5d","toSide":"left"},
+		{"id":"8b67e7787fd2eadc","fromNode":"cb6ef5b785f1b617","fromSide":"right","toNode":"11e933dc3afd88f5","toSide":"left"},
+		{"id":"5880de82f0fd422b","fromNode":"ffbf031b289efe5d","fromSide":"right","toNode":"e64cc88330443f4b","toSide":"left"},
+		{"id":"6bbdd0fef4aa32b3","fromNode":"11e933dc3afd88f5","fromSide":"right","toNode":"dec729fab4211707","toSide":"left"},
+		{"id":"17f88513db44aed6","fromNode":"11e933dc3afd88f5","fromSide":"right","toNode":"1d453e4e4724a7fe","toSide":"left"},
+		{"id":"5955ff9496691f83","fromNode":"1d453e4e4724a7fe","fromSide":"right","toNode":"dec729fab4211707","toSide":"top"},
+		{"id":"0c2f93d185d9db0c","fromNode":"dec729fab4211707","fromSide":"right","toNode":"26aa2e151b455b6c","toSide":"left"},
+		{"id":"c0f8f8de11fc2029","fromNode":"e64cc88330443f4b","fromSide":"right","toNode":"6721f0d94b1b7459","toSide":"left"},
+		{"id":"c3c58e267c7e11d3","fromNode":"6721f0d94b1b7459","fromSide":"bottom","toNode":"dec729fab4211707","toSide":"top"}
+	]
+}

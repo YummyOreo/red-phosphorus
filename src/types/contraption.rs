@@ -1,16 +1,25 @@
-use super::block::Block;
+use super::{block::Block, compiler::Graph};
 use crate::version::Version;
 
+pub type Position = (u16, u16, u16);
+
 pub trait World<'a> {
-    fn get_block(&'a self, pos: (i8, i8, i8)) -> &'a Block;
-    fn get_block_mut(&'a mut self, pos: (i8, i8, i8)) -> &'a mut Block;
+    fn get_block(&'a self, pos: Position) -> &'a Block;
+    fn get_block_mut(&'a mut self, pos: Position) -> &'a mut Block;
+
+    fn get_has_updated(&self) -> bool;
+    fn get_has_state_updated(&self) -> bool;
+
+    fn bounds(&self) -> (Position, Position);
 }
+
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
 /// contraption. This allows for you to use multi-threading
 pub struct Contraption<'a, T: World<'a>> {
     world: &'a mut T,
     verson: Version,
+    last_graph: Option<Graph>,
 }
 
 impl<'a, T: World<'a>> Contraption<'a, T> {
@@ -18,6 +27,7 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
         Self {
             world,
             verson: Version::default(),
+            last_graph: None,
         }
     }
 
@@ -36,6 +46,14 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
     /// Set the MC version for the contraption
     pub fn set_version(&mut self, version: Version) {
         self.verson = version;
+    }
+
+    pub fn get_graph(&self) -> Option<Graph> {
+        self.last_graph.clone()
+    }
+
+    pub fn has_graph(&self) -> bool {
+        self.last_graph.is_some()
     }
 
     #[allow(clippy::missing_panics_doc)]

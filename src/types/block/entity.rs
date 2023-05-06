@@ -1,10 +1,12 @@
 #![allow(clippy::cast_precision_loss)]
 
+use crate::types::PowerLevel;
+
 #[allow(clippy::module_name_repetitions)]
 /// Block Entity trait
 pub trait BlockEntity {
     /// Get the signal strength when a comparator "reads" from it
-    fn get_signal_strength(&self) -> i8;
+    fn get_signal_strength(&self) -> PowerLevel;
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
