@@ -1,15 +1,6 @@
 name: Rust
 
-on:
-  push:
-  pull_request:
-  workflow_run:
-    workflows:
-      - "build"
-      - "test"
-      - "clippy"
-      - "format"
-    types: [requested]
+on: [ push, pull_request, workflow_dispatch ]
 
 env:
   CARGO_TERM_COLOR: always
