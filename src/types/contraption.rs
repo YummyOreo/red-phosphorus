@@ -1,4 +1,4 @@
-use super::block::Block;
+use super::{block::Block, compiler::Graph};
 use crate::version::Version;
 
 pub type Position = (u16, u16, u16);
@@ -6,6 +6,9 @@ pub type Position = (u16, u16, u16);
 pub trait World<'a> {
     fn get_block(&self, pos: Position) -> &'a dyn Block<'a>;
     fn get_block_mut(&mut self, pos: Position) -> &'a mut dyn Block<'a>;
+
+    fn get_has_updated(&self) -> bool;
+    fn get_has_state_updated(&self) -> bool;
 
     fn bounds(&self) -> (Position, Position);
 }
@@ -15,6 +18,7 @@ pub trait World<'a> {
 pub struct Contraption<'a, T: World<'a>> {
     world: &'a mut T,
     verson: Version,
+    last_graph: Option<Graph>,
 }
 
 impl<'a, T: World<'a>> Contraption<'a, T> {
@@ -22,6 +26,7 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
         Self {
             world,
             verson: Version::default(),
+            last_graph: None,
         }
     }
 
@@ -41,6 +46,14 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
     /// Set the MC version for the contraption
     pub fn set_version(&mut self, version: Version) {
         self.verson = version;
+    }
+
+    pub fn get_graph(&self) -> Option<Graph> {
+        self.last_graph.clone()
+    }
+
+    pub fn has_graph(&self) -> bool {
+        self.last_graph.is_some()
     }
 
     #[allow(clippy::missing_panics_doc)]

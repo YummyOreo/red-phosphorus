@@ -2,6 +2,7 @@ use std::{cell::RefCell, collections::HashSet, rc::Rc};
 
 use super::{contraption::Position, PowerLevel};
 
+#[derive(Clone)]
 pub enum NodeKind {
     PowerSource,
     Block,
@@ -14,6 +15,7 @@ pub enum NodeKind {
 
 pub type NodeCell = Rc<RefCell<Node>>;
 
+#[derive(Clone)]
 pub struct Node {
     pub kind: NodeKind,
     pub power: PowerLevel,
@@ -29,6 +31,8 @@ impl Node {
         }
     }
 }
+
+#[derive(Clone)]
 pub struct Graph {
     pub root: NodeCell,
 
@@ -37,7 +41,7 @@ pub struct Graph {
 
 #[derive(Default)]
 pub struct State {
-    pub tree: Option<Graph>,
+    pub graph: Option<Graph>,
 }
 
 impl State {
