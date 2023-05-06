@@ -1,6 +1,6 @@
-use std::cell::RefCell;
-use std::collections::HashSet;
-use std::rc::Rc;
+use std::{cell::RefCell, collections::HashSet, rc::Rc};
+
+use super::{contraption::Position, PowerLevel};
 
 pub enum NodeKind {
     PowerSource,
@@ -16,7 +16,7 @@ pub type NodeCell = Rc<RefCell<Node>>;
 
 pub struct Node {
     pub kind: NodeKind,
-    pub power: i8,
+    pub power: PowerLevel,
     pub edges: Vec<NodeCell>,
 }
 
@@ -32,7 +32,7 @@ impl Node {
 pub struct Graph {
     pub root: NodeCell,
 
-    pub index: HashSet<(u32, u32, u32), NodeCell>,
+    pub index: HashSet<Position, NodeCell>,
 }
 
 #[derive(Default)]

@@ -1,6 +1,3 @@
-const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
-const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
-
 pub enum Component {
     Dust,
     Block,
@@ -34,21 +31,4 @@ pub enum Component {
     DoorUpper,
     DoorLower,
     Trapdoor,
-}
-
-impl Component {
-    pub fn get_update_direction(&self) -> Option<UpdateDirection> {
-        match self {
-            Self::Rail => Some(RAIL_UPDATE_DIRECTION),
-            Self::Dust { .. } => Some(DUST_UPDATE_DIRECTION),
-            _ => None,
-        }
-    }
-}
-
-pub enum UpdateDirection {
-    /// From the source out
-    FromSource,
-    /// From last to source
-    AwaySource,
 }

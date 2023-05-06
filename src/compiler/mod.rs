@@ -5,5 +5,4 @@ use crate::{
 
 pub fn complie<'a, T: World<'a>>(_contraption: &'a mut Contraption<'a, T>) {
     let mut _state = State::new();
-
 }

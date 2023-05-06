@@ -2,6 +2,7 @@ pub mod entity;
 pub mod redstone;
 
 use self::{entity::BlockEntity, redstone::Component};
+use super::{contraption::Position, PowerLevel};
 
 /// Base trait for a block
 ///
@@ -12,10 +13,10 @@ pub trait Block<'a> {
     fn get_name(&self) -> &'a str;
 
     /// Get the position of the block in 3d space
-    fn get_position(&self) -> &'a (i32, i32, i32);
+    fn get_position(&self) -> &'a Position;
     /// Set the position of block
     /// used for when a piston is pushing a block
-    fn set_position(&mut self, position: (i32, i32, i32));
+    fn set_position(&mut self, position: Position);
 
     /// Get the `Facing` of a block
     /// Sometimes this can be modifired (see rail), but this should be done by you
@@ -27,13 +28,13 @@ pub trait Block<'a> {
     fn is_solid(&self) -> bool;
 
     /// Get the power level and the block that is powering the block
-    fn get_power(&self) -> (&i8, Option<&'a dyn Block<'a>>);
+    fn get_power(&self) -> (&PowerLevel, Option<&'a dyn Block<'a>>);
     /// Get the power level and **a mutable refrence to** the block that is powering the block
-    fn get_power_mut(&mut self) -> (&i8, Option<&'a mut dyn Block<'a>>);
+    fn get_power_mut(&mut self) -> (&PowerLevel, Option<&'a mut dyn Block<'a>>);
     /// Set the power level and source
     ///
     /// Also called when the block is powered
-    fn set_power(&mut self, level: i8, source: Option<&'a mut dyn Block<'a>>);
+    fn set_power(&mut self, level: PowerLevel, source: Option<&'a mut dyn Block<'a>>);
 
     /// Get the "kind of the block"
     /// See more in the enum `Kind`

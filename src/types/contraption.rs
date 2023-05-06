@@ -1,9 +1,13 @@
 use super::block::Block;
 use crate::version::Version;
 
+pub type Position = (u16, u16, u16);
+
 pub trait World<'a> {
-    fn get_block(&self, pos: (i8, i8, i8)) -> &'a dyn Block<'a>;
-    fn get_block_mut(&mut self, pos: (i8, i8, i8)) -> &'a mut dyn Block<'a>;
+    fn get_block(&self, pos: Position) -> &'a dyn Block<'a>;
+    fn get_block_mut(&mut self, pos: Position) -> &'a mut dyn Block<'a>;
+
+    fn bounds(&self) -> (Position, Position);
 }
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each

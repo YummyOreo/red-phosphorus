@@ -7,7 +7,10 @@
 //! See [the wiki](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
 //! Some have been providid in the utils, others are too simple to be implemented here.
 
-use crate::types::block::entity::{ItemType, Slot};
+use crate::types::{
+    block::entity::{ItemType, Slot},
+    PowerLevel,
+};
 
 /// Double chest
 pub const MAX_BIG_CONTAINER: i8 = 54;
@@ -91,16 +94,16 @@ fn get_fullness(slots: Vec<Option<Slot>>) -> f32 {
 /// Calculate strength based on given fullness of a container and the max slots (not full slots)
 ///
 /// `1 + ((fullness) / (max_slots)) * 14`
-fn calc_strength(fullness: f32, max_slots: f32) -> i8 {
+fn calc_strength(fullness: f32, max_slots: f32) -> PowerLevel {
     // Some wierd math from minecraft!
     // casting to i8 should work bc strengths should never go over 15
     #[allow(clippy::cast_possible_truncation)]
     {
         let sum = (fullness / max_slots).mul_add(14_f32, 1_f32).floor();
         if sum > 15_f32 {
-            15_i8
+            15_u8
         } else {
-            sum as i8
+            sum as PowerLevel
         }
     }
 }
@@ -110,7 +113,7 @@ fn calc_strength(fullness: f32, max_slots: f32) -> i8 {
 /// You can do this by making a slot with `None` as the slot
 ///
 /// Everything except the expectations [listed here](https://minecraft.fandom.com/wiki/Redstone_Comparator#Miscellaneous)
-pub fn calc_signal_strength(slots: Vec<Option<Slot>>) -> Option<i8> {
+pub fn calc_signal_strength(slots: Vec<Option<Slot>>) -> Option<PowerLevel> {
     let max_slots: f32 = slots.len().checked_sub(1)? as f32;
 
     let fullness: f32 = get_fullness(slots);
@@ -121,14 +124,14 @@ pub fn calc_signal_strength(slots: Vec<Option<Slot>>) -> Option<i8> {
 /// just number of slices left * 2
 ///
 /// `(slices_left) * 2`
-pub fn calc_strength_cake(slices_left: i8) -> i8 {
-    slices_left * 2_i8
+pub fn calc_strength_cake(slices_left: u8) -> PowerLevel {
+    slices_left * 2_u8
 }
 
 /// Calculate the strength output of a juxebox
 ///
 /// based on the current disk's name
-pub fn calc_strength_jukebox(disk_name: Option<&str>) -> Option<i8> {
+pub fn calc_strength_jukebox(disk_name: Option<&str>) -> Option<PowerLevel> {
     if let Some(name) = disk_name {
         return match name.to_lowercase().as_str() {
             "13" => Some(1),
@@ -155,10 +158,10 @@ pub fn calc_strength_jukebox(disk_name: Option<&str>) -> Option<i8> {
 /// Calculate the strength from a lecturen based on the max pages and current page
 ///
 /// `1 + ((current_page) - 1 / (pages - 1)) * 14`
-pub fn calc_strength_lectern(pages: i32, current_page: i32) -> i8 {
+pub fn calc_strength_lectern(pages: i32, current_page: i32) -> PowerLevel {
     ((current_page - 1) as f32 / (pages - 1) as f32)
         .mul_add(14_f32, 1_f32)
-        .floor() as i8
+        .floor() as PowerLevel
 }
 
 #[cfg(test)]
@@ -187,7 +190,7 @@ mod test {
             Some(Slot::new(ItemType::FourthStackable, 0)),
             Some(Slot::new(ItemType::FourthStackable, 0)),
         ];
-        let expected = 4_i8;
+        let expected = 4_u8;
 
         let res = calc_strength(get_fullness(slots), 5_f32);
         assert_eq!(res, expected);
@@ -204,7 +207,7 @@ mod test {
             Some(Slot::new(ItemType::FourthStackable, 16)),
             Some(Slot::new(ItemType::FourthStackable, 16)),
         ];
-        let expected = 15_i8;
+        let expected = 15_u8;
 
         let res = calc_strength(get_fullness(slots), 9_f32);
         assert_eq!(res, expected);

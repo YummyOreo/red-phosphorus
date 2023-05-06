@@ -8,3 +8,5 @@
 pub mod block;
 pub mod compiler;
 pub mod contraption;
+
+pub type PowerLevel = u8;
