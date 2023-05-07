@@ -42,10 +42,15 @@ pub struct Graph {
 #[derive(Default)]
 pub struct State {
     pub graph: Option<Graph>,
+
+    pub current_block: Position,
 }
 
 impl State {
-    pub fn new() -> Self {
-        State::default()
+    pub fn new(start_block: Position) -> Self {
+        State {
+            current_block: start_block,
+            ..Default::default()
+        }
     }
 }
