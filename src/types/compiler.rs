@@ -1,4 +1,4 @@
-use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use super::{contraption::Position, PowerLevel};
 
@@ -36,7 +36,20 @@ impl Node {
 pub struct Graph {
     pub root: NodeCell,
 
-    pub index: HashSet<Position, NodeCell>,
+    pub index: HashMap<Position, NodeCell>,
+}
+
+impl Graph {
+    pub fn register(&mut self, node: NodeCell, pos: Position) {
+        self.index.insert(pos, node);
+    }
+
+    pub fn lookup(&self, pos: Position) -> Option<NodeCell> {
+        Some(self.index.get(&pos)?.clone())
+    }
+    pub fn lookup_mut(&mut self, pos: Position) -> Option<NodeCell> {
+        Some(self.index.get_mut(&pos)?.clone())
+    }
 }
 
 #[derive(Default)]
