@@ -4,8 +4,10 @@ use crate::version::Version;
 pub type Position = (i32, i32, i32);
 
 pub trait World<'a> {
-    fn get_block(&'a self, pos: Position) -> &'a Block;
-    fn get_block_mut(&'a mut self, pos: Position) -> &'a mut Block;
+    /// Air will be returned as `None`
+    fn get_block(&'a self, pos: Position) -> Option<&'a Block>;
+    /// Air will be returned as `None`
+    fn get_block_mut(&'a mut self, pos: Position) -> Option<&'a mut Block>;
 
     fn get_has_updated(&self) -> bool;
     fn get_has_state_updated(&self) -> bool;

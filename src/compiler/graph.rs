@@ -1,4 +1,35 @@
-use crate::types::contraption::Position;
+use crate::types::{
+    block::{Block, Kind},
+    compiler::{Node, NodeKind},
+    contraption::Position,
+};
+
+#[allow(unused)]
+/// Just makes the node, does not make the connections
+pub fn match_block(block: Option<&dyn Block>) -> Node {
+    if let Some(block) = block {
+        match block.get_kind() {
+            Kind::Block => Node {
+                kind: NodeKind::Block,
+                power: 0,
+                edges: vec![],
+            },
+            Kind::Component(component) => {
+                todo!();
+            }
+            Kind::BlockEntity(entity) => {
+                todo!();
+            }
+        };
+        todo!()
+    } else {
+        Node {
+            kind: NodeKind::Air,
+            power: 0,
+            edges: vec![],
+        }
+    }
+}
 
 macro_rules! check_next_block {
     ($current_block:tt, $bounds:tt, $b:tt) => {{
