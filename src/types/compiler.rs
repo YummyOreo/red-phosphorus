@@ -46,6 +46,10 @@ impl Graph {
         self.index.insert(pos, node);
     }
 
+    pub fn remove(&mut self, pos: Position) -> Option<NodeCell> {
+        self.index.remove(&pos)
+    }
+
     pub fn lookup(&self, pos: Position) -> Option<NodeCell> {
         Some(self.index.get(&pos)?.clone())
     }
