@@ -8,12 +8,10 @@ use crate::types::{
 /// Just makes the node, does not make the connections
 pub fn match_block(block: Option<&dyn Block>) -> Node {
     if let Some(block) = block {
+        let is_solid = block.is_solid();
         match block.get_kind() {
-            Kind::Block => Node {
-                kind: NodeKind::Block,
-                power: 0,
-                edges: vec![],
-            },
+            Kind::Block if is_solid => Node::new(NodeKind::Block),
+            Kind::Block => Node::new(NodeKind::Air),
             Kind::Component(component) => {
                 todo!();
             }
@@ -23,11 +21,7 @@ pub fn match_block(block: Option<&dyn Block>) -> Node {
         };
         todo!()
     } else {
-        Node {
-            kind: NodeKind::Air,
-            power: 0,
-            edges: vec![],
-        }
+        Node::new(NodeKind::Air)
     }
 }
 
