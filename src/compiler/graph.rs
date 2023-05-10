@@ -6,12 +6,12 @@ use crate::types::{
 
 #[allow(unused)]
 /// Just makes the node, does not make the connections
-pub fn match_block(block: Option<&dyn Block>) -> Node {
+pub fn match_block(block: Option<&dyn Block>, pos: Position) -> Node {
     if let Some(block) = block {
         let is_solid = block.is_solid();
         match block.get_kind() {
-            Kind::Block if is_solid => Node::new(NodeKind::Block),
-            Kind::Block => Node::new(NodeKind::Air),
+            Kind::Block if is_solid => Node::new(NodeKind::Block, pos),
+            Kind::Block => Node::new(NodeKind::Air, pos),
             Kind::Component(component) => {
                 todo!();
             }
@@ -21,7 +21,7 @@ pub fn match_block(block: Option<&dyn Block>) -> Node {
         };
         todo!()
     } else {
-        Node::new(NodeKind::Air)
+        Node::new(NodeKind::Air, pos)
     }
 }
 

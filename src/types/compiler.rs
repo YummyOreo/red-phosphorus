@@ -18,14 +18,16 @@ pub type NodeCell = Rc<RefCell<Node>>;
 #[derive(Clone)]
 pub struct Node {
     pub kind: NodeKind,
+    pub pos: Position,
     pub power: PowerLevel,
     pub edges: Vec<NodeCell>,
 }
 
 impl Node {
-    pub fn new(kind: NodeKind) -> Self {
+    pub fn new(kind: NodeKind, pos: Position) -> Self {
         Self {
             kind,
+            pos,
             power: 0,
             edges: Vec::new(),
         }
