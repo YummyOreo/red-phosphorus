@@ -25,10 +25,13 @@ pub struct Node {
 
 impl Node {
     pub fn new(kind: NodeKind, pos: Position) -> Self {
+        Self::new_power(kind, pos, 0)
+    }
+    pub fn new_power(kind: NodeKind, pos: Position, power: PowerLevel) -> Self {
         Self {
             kind,
             pos,
-            power: 0,
+            power,
             edges: Vec::new(),
         }
     }

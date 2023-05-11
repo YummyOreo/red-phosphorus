@@ -1,9 +1,16 @@
+use crate::types::PowerLevel;
+
 #[derive(Clone)]
 pub enum Component {
-    Dust,
+    Dust {
+        power: PowerLevel,
+    },
     Block,
     Tourch,
-    Repeater,
+    Repeater {
+        delay: i8,
+        locked: bool,
+    },
     Comparator,
     Lever,
     /// Redstone buttons
@@ -23,7 +30,9 @@ pub enum Component {
     StickyPiston,
     SticyPistonHead,
     Observer,
-    Lamp,
+    Lamp {
+        powered: bool,
+    },
     TargetBlock,
     NoteBlock,
     /// All rails that can be activated

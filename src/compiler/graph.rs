@@ -1,5 +1,5 @@
 use crate::types::{
-    block::{Block, Kind},
+    block::{redstone::Component, Block, Kind},
     compiler::{Node, NodeKind},
     contraption::Position,
 };
@@ -12,9 +12,7 @@ pub fn match_block(block: Option<&dyn Block>, pos: Position) -> Node {
         match block.get_kind() {
             Kind::Block if is_solid => Node::new(NodeKind::Block, pos),
             Kind::Block => Node::new(NodeKind::Air, pos),
-            Kind::Component(component) => {
-                todo!();
-            }
+            Kind::Component(component) => match_component(component, pos),
             Kind::BlockEntity(entity) => {
                 todo!();
             }
@@ -22,6 +20,30 @@ pub fn match_block(block: Option<&dyn Block>, pos: Position) -> Node {
         todo!()
     } else {
         Node::new(NodeKind::Air, pos)
+    }
+}
+
+pub fn match_component(component: &Component, pos: Position) -> Node {
+    match component {
+        Component::Block => Node::new(NodeKind::PowerSource, pos),
+        Component::Dust { power } => Node::new_power(NodeKind::Dust, pos, *power),
+        Component::Repeater { delay, locked } => Node::new(
+            NodeKind::Repeater {
+                delay: *delay,
+                locked: *locked,
+            },
+            pos,
+        ),
+        Component::Lamp { powered } => {
+            if *powered {
+                Node::new_power(NodeKind::Lamp, pos, 15)
+            } else {
+                Node::new(NodeKind::Lamp, pos)
+            }
+        }
+        _ => {
+            unimplemented!()
+        }
     }
 }
 
