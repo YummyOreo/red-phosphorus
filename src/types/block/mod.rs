@@ -10,10 +10,10 @@ use super::{contraption::Position, PowerLevel};
 /// red_phosphorus::types::block::Kind` and the `get_kind` or `get_kind_mut` functions
 pub trait Block<'a> {
     /// Get the name of the block
-    fn get_name(&self) -> &'a str;
+    fn get_name(&'a self) -> &'a str;
 
     /// Get the position of the block in 3d space
-    fn get_position(&self) -> &'a Position;
+    fn get_position(&'a self) -> &'a Position;
     /// Set the position of block
     /// used for when a piston is pushing a block
     fn set_position(&mut self, position: Position);
@@ -28,22 +28,20 @@ pub trait Block<'a> {
     fn is_solid(&self) -> bool;
 
     /// Get the power level and the block that is powering the block
-    fn get_power(&self) -> (&PowerLevel, Option<&'a dyn Block<'a>>);
-    /// Get the power level and **a mutable refrence to** the block that is powering the block
-    fn get_power_mut(&mut self) -> (&PowerLevel, Option<&'a mut dyn Block<'a>>);
+    fn get_power(&'a self) -> (&PowerLevel, Option<&'a dyn Block<'a>>);
     /// Set the power level and source
     ///
     /// Also called when the block is powered
-    fn set_power(&mut self, level: PowerLevel, source: Option<&'a mut dyn Block<'a>>);
+    fn set_power(&'a mut self, level: PowerLevel, source: Option<&'a dyn Block<'a>>);
 
     /// Get the "kind of the block"
     /// See more in the enum `Kind`
-    fn get_kind(&self) -> &Kind;
+    fn get_kind(&'a self) -> &Kind;
     /// Get the "kind of the block"
     /// Useful for modifying a redstone component
     ///
     /// See more in the enum `Kind`
-    fn get_kind_mut(&mut self) -> &mut Kind;
+    fn get_kind_mut(&'a mut self) -> &mut Kind;
 
     /// Get if the block is movable and how
     /// If it is immuvable, return `None` or a empty list
