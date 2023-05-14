@@ -13,11 +13,8 @@ pub fn match_block(block: Option<&dyn Block>, pos: Position) -> Node {
             Kind::Block if is_solid => Node::new(NodeKind::Block, pos),
             Kind::Block => Node::new(NodeKind::Air, pos),
             Kind::Component(component) => match_component(component, pos),
-            Kind::BlockEntity(entity) => {
-                todo!();
-            }
-        };
-        todo!()
+            Kind::BlockEntity(entity) => unimplemented!(),
+        }
     } else {
         Node::new(NodeKind::Air, pos)
     }
@@ -95,5 +92,12 @@ mod tests {
         let bounds = ((0, 0, 0), (1, 1, 1));
 
         assert_eq!(None, get_next_block(current_block, bounds));
+    }
+
+    // TODO: replace this w/ test utils when made
+    struct FakeBlock {}
+
+    #[test]
+    fn test_match_block() {
     }
 }
