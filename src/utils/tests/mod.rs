@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::types::{
     block::{Block, Facing, Kind, Movable},
-    contraption::Position,
+    contraption::{Position, World},
     PowerLevel,
 };
 
@@ -75,6 +77,48 @@ impl<'a> FakeBlock<'a> {
             power,
             facing,
             ..Default::default()
+        }
+    }
+}
+
+pub struct FakeWorld<'a> {
+    pub blocks: HashMap<Position, Box<dyn Block<'a>>>,
+    pub bounds: (Position, Position),
+
+    pub has_updated: bool,
+    pub has_state_updated: bool,
+}
+
+impl<'a> World<'a> for FakeWorld<'a> {
+    fn bounds(&self) -> (Position, Position) {
+        self.bounds
+    }
+
+    fn get_block(&'a self, pos: Position) -> Option<&'a Box<dyn Block<'a>>> {
+        self.blocks.get(&pos)
+    }
+    fn get_block_mut(&'a mut self, pos: Position) -> Option<&'a mut Box<dyn Block<'a>>> {
+        self.blocks.get_mut(&pos)
+    }
+
+    fn get_has_updated(&self) -> bool {
+        self.has_updated
+    }
+    fn get_has_state_updated(&self) -> bool {
+        self.has_state_updated
+    }
+}
+
+impl FakeWorld<'static> {
+    pub fn new(
+        blocks: HashMap<Position, Box<dyn Block<'static>>>,
+        bounds: (Position, Position),
+    ) -> Self {
+        Self {
+            blocks,
+            bounds,
+            has_updated: false,
+            has_state_updated: false,
         }
     }
 }

@@ -4,8 +4,11 @@ use crate::version::Version;
 pub type Position = (u16, u16, u16);
 
 pub trait World<'a> {
-    fn get_block(&self, pos: Position) -> &'a dyn Block<'a>;
-    fn get_block_mut(&mut self, pos: Position) -> &'a mut dyn Block<'a>;
+    /// None = Air
+    #[allow(clippy::borrowed_box)]
+    fn get_block(&'a self, pos: Position) -> Option<&'a Box<dyn Block<'a>>>;
+    /// None = Air
+    fn get_block_mut(&'a mut self, pos: Position) -> Option<&'a mut Box<dyn Block<'a>>>;
 
     fn get_has_updated(&self) -> bool;
     fn get_has_state_updated(&self) -> bool;
