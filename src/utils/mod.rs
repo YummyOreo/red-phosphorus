@@ -3,6 +3,6 @@ pub mod blockentity;
 pub mod components;
 
 #[cfg(test)]
-mod tests;
+pub mod tests;
 #[cfg(test)]
 pub use tests::compiler as compiler_test;
