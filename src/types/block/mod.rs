@@ -1,71 +1,63 @@
 pub mod entity;
 pub mod redstone;
 
-use self::{entity::BlockEntity, redstone::Component};
+use self::redstone::Component;
 
-/// Base trait for a block
-///
-/// For `BlockEntitys` or Redstone Components, specify this in as a `Kind`. See `use
-/// red_phosphorus::types::block::Kind` and the `get_kind` or `get_kind_mut` functions
-pub trait Block<'a> {
-    /// Get the name of the block
-    fn get_name(&self) -> &'a str;
-
-    /// Get the position of the block in 3d space
-    fn get_position(&self) -> &'a (i32, i32, i32);
-    /// Set the position of block
-    /// used for when a piston is pushing a block
-    fn set_position(&mut self, position: (i32, i32, i32));
-
-    /// Get the `Facing` of a block
-    /// Sometimes this can be modifired (see rail), but this should be done by you
-    ///
-    /// See more info in the `Facing` enum
-    fn get_facing(&self) -> Vec<Facing>;
-
-    /// Get if the block is solid
-    fn is_solid(&self) -> bool;
-
-    /// Get the power level and the block that is powering the block
-    fn get_power(&self) -> (&i8, Option<&'a dyn Block<'a>>);
-    /// Get the power level and **a mutable refrence to** the block that is powering the block
-    fn get_power_mut(&mut self) -> (&i8, Option<&'a mut dyn Block<'a>>);
-    /// Set the power level and source
-    ///
-    /// Also called when the block is powered
-    fn set_power(&mut self, level: i8, source: Option<&'a mut dyn Block<'a>>);
-
-    /// Get the "kind of the block"
-    /// See more in the enum `Kind`
-    fn get_kind(&self) -> &Kind;
-    /// Get the "kind of the block"
-    /// Useful for modifying a redstone component
-    ///
-    /// See more in the enum `Kind`
-    fn get_kind_mut(&mut self) -> &mut Kind;
-
-    /// Get if the block is movable and how
-    /// If it is immuvable, return `None` or a empty list
-    /// See more in the enum `Movable`
-    fn get_movable(&self) -> Option<Vec<Movable>>;
-
-    /// Called when the block is updated
-    fn update(&self);
+#[derive(Clone, Default)]
+/// Basic struct for a block
+pub struct Block {
+    pos: (i32, i32, i32),
+    kind: Kind,
+    solid: bool,
+    facing: Vec<Facing>,
 }
 
-/// The "kind of the block"
-/// A block (in terms of redstone) can be 3 types:
-/// - Just a regular block
-/// - A block `BlockEntity`
-/// - A redstone `Component`
-///
-/// `Block`: takes nothing
-/// `BlockEntity`: Takes a struct implementity the trait `BlockEntity`
-/// `Component`: Takes a enum variant from `Component`
+impl Block {
+    pub fn new(pos: (i32, i32, i32), kind: Kind) -> Self {
+        Self {
+            pos,
+            kind,
+            ..Default::default()
+        }
+    }
+
+    pub fn set_position(&mut self, pos: (i32, i32, i32)) {
+        self.pos = pos;
+    }
+    pub fn set_kind(&mut self, kind: Kind) {
+        self.kind = kind;
+    }
+    pub fn set_solid(&mut self, solid: bool) {
+        self.solid = solid;
+    }
+    pub fn set_facing(&mut self, facing: Vec<Facing>) {
+        self.facing = facing;
+    }
+
+    pub fn get_position(&self) -> (i32, i32, i32) {
+        self.pos
+    }
+    pub fn get_kind(&self) -> &Kind {
+        &self.kind
+    }
+    pub fn get_solid(&self) -> bool {
+        self.solid
+    }
+    pub fn get_facing(&self) -> &Vec<Facing> {
+        &self.facing
+    }
+}
+
+#[derive(Clone)]
 pub enum Kind {
     Block,
-    BlockEntity(Box<dyn BlockEntity>),
     Component(Component),
+}
+
+impl Default for Kind {
+    fn default() -> Self {
+        Self::Block
+    }
 }
 
 #[derive(Clone)]

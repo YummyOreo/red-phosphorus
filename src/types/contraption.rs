@@ -6,22 +6,22 @@ use crate::version::Version;
 /// contraption. This allows for you to use multi-threading
 pub struct Contraption<'a> {
     /// The blocks of the redstone contraption that you want to emulate
-    blocks: &'a mut Vec<&'a mut dyn Block<'a>>,
+    blocks: &'a mut Vec<&'a mut Block>,
     verson: Version,
 }
 
 impl<'a> Contraption<'a> {
-    pub fn new(blocks: &'a mut Vec<&'a mut dyn Block<'a>>) -> Self {
+    pub fn new(blocks: &'a mut Vec<&'a mut Block>) -> Self {
         Self {
             blocks,
             verson: Version::default(),
         }
     }
 
-    pub fn get_world(&self) -> &[&'a mut dyn Block<'a>] {
+    pub fn get_world(&self) -> &[&'a mut Block] {
         self.blocks
     }
-    pub fn get_world_mut(&mut self) -> &mut Vec<&'a mut dyn Block<'a>> {
+    pub fn get_world_mut(&mut self) -> &mut Vec<&'a mut Block> {
         self.blocks
     }
 

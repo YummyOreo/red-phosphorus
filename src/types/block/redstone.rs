@@ -1,6 +1,7 @@
 const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
 const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
 
+#[derive(Clone)]
 pub enum Component {
     Dust,
     Block,
