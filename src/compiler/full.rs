@@ -8,6 +8,7 @@ use crate::{
 
 pub mod single_thread {
     use super::*;
+    use crate::compiler::graph::match_block;
 
     #[allow(unused)]
     pub fn full_compile<'a, W: World<'a>>(world: &'a mut W) -> Graph {
@@ -17,6 +18,7 @@ pub mod single_thread {
         let state = State::new(bounds.0);
 
         let fist_block = world.get_block(bounds.0);
+        let first_node = match_block(fist_block, bounds.0);
         todo!()
     }
 }
