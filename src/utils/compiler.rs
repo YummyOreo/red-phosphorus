@@ -1,4 +1,14 @@
-use crate::types::contraption::Position;
+use std::{cell::RefCell, rc::Rc};
+
+use crate::types::{
+    compiler::{Node, NodeCell},
+    contraption::Position,
+};
+
+#[inline]
+pub fn make_node(node: Node) -> NodeCell {
+    Rc::new(RefCell::new(node))
+}
 
 pub fn calc_bounds(bounds: (Position, Position)) -> i32 {
     let (length, width, height) = (

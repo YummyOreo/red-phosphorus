@@ -1,6 +1,7 @@
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use super::{contraption::Position, PowerLevel};
+use crate::utils::compiler::make_node;
 
 #[derive(Clone)]
 pub enum NodeKind {
@@ -45,6 +46,18 @@ pub struct Graph {
 }
 
 impl Graph {
+    pub fn new(node: Node) -> Self {
+        let pos = node.pos;
+        let node = make_node(node);
+
+        let mut graph = Self {
+            root: node,
+            index: HashMap::new(),
+        };
+        graph.register(graph.root.clone(), pos);
+        graph
+    }
+
     pub fn register(&mut self, node: NodeCell, pos: Position) {
         self.index.insert(pos, node);
     }

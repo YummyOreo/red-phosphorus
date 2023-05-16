@@ -15,10 +15,13 @@ pub mod single_thread {
         let bounds = world.bounds();
         let size = calc_bounds(bounds);
 
-        let state = State::new(bounds.0);
+        let mut state = State::new(bounds.0);
 
         let fist_block = world.get_block(bounds.0);
         let first_node = match_block(fist_block, bounds.0);
+
+        state.graph = Some(Graph::new(first_node));
+
         todo!()
     }
 }
