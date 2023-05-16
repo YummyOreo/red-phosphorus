@@ -6,14 +6,13 @@ use crate::types::{
 
 #[allow(unused)]
 /// Just makes the node, does not make the connections
-pub fn match_block(block: Option<&dyn Block>, pos: Position) -> Node {
+pub fn match_block(block: Option<&Block>, pos: Position) -> Node {
     if let Some(block) = block {
         let is_solid = block.is_solid();
         match block.get_kind() {
             Kind::Block if is_solid => Node::new(NodeKind::Block, pos),
             Kind::Block => Node::new(NodeKind::Air, pos),
             Kind::Component(component) => match_component(component, pos),
-            Kind::BlockEntity(entity) => unimplemented!(),
         }
     } else {
         Node::new(NodeKind::Air, pos)
@@ -93,10 +92,4 @@ mod tests {
 
         assert_eq!(None, get_next_block(current_block, bounds));
     }
-
-    // TODO: replace this w/ test utils when made
-    struct FakeBlock {}
-
-    #[test]
-    fn test_match_block() {}
 }

@@ -1,8 +1,7 @@
 pub mod entity;
 pub mod redstone;
 
-use self::{entity::BlockEntity, redstone::Component};
-use super::{contraption::Position, PowerLevel};
+use self::redstone::Component;
 
 #[derive(Clone, Default)]
 /// Basic struct for a block
@@ -41,7 +40,7 @@ impl Block {
     pub fn get_kind(&self) -> &Kind {
         &self.kind
     }
-    pub fn get_solid(&self) -> bool {
+    pub fn is_solid(&self) -> bool {
         self.solid
     }
     pub fn get_facing(&self) -> &Vec<Facing> {
