@@ -98,6 +98,5 @@ mod tests {
     struct FakeBlock {}
 
     #[test]
-    fn test_match_block() {
-    }
+    fn test_match_block() {}
 }
