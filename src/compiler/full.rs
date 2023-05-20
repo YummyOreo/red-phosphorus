@@ -8,7 +8,7 @@ use crate::{
 
 pub mod single_thread {
     use super::*;
-    use crate::{compiler::graph::match_block, types::contraption::Blocks};
+    use crate::compiler::graph::match_block;
 
     pub fn full_compile<'a, W: World<'a>>(world: &'a mut W) -> Graph {
         let bounds = world.bounds();
