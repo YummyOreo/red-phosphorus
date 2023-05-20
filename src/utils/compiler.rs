@@ -44,8 +44,8 @@ pub fn get_next_block(current_block: Position, bounds: (Position, Position)) -> 
 }
 
 pub struct NextBlocks {
-    current_block: Position,
-    bounds: (Position, Position),
+    pub current_block: Position,
+    pub bounds: (Position, Position),
 }
 
 impl Iterator for NextBlocks {
