@@ -26,9 +26,9 @@ pub struct Node {
 
 impl Node {
     pub fn new(kind: NodeKind, pos: Position) -> Self {
-        Self::new_power(kind, pos, 0)
+        Self::new_with_power(kind, pos, 0)
     }
-    pub fn new_power(kind: NodeKind, pos: Position, power: PowerLevel) -> Self {
+    pub fn new_with_power(kind: NodeKind, pos: Position, power: PowerLevel) -> Self {
         Self {
             kind,
             pos,
