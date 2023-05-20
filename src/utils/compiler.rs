@@ -43,22 +43,6 @@ pub fn get_next_block(current_block: Position, bounds: (Position, Position)) -> 
     }
 }
 
-pub struct NextBlocks {
-    pub current_block: Position,
-    pub bounds: (Position, Position),
-}
-
-impl Iterator for NextBlocks {
-    type Item = Position;
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(pos) = get_next_block(self.current_block, self.bounds) {
-            self.current_block = pos;
-            return Some(pos);
-        }
-        None
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::*;

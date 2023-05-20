@@ -1,13 +1,39 @@
 use super::{block::Block, compiler::Graph};
-use crate::version::Version;
+use crate::{utils::compiler::get_next_block, version::Version};
 
 pub type Position = (i32, i32, i32);
+
+/// A usefull iter that allows you to go through each block in the world
+pub struct Blocks {
+    pub current_block: Position,
+    pub bounds: (Position, Position),
+}
+
+impl Iterator for Blocks {
+    type Item = Position;
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(pos) = get_next_block(self.current_block, self.bounds) {
+            self.current_block = pos;
+            return Some(pos);
+        }
+        None
+    }
+}
 
 pub trait World<'a> {
     /// Air will be returned as `None`
     fn get_block(&'a self, pos: Position) -> Option<&'a Block>;
     /// Air will be returned as `None`
     fn get_block_mut(&'a mut self, pos: Position) -> Option<&'a mut Block>;
+
+    /// Returns the `Blocks` iter
+    fn get_all_blocks(&self, starting_pos: Position) -> Blocks {
+        let bounds = self.bounds();
+        Blocks {
+            current_block: starting_pos,
+            bounds,
+        }
+    }
 
     fn get_has_updated(&self) -> bool;
     fn get_has_state_updated(&self) -> bool;
