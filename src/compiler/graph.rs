@@ -4,7 +4,6 @@ use crate::types::{
     contraption::Position,
 };
 
-#[allow(unused)]
 /// Just makes the node, does not make the connections
 pub fn match_block(block: Option<&Block>, pos: Position) -> Node {
     if let Some(block) = block {

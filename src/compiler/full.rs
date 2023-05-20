@@ -10,10 +10,9 @@ pub mod single_thread {
     use super::*;
     use crate::compiler::graph::match_block;
 
-    #[allow(unused)]
     pub fn full_compile<'a, W: World<'a>>(world: &'a mut W) -> Graph {
         let bounds = world.bounds();
-        let size = calc_bounds(bounds);
+        let _size = calc_bounds(bounds);
 
         let mut state = State::new(bounds.0);
 
