@@ -27,7 +27,7 @@ pub trait World<'a> {
     fn get_block_mut(&'a mut self, pos: Position) -> Option<&'a mut Block>;
 
     /// Returns the `Blocks` iter
-    fn get_all_blocks(&self, starting_pos: Position) -> Blocks {
+    fn get_blocks(&self, starting_pos: Position) -> Blocks {
         let bounds = self.bounds();
         Blocks {
             current_block: starting_pos,

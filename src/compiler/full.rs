@@ -16,7 +16,7 @@ pub mod single_thread {
 
         let mut state = State::new(bounds.0);
 
-        let blocks = world.get_all_blocks((-1, 0, 0));
+        let blocks = world.get_blocks((-1, 0, 0));
         for pos in blocks {
             let block = world.get_block(pos);
             if let Some(node) = match_block(block, pos) {
