@@ -59,9 +59,7 @@ impl Distribution<Block> for Standard {
             1 => Block::new(Default::default(), Kind::Block),
             2 => Block::new(Default::default(), Kind::Component(Component::Block)),
             3 => {
-                let mut component = Component::Dust {
-                    power: rng.gen_range(0..=15),
-                };
+                let mut component = Component::Dust { power: 0 };
                 Block::new(Default::default(), Kind::Component(component))
             }
             4 => {
@@ -103,6 +101,21 @@ pub fn random_world() -> FakeWorld {
 
     let mut blocks: HashMap<Position, Block> = HashMap::new();
 
-    for pos in blocks_pos {}
-    todo!()
+    for pos in blocks_pos {
+        let mut block: Block = rand::random();
+        if let Kind::Component(Component::Repeater { delay, locked }) = block.get_kind() {
+            let facing = loop {
+                match rand::random::<Facing>() {
+                    // Makes sure that its not facing up
+                    Facing::NegativeY => continue,
+                    // Makes sure that its not facing up
+                    Facing::PositiveY => continue,
+                    x => break x,
+                }
+            };
+            block.set_facing(vec![facing]);
+        }
+        blocks.insert(pos, block);
+    }
+    FakeWorld { bounds, blocks }
 }
