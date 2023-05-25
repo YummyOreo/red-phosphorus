@@ -1,5 +1,5 @@
 use super::{block::Block, compiler::Graph};
-use crate::{utils::compiler::get_next_block, version::Version};
+use crate::version::Version;
 
 pub type Position = (i32, i32, i32);
 
@@ -9,14 +9,30 @@ pub struct Blocks {
     pub bounds: (Position, Position),
 }
 
+macro_rules! check_block {
+    ($current_block:tt, $bounds:tt, $b:tt) => {{
+        if $current_block.$b == $bounds.1.$b {
+            $current_block.$b = 0;
+            Some(())
+        } else {
+            $current_block.$b += 1;
+            None
+        }
+    }};
+}
+
 impl Iterator for Blocks {
     type Item = Position;
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(pos) = get_next_block(self.current_block, self.bounds) {
-            self.current_block = pos;
-            return Some(pos);
+        let mut new_block = self.current_block;
+        let bounds = self.bounds;
+        if check_block!(new_block, bounds, 2).is_some()
+            && check_block!(new_block, bounds, 1).is_some()
+            && check_block!(new_block, bounds, 0).is_none()
+        {
+            return None;
         }
-        None
+        Some(new_block)
     }
 }
 
