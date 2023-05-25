@@ -3,7 +3,7 @@ pub mod redstone;
 
 use self::redstone::Component;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 /// Basic struct for a block
 pub struct Block {
     pos: (i32, i32, i32),
@@ -17,6 +17,7 @@ impl Block {
         Self {
             pos,
             kind,
+            solid: true,
             ..Default::default()
         }
     }
@@ -48,7 +49,7 @@ impl Block {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Kind {
     Block,
     Component(Component),

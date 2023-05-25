@@ -3,7 +3,7 @@ use std::{cell::RefCell, collections::HashMap, rc::Rc};
 use super::{contraption::Position, PowerLevel};
 use crate::utils::compiler::make_node;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum NodeKind {
     PowerSource,
     Block,
@@ -16,7 +16,7 @@ pub enum NodeKind {
 
 pub type NodeCell = Rc<RefCell<Node>>;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Node {
     pub kind: NodeKind,
     pub pos: Position,

@@ -10,7 +10,7 @@ pub struct Blocks {
 }
 
 macro_rules! check_block {
-    ($current_block:tt, $bounds:tt, $b:tt) => {{
+    ($current_block:expr, $bounds:tt, $b:tt) => {{
         if $current_block.$b == $bounds.1.$b {
             $current_block.$b = 0;
             Some(())
@@ -24,15 +24,14 @@ macro_rules! check_block {
 impl Iterator for Blocks {
     type Item = Position;
     fn next(&mut self) -> Option<Self::Item> {
-        let mut new_block = self.current_block;
         let bounds = self.bounds;
-        if check_block!(new_block, bounds, 2).is_some()
-            && check_block!(new_block, bounds, 1).is_some()
-            && check_block!(new_block, bounds, 0).is_none()
+        if check_block!(self.current_block, bounds, 2).is_some()
+            && check_block!(self.current_block, bounds, 1).is_some()
+            && check_block!(self.current_block, bounds, 0).is_some()
         {
             return None;
         }
-        Some(new_block)
+        Some(self.current_block)
     }
 }
 

@@ -1,6 +1,6 @@
 use crate::types::PowerLevel;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Component {
     Dust {
         power: PowerLevel,
