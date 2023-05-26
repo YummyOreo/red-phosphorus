@@ -25,3 +25,5 @@ You should use the `red-phosphorus` crate, and just that. All of the other crate
 # Contributing
 [See contributing.md](/CONTRIBUTING.md)
 
+# License
+Available under the Apache License (Version 2.0) or the MIT license, at your option.
