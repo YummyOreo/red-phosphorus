@@ -16,7 +16,7 @@ pub fn match_block(block: &Block, pos: Position) -> Option<Node> {
 
 pub fn match_component(component: &Component, pos: Position) -> Node {
     match component {
-        Component::Block => Node::new(NodeKind::PowerSource, pos),
+        Component::Block => Node::new_with_power(NodeKind::PowerSource, pos, 15),
         Component::Dust { power } => Node::new_with_power(NodeKind::Dust, pos, *power),
         Component::Repeater { delay, locked } => Node::new(
             NodeKind::Repeater {

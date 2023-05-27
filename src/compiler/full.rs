@@ -60,9 +60,41 @@ pub mod single_thread {
                 (6, 2, 10),
                 Kind::Component(crate::types::block::redstone::Component::Dust { power: 10 }),
             )]);
-
             let mut expected_node = Node::new(crate::types::compiler::NodeKind::Dust, (6, 2, 10));
             expected_node.power = 10;
+            assert_eq!(Some(expected_node), make_first_node(&world));
+
+            let world = FakeWorld::new_random(vec![Block::new(
+                (6, 2, 10),
+                Kind::Component(crate::types::block::redstone::Component::Repeater {
+                    delay: 1,
+                    locked: false,
+                }),
+            )]);
+            let expected_node = Node::new(
+                crate::types::compiler::NodeKind::Repeater {
+                    delay: 1,
+                    locked: false,
+                },
+                (6, 2, 10),
+            );
+            assert_eq!(Some(expected_node), make_first_node(&world));
+
+            let world = FakeWorld::new_random(vec![Block::new(
+                (6, 2, 10),
+                Kind::Component(crate::types::block::redstone::Component::Block),
+            )]);
+            let mut expected_node =
+                Node::new(crate::types::compiler::NodeKind::PowerSource, (6, 2, 10));
+            expected_node.power = 15;
+            assert_eq!(Some(expected_node), make_first_node(&world));
+
+            let world = FakeWorld::new_random(vec![Block::new(
+                (6, 2, 10),
+                Kind::Component(crate::types::block::redstone::Component::Lamp { powered: true }),
+            )]);
+            let mut expected_node = Node::new(crate::types::compiler::NodeKind::Lamp, (6, 2, 10));
+            expected_node.power = 15;
             assert_eq!(Some(expected_node), make_first_node(&world));
         }
     }
