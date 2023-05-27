@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use rand::{
     distributions::{Distribution, Standard},
-    Rng,
+    Rng, SeedableRng,
 };
 
 use crate::types::{
@@ -128,11 +128,19 @@ impl Distribution<Block> for Standard {
 }
 
 fn random_bounds(min: Position, largest: Position) -> (Position, Position) {
+    let mut seeds = (rand::random(), rand::random(), rand::random());
+    let mut rng = (
+        rand::prelude::StdRng::seed_from_u64(seeds.0),
+        rand::prelude::StdRng::seed_from_u64(seeds.1),
+        rand::prelude::StdRng::seed_from_u64(seeds.2),
+    );
+    // So we can repo tests if they fail
+    dbg!(seeds);
     let start = min;
     let end = (
-        rand::thread_rng().gen_range(largest.0..i8::MAX as i32),
-        rand::thread_rng().gen_range(largest.1..i8::MAX as i32),
-        rand::thread_rng().gen_range(largest.2..i8::MAX as i32),
+        rng.0.gen_range(largest.0..i8::MAX as i32),
+        rng.1.gen_range(largest.1..i8::MAX as i32),
+        rng.2.gen_range(largest.2..i8::MAX as i32),
     );
 
     (start, end)
