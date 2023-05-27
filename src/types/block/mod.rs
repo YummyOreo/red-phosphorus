@@ -1,27 +1,33 @@
-pub mod entity;
 pub mod redstone;
 
 use self::redstone::Component;
+use super::{contraption::Position, PowerLevel};
 
 #[derive(Clone, Default)]
 /// Basic struct for a block
 pub struct Block {
-    pos: (i32, i32, i32),
+    pos: Position,
+    power: PowerLevel,
     kind: Kind,
     solid: bool,
     facing: Vec<Facing>,
 }
 
 impl Block {
-    pub fn new(pos: (i32, i32, i32), kind: Kind) -> Self {
+    pub fn new(pos: Position, kind: Kind) -> Self {
+        Self::new_with_power(pos, kind, 0)
+    }
+
+    pub fn new_with_power(pos: Position, kind: Kind, power: PowerLevel) -> Self {
         Self {
             pos,
+            power,
             kind,
             ..Default::default()
         }
     }
 
-    pub fn set_position(&mut self, pos: (i32, i32, i32)) {
+    pub fn set_position(&mut self, pos: Position) {
         self.pos = pos;
     }
     pub fn set_kind(&mut self, kind: Kind) {
@@ -33,8 +39,11 @@ impl Block {
     pub fn set_facing(&mut self, facing: Vec<Facing>) {
         self.facing = facing;
     }
+    pub fn set_power(&mut self, power: PowerLevel) {
+        self.power = power;
+    }
 
-    pub fn get_position(&self) -> (i32, i32, i32) {
+    pub fn get_position(&self) -> Position {
         self.pos
     }
     pub fn get_kind(&self) -> &Kind {
@@ -45,6 +54,9 @@ impl Block {
     }
     pub fn get_facing(&self) -> &Vec<Facing> {
         &self.facing
+    }
+    pub fn get_power(&self) -> PowerLevel {
+        self.power
     }
 }
 
