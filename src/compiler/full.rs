@@ -34,13 +34,7 @@ pub mod single_thread {
 
         let mut state = State::new(bounds.0);
 
-        match make_first_node(world) {
-            Some(node) => state.graph = Some(Graph::new(node)),
-            None => {
-                // All blocks are air, thus no need for a graph
-                return None;
-            }
-        }
+        state.graph = Some(Graph::new(make_first_node(world)?));
 
         let _blocks = world.get_blocks(state.graph.expect("Should be there").root.borrow().pos);
         todo!()
