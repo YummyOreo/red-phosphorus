@@ -13,11 +13,13 @@ pub mod single_thread {
     fn make_first_node<'a, W: World<'a>>(world: &'a W) -> Option<Node> {
         let blocks = world.get_blocks((0, 0, 0));
         let mut node = None;
+        dbg!(world.bounds());
         for pos in blocks {
             let block = world.get_block(pos);
             match block {
                 None => continue,
                 Some(block) => {
+                    dbg!(block);
                     if let Some(n) = match_block(block, pos) {
                         node = Some(n);
                         break;
@@ -52,14 +54,7 @@ pub mod single_thread {
 
         #[test]
         fn test_first_node() {
-            let mut blocks = HashMap::new();
-            blocks.insert((1, 1, 1), Block::new((1, 1, 1), Kind::Block));
-            blocks.get(&(1, 1, 1)).unwrap();
-            let world = FakeWorld {
-                bounds: ((0, 0, 0), (10, 10, 10)),
-                blocks,
-            };
-
+            let world = FakeWorld::new_random(vec![Block::new((1, 1, 1), Kind::Block)]);
             let expected_node = Node::new(crate::types::compiler::NodeKind::Block, (1, 1, 1));
             assert_eq!(Some(expected_node), make_first_node(&world));
 
@@ -72,10 +67,10 @@ pub mod single_thread {
                 ),
             );
             blocks.get(&(6, 2, 10)).unwrap();
-            let world = FakeWorld {
-                bounds: ((0, 0, 0), (10, 10, 10)),
-                blocks,
-            };
+            let world = FakeWorld::new_random(vec![Block::new(
+                (6, 2, 10),
+                Kind::Component(crate::types::block::redstone::Component::Dust { power: 10 }),
+            )]);
 
             let mut expected_node = Node::new(crate::types::compiler::NodeKind::Dust, (6, 2, 10));
             expected_node.power = 10;

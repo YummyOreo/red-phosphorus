@@ -12,7 +12,7 @@ pub struct Blocks {
 macro_rules! check_block {
     ($current_block:expr, $bounds:tt, $b:tt) => {{
         if $current_block.$b == $bounds.1.$b {
-            $current_block.$b = 0;
+            $current_block.$b = $bounds.0.$b;
             Some(())
         } else {
             $current_block.$b += 1;

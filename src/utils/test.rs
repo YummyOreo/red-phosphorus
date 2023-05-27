@@ -15,6 +15,55 @@ pub struct FakeWorld {
     pub blocks: HashMap<Position, Block>,
 }
 
+impl FakeWorld {
+    pub fn new(blocks: Vec<Block>, bounds: (Position, Position)) -> Self {
+        let mut blocks_map = HashMap::new();
+        for block in blocks {
+            blocks_map.insert(block.get_position(), block);
+        }
+
+        FakeWorld {
+            bounds,
+            blocks: blocks_map,
+        }
+    }
+
+    pub fn new_random(blocks: Vec<Block>) -> Self {
+        let mut blocks_map = HashMap::new();
+        let mut smallest = (0, 0, 0);
+        let mut largest = (0, 0, 0);
+        for block in blocks {
+            let pos = block.get_position();
+            // TODO: find a better way to do this
+            if smallest.0 > pos.0 {
+                smallest.0 = pos.0;
+            }
+            if smallest.1 > pos.1 {
+                smallest.1 = pos.1;
+            }
+            if smallest.2 > pos.2 {
+                smallest.2 = pos.2;
+            }
+
+            if largest.0 < pos.0 {
+                largest.0 = pos.0;
+            }
+            if largest.1 < pos.1 {
+                largest.1 = pos.1;
+            }
+            if largest.2 < pos.2 {
+                largest.2 = pos.2;
+            }
+            blocks_map.insert(pos, block);
+        }
+
+        FakeWorld {
+            bounds: random_bounds(smallest, largest),
+            blocks: blocks_map,
+        }
+    }
+}
+
 impl<'a> World<'a> for FakeWorld {
     fn bounds(&self) -> (Position, Position) {
         self.bounds
@@ -78,21 +127,22 @@ impl Distribution<Block> for Standard {
     }
 }
 
-pub fn random_world() -> FakeWorld {
-    let start = (
-        rand::random::<i8>() as i32,
-        rand::random::<i8>() as i32,
-        rand::random::<i8>() as i32,
-    );
+fn random_bounds(min: Position, largest: Position) -> (Position, Position) {
+    let start = min;
     let end = (
-        rand::random::<i8>() as i32,
-        rand::random::<i8>() as i32,
-        rand::random::<i8>() as i32,
+        rand::thread_rng().gen_range(largest.0..i8::MAX as i32),
+        rand::thread_rng().gen_range(largest.1..i8::MAX as i32),
+        rand::thread_rng().gen_range(largest.2..i8::MAX as i32),
     );
 
+    (start, end)
+}
+
+pub fn random_world() -> FakeWorld {
+    let bounds = random_bounds((0, 0, 0), (i8::MAX as i32, i8::MAX as i32, i8::MAX as i32));
+    let start = bounds.0;
     let mut current_block = start;
     current_block.0 -= 1;
-    let bounds = (start, end);
 
     let blocks_pos = Blocks {
         current_block,
