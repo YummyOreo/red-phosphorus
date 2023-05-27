@@ -44,8 +44,6 @@ pub mod single_thread {
 
     #[cfg(test)]
     mod test {
-        use std::collections::HashMap;
-
         use super::*;
         use crate::{
             types::block::{Block, Kind},
@@ -58,15 +56,6 @@ pub mod single_thread {
             let expected_node = Node::new(crate::types::compiler::NodeKind::Block, (1, 1, 1));
             assert_eq!(Some(expected_node), make_first_node(&world));
 
-            let mut blocks = HashMap::new();
-            blocks.insert(
-                (6, 2, 10),
-                Block::new(
-                    (6, 2, 10),
-                    Kind::Component(crate::types::block::redstone::Component::Dust { power: 10 }),
-                ),
-            );
-            blocks.get(&(6, 2, 10)).unwrap();
             let world = FakeWorld::new_random(vec![Block::new(
                 (6, 2, 10),
                 Kind::Component(crate::types::block::redstone::Component::Dust { power: 10 }),
