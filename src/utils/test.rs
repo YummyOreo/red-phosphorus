@@ -108,7 +108,7 @@ impl Distribution<Block> for Standard {
             1 => Block::new(Default::default(), Kind::Block),
             2 => Block::new(Default::default(), Kind::Component(Component::Block)),
             3 => {
-                let mut component = Component::Dust { power: 0 };
+                let mut component = Component::Dust;
                 Block::new(Default::default(), Kind::Component(component))
             }
             4 => {
@@ -119,7 +119,7 @@ impl Distribution<Block> for Standard {
                 Block::new(Default::default(), Kind::Component(component))
             }
             5 => {
-                let mut component = Component::Lamp { powered: false };
+                let mut component = Component::Lamp;
                 Block::new(Default::default(), Kind::Component(component))
             }
             _ => unreachable!(),

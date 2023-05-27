@@ -1,10 +1,6 @@
-use crate::types::PowerLevel;
-
 #[derive(Clone, Debug)]
 pub enum Component {
-    Dust {
-        power: PowerLevel,
-    },
+    Dust,
     Block,
     Tourch,
     Repeater {
@@ -30,9 +26,7 @@ pub enum Component {
     StickyPiston,
     SticyPistonHead,
     Observer,
-    Lamp {
-        powered: bool,
-    },
+    Lamp,
     TargetBlock,
     NoteBlock,
     /// All rails that can be activated
