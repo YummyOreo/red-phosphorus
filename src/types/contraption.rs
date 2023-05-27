@@ -13,10 +13,10 @@ macro_rules! check_block {
     ($current_block:expr, $bounds:tt, $b:tt) => {{
         if $current_block.$b == $bounds.1.$b {
             $current_block.$b = $bounds.0.$b;
-            Some(())
+            true
         } else {
             $current_block.$b += 1;
-            None
+            false
         }
     }};
 }
@@ -25,9 +25,9 @@ impl Iterator for Blocks {
     type Item = Position;
     fn next(&mut self) -> Option<Self::Item> {
         let bounds = self.bounds;
-        if check_block!(self.current_block, bounds, 2).is_some()
-            && check_block!(self.current_block, bounds, 1).is_some()
-            && check_block!(self.current_block, bounds, 0).is_some()
+        if check_block!(self.current_block, bounds, 2)
+            && check_block!(self.current_block, bounds, 1)
+            && check_block!(self.current_block, bounds, 0)
         {
             return None;
         }
