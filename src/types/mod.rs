@@ -7,3 +7,5 @@
 
 pub mod block;
 pub mod contraption;
+
+pub type PowerLevel = i8;

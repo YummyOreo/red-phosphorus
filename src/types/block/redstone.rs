@@ -1,12 +1,12 @@
-const DUST_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::FromSource;
-const RAIL_UPDATE_DIRECTION: UpdateDirection = UpdateDirection::AwaySource;
-
 #[derive(Clone)]
 pub enum Component {
     Dust,
     Block,
     Tourch,
-    Repeater,
+    Repeater {
+        delay: i8,
+        locked: bool,
+    },
     Comparator,
     Lever,
     /// Redstone buttons
@@ -35,16 +35,6 @@ pub enum Component {
     DoorUpper,
     DoorLower,
     Trapdoor,
-}
-
-impl Component {
-    pub fn get_update_direction(&self) -> Option<UpdateDirection> {
-        match self {
-            Self::Rail => Some(RAIL_UPDATE_DIRECTION),
-            Self::Dust { .. } => Some(DUST_UPDATE_DIRECTION),
-            _ => None,
-        }
-    }
 }
 
 pub enum UpdateDirection {
