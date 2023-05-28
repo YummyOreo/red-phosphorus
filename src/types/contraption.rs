@@ -1,4 +1,4 @@
-use super::block::Block;
+use super::{block::Block, compiler::Graph};
 use crate::version::Version;
 
 pub type Position = (i32, i32, i32);
@@ -62,6 +62,7 @@ pub trait World<'a> {
 pub struct Contraption<'a, T: World<'a>> {
     world: &'a mut T,
     verson: Version,
+    graph: Option<Graph>,
 }
 
 impl<'a, T: World<'a>> Contraption<'a, T> {
@@ -69,6 +70,7 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
         Self {
             world,
             verson: Version::default(),
+            graph: None,
         }
     }
 
@@ -93,5 +95,13 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
     /// To be called each tick
     pub fn tick(&mut self) {
         todo!()
+    }
+
+    fn get_graph(&self) -> Option<&Graph> {
+        self.graph.as_ref()
+    }
+
+    fn has_graph(&self) -> bool {
+        self.graph.is_some()
     }
 }
