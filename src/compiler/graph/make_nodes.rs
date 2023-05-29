@@ -37,3 +37,29 @@ pub fn match_component(component: &Component, pos: Position, power: PowerLevel) 
         _ => unimplemented!(),
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::types::block::Block;
+
+    macro_rules! test_block_match {
+        ($name:tt, $block:expr, $node:expr) => {
+            #[test]
+            fn $name() {
+                let res = match_block(&$block);
+                assert_eq!(res, $node);
+            }
+        };
+    }
+
+    test_block_match!(
+        test_block_match,
+        Block::new_full((0, 0, 0), Kind::Block, 0, true, vec![]),
+        Some(Node {
+            kind: NodeKind::Solid,
+            pos: (0, 0, 0),
+            power: 0,
+        })
+    );
+}

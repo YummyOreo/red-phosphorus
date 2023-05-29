@@ -3,7 +3,7 @@ pub mod redstone;
 use self::redstone::Component;
 use super::{contraption::Position, PowerLevel};
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 /// Basic struct for a block
 pub struct Block {
     pos: Position,
@@ -19,11 +19,22 @@ impl Block {
     }
 
     pub fn new_with_power(pos: Position, kind: Kind, power: PowerLevel) -> Self {
+        Self::new_full(pos, kind, power, true, vec![])
+    }
+
+    pub fn new_full(
+        pos: Position,
+        kind: Kind,
+        power: PowerLevel,
+        solid: bool,
+        facing: Vec<Facing>,
+    ) -> Self {
         Self {
             pos,
             power,
             kind,
-            ..Default::default()
+            solid,
+            facing,
         }
     }
 
@@ -60,7 +71,7 @@ impl Block {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum Kind {
     Block,
     Component(Component),
@@ -72,7 +83,7 @@ impl Default for Kind {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 /// The way that a block is moveable
 /// Some blocks can't be moved any ways, some only directly by pistons, and some by both pistons
 /// and slime blocks, so this should also be stored in a vector. A empty vectior should be seen as
@@ -92,7 +103,7 @@ pub enum Movable {
     PistonPushable,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 /// Defining a direction that a block is facing
 /// Some blocks may be facing multiple directions (such as rail). So it should be stored in a
 /// vector
