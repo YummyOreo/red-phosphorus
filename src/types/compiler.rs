@@ -2,12 +2,24 @@ use petgraph::stable_graph::StableDiGraph;
 
 use super::{contraption::Position, PowerLevel};
 
-pub enum NodeKind {}
+pub enum NodeKind {
+    Solid,
+}
 
 pub struct Node {
-    pos: Position,
-    power: PowerLevel,
-    kind: NodeKind,
+    pub pos: Position,
+    pub power: PowerLevel,
+    pub kind: NodeKind,
+}
+
+impl Node {
+    pub fn new(pos: Position, kind: NodeKind) -> Self {
+        Self::new_with_power(pos, kind, 0)
+    }
+
+    pub fn new_with_power(pos: Position, kind: NodeKind, power: PowerLevel) -> Self {
+        Self { pos, power, kind }
+    }
 }
 
 pub enum Link {
