@@ -4,6 +4,12 @@ use super::{contraption::Position, PowerLevel};
 
 pub enum NodeKind {
     Solid,
+
+    PowerSource,
+    ToggleablePowerSource { on: bool },
+    Dust,
+    Repeater { delay: i8, locked: bool },
+    Lamp,
 }
 
 pub struct Node {
