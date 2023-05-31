@@ -54,12 +54,76 @@ mod test {
     }
 
     test_block_match!(
-        test_block_match,
+        test_block_match_solid,
         Block::new_full((0, 0, 0), Kind::Block, 0, true, vec![]),
         Some(Node {
             kind: NodeKind::Solid,
             pos: (0, 0, 0),
             power: 0,
+        })
+    );
+
+    test_block_match!(
+        test_block_match_solid_1,
+        Block::new_full((10, 2, 3), Kind::Block, 15, true, vec![]),
+        Some(Node {
+            kind: NodeKind::Solid,
+            pos: (10, 2, 3),
+            power: 15,
+        })
+    );
+
+    test_block_match!(
+        test_block_match_air,
+        Block::new_full((10, 2, 3), Kind::Block, 15, false, vec![]),
+        None
+    );
+
+    test_block_match!(
+        test_block_match_block,
+        Block::new_full(
+            (0, -1, -100),
+            Kind::Component(Component::Block),
+            0,
+            false,
+            vec![]
+        ),
+        Some(Node {
+            kind: NodeKind::PowerSource,
+            pos: (0, -1, -100),
+            power: 15,
+        })
+    );
+
+    test_block_match!(
+        test_block_match_lever,
+        Block::new_full(
+            (123, -1000, -0),
+            Kind::Component(Component::Lever { flicked: false }),
+            15,
+            false,
+            vec![]
+        ),
+        Some(Node {
+            kind: NodeKind::ToggleablePowerSource { on: false },
+            pos: (123, -1000, -0),
+            power: 15,
+        })
+    );
+
+    test_block_match!(
+        test_block_match_lever_1,
+        Block::new_full(
+            (123, -1000, -0),
+            Kind::Component(Component::Lever { flicked: true }),
+            0,
+            false,
+            vec![]
+        ),
+        Some(Node {
+            kind: NodeKind::ToggleablePowerSource { on: true },
+            pos: (123, -1000, -0),
+            power: 15,
         })
     );
 }
