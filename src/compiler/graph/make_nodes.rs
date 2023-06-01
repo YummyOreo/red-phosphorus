@@ -29,7 +29,7 @@ pub fn match_component(component: &Component, pos: Position, power: PowerLevel) 
         Component::Repeater { delay, locked } => Node::new_with_power(
             pos,
             NodeKind::Repeater {
-                delay: *delay,
+                delay: *delay + 1,
                 locked: *locked,
             },
             power,
@@ -63,14 +63,25 @@ mod test {
         };
     }
 
+    // Blocks
     #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid, power: 0)) ; "solid block with power 0")]
     #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some(make_node!(kind: NodeKind::Solid, power: 15)) ; "solid block with power 15")]
     #[test_case(make_block!(kind: Kind::Block, solid: false, power: 15), None ; "non-solid block with power 15")]
+    // Redstone Block
     #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some(make_node!(kind: NodeKind::PowerSource, power: 15)) ; "redstone block")]
+    // Lever
     #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: false }), solid: false, power: 15), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "lever off")]
     #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "lever on")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
+    // Tourch
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
+    // Repeater
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 0, locked: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 1, locked: false })) ; "repeater unlocked no delay")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true }), power: 5), Some(make_node!(kind: NodeKind::Repeater { delay: 3, locked: true }, power: 5)) ; "repeater locked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false }), power: 15), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: false }, power: 15)) ; "repeater unlocked delay power")]
+    // Lamp
+    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
     fn test_block_match(block: Block, node: Option<Node>) {
         let res = match_block(&block);
         assert_eq!(res, node);
