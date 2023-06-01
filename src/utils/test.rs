@@ -8,7 +8,51 @@ use rand::{
 use crate::types::{
     block::{redstone::Component, Block, Facing, Kind},
     contraption::{Blocks, Position, World},
+    PowerLevel,
 };
+
+#[derive(Debug, Default)]
+pub struct BlockBuilder {
+    pub pos: Position,
+    pub power: PowerLevel,
+    pub kind: Kind,
+    pub solid: bool,
+    pub facing: Vec<Facing>,
+}
+
+impl BlockBuilder {
+    pub fn build(&self) -> Block {
+        Block::new_full(
+            self.pos,
+            self.kind.clone(),
+            self.power,
+            self.solid,
+            self.facing.clone(),
+        )
+    }
+
+    pub fn set_pos(mut self, position: Position) -> Self {
+        self.pos = position;
+        self
+    }
+
+    pub fn set_power(mut self, power: PowerLevel) -> Self {
+        self.power = power;
+        self
+    }
+    pub fn set_kind(mut self, kind: Kind) -> Self {
+        self.kind = kind;
+        self
+    }
+    pub fn set_solid(mut self, solid: bool) -> Self {
+        self.solid = solid;
+        self
+    }
+    pub fn set_facing(mut self, facing: Vec<Facing>) -> Self {
+        self.facing = facing;
+        self
+    }
+}
 
 pub struct FakeWorld {
     pub bounds: (Position, Position),

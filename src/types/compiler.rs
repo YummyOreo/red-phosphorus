@@ -13,7 +13,13 @@ pub enum NodeKind {
     Lamp,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+impl Default for NodeKind {
+    fn default() -> Self {
+        Self::Solid
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct Node {
     pub pos: Position,
     pub power: PowerLevel,

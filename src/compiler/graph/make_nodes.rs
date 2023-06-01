@@ -40,122 +40,39 @@ pub fn match_component(component: &Component, pos: Position, power: PowerLevel) 
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::types::block::Block;
+    use test_case::test_case;
 
-    macro_rules! test_block_match {
-        ($name:tt, $block:expr, $node:expr) => {
-            #[test]
-            fn $name() {
-                let res = match_block(&$block);
-                assert_eq!(res, $node);
+    use super::*;
+    use crate::{types::block::Block, utils::test::BlockBuilder};
+
+    macro_rules! make_block {
+        ($($b:ident : $t:expr),*) => {
+            BlockBuilder {
+                $($b : $t),*,
+                ..Default::default()
+            }.build()
+        };
+    }
+
+    macro_rules! make_node {
+        ($($b:ident: $t:expr),*) => {
+            Node {
+                $($b : $t),*,
+                ..Default::default()
             }
         };
     }
 
-    test_block_match!(
-        test_block_match_solid,
-        Block::new_full((0, 0, 0), Kind::Block, 0, true, vec![]),
-        Some(Node {
-            kind: NodeKind::Solid,
-            pos: (0, 0, 0),
-            power: 0,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_solid_1,
-        Block::new_full((1, 1, 1), Kind::Block, 15, true, vec![]),
-        Some(Node {
-            kind: NodeKind::Solid,
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_air,
-        Block::new_full((1, 1, 1), Kind::Block, 15, false, vec![]),
-        None
-    );
-
-    test_block_match!(
-        test_block_match_block,
-        Block::new_full(
-            (1, 1, 1),
-            Kind::Component(Component::Block),
-            0,
-            false,
-            vec![]
-        ),
-        Some(Node {
-            kind: NodeKind::PowerSource,
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_lever,
-        Block::new_full(
-            (1, 1, 1),
-            Kind::Component(Component::Lever { flicked: false }),
-            15,
-            false,
-            vec![]
-        ),
-        Some(Node {
-            kind: NodeKind::ToggleablePowerSource { on: false },
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_lever_1,
-        Block::new_full(
-            (1, 1, 1),
-            Kind::Component(Component::Lever { flicked: true }),
-            0,
-            false,
-            vec![]
-        ),
-        Some(Node {
-            kind: NodeKind::ToggleablePowerSource { on: true },
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_tourch,
-        Block::new_full(
-            (1, 1, 1),
-            Kind::Component(Component::Tourch { on: false }),
-            0,
-            false,
-            vec![]
-        ),
-        Some(Node {
-            kind: NodeKind::ToggleablePowerSource { on: false },
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
-
-    test_block_match!(
-        test_block_match_tourch_1,
-        Block::new_full(
-            (1, 1, 1),
-            Kind::Component(Component::Tourch { on: true }),
-            0,
-            false,
-            vec![]
-        ),
-        Some(Node {
-            kind: NodeKind::ToggleablePowerSource { on: true },
-            pos: (1, 1, 1),
-            power: 15,
-        })
-    );
+    #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid, power: 0)) ; "solid block with power 0")]
+    #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some(make_node!(kind: NodeKind::Solid, power: 15)) ; "solid block with power 15")]
+    #[test_case(make_block!(kind: Kind::Block, solid: false, power: 15), None ; "non-solid block with power 15")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some(make_node!(kind: NodeKind::PowerSource, power: 15)) ; "redstone block")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: false }), solid: false, power: 15), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "lever off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "lever on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
+    fn test_block_match(block: Block, node: Option<Node>) {
+        let res = match_block(&block);
+        assert_eq!(res, node);
+    }
 }
