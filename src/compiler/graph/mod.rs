@@ -1,3 +1,4 @@
 mod make_nodes;
 
-pub mod single_threaded {}
+pub mod single_threaded {
+}

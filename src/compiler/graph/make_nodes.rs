@@ -1,11 +1,23 @@
 use crate::types::{
     block::{redstone::Component, Block, Kind},
-    compiler::{Node, NodeKind},
-    contraption::Position,
+    compiler::{Graph, Node, NodeKind},
+    contraption::{Position, World},
     PowerLevel,
 };
 
-pub fn match_block(block: &Block) -> Option<Node> {
+pub fn make_nodes<'a, W: World<'a>>(world: &'a W) -> Graph {
+    let mut graph = Graph::new();
+    for block in world.get_blocks(world.bounds().0) {
+        let block = world.get_block(block);
+        if let Some(node) = match_block(block) {
+            graph.add_node(node);
+        }
+    }
+    graph
+}
+
+pub fn match_block(block: Option<&Block>) -> Option<Node> {
+    let block = block?;
     let pos = block.get_position();
     let power = block.get_power();
     match block.get_kind() {
@@ -83,7 +95,7 @@ mod test {
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
     fn test_block_match(block: Block, node: Option<Node>) {
-        let res = match_block(&block);
+        let res = match_block(Some(&block));
         assert_eq!(res, node);
     }
 }
