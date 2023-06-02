@@ -16,7 +16,7 @@ pub fn make_nodes<'a, W: World<'a>>(world: &'a W) -> Graph {
     graph
 }
 
-pub fn match_block(block: Option<&Block>) -> Option<Node> {
+fn match_block(block: Option<&Block>) -> Option<Node> {
     let block = block?;
     let pos = block.get_position();
     let power = block.get_power();
@@ -27,7 +27,7 @@ pub fn match_block(block: Option<&Block>) -> Option<Node> {
     }
 }
 
-pub fn match_component(component: &Component, pos: Position, power: PowerLevel) -> Node {
+fn match_component(component: &Component, pos: Position, power: PowerLevel) -> Node {
     match component {
         Component::Dust => Node::new_with_power(pos, NodeKind::Dust, power),
         Component::Block => Node::new_with_power(pos, NodeKind::PowerSource, 15),
