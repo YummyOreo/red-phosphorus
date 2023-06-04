@@ -36,6 +36,7 @@ impl Node {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub enum Link {
     // u8 being the distance till the next component
     Power(u8),

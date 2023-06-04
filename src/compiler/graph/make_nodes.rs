@@ -3,13 +3,14 @@ use std::{
     hash::{Hash, Hasher},
 };
 
+use mini_moka::sync::Cache;
+
 use crate::types::{
     block::{redstone::Component, Block, Kind},
     compiler::{Graph, Node, NodeKind},
     contraption::{Position, World},
     PowerLevel,
 };
-use mini_moka::sync::Cache;
 
 pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: Cache<u64, Option<Node>>) -> Graph {
     let mut graph = Graph::new();
@@ -60,7 +61,7 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
         Component::Repeater { delay, locked } => Node::new_with_power(
             pos,
             NodeKind::Repeater {
-                delay: *delay + 1,
+                delay: *delay * 2, // Converts redstone ticks to ticks
                 locked: *locked,
             },
             power,
@@ -107,9 +108,9 @@ mod test {
     #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
     #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
     // Repeater
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 0, locked: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 1, locked: false })) ; "repeater unlocked no delay")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true }), power: 5), Some(make_node!(kind: NodeKind::Repeater { delay: 3, locked: true }, power: 5)) ; "repeater locked delay power")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false }), power: 15), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: false }, power: 15)) ; "repeater unlocked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 2, locked: false })) ; "repeater unlocked default delay")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true }), power: 5), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 5)) ; "repeater locked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false }), power: 15), Some(make_node!(kind: NodeKind::Repeater { delay: 6, locked: false }, power: 15)) ; "repeater unlocked delay power")]
     // Lamp
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
