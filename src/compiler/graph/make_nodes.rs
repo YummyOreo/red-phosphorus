@@ -71,7 +71,7 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
+    use std::{borrow::Borrow, collections::HashMap};
 
     use test_case::test_case;
 
@@ -123,4 +123,45 @@ mod test {
         assert_eq!(res, node);
     }
 
+    #[test]
+    fn test_make_nodes() {
+        let mut blocks = vec![
+            make_block!(kind: Kind::Block, solid: true, pos: (1, 0, 0)),
+            make_block!(kind: Kind::Block, solid: true, pos: (0, 0, 2)),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 2), facing: vec![Facing::NegativeY, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::NegativeY, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false }), pos: (2, 0, 0)),
+            make_block!(kind: Kind::Component(Component::Lever { flicked: false }), pos: (2, 1, 0)),
+            make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
+        ];
+
+        let world = FakeWorld {
+            bounds: ((0, 0, 0), (100, 100, 100)),
+            blocks: make_blocks(blocks.clone()),
+        };
+
+        let mut cache = Cache::new(10_000);
+
+        let res = make_nodes(&world, &mut cache);
+        for node_i in res.node_indices() {
+            let node = res.node_weight(node_i).unwrap();
+            let blocks_index = blocks
+                .iter()
+                .position(|b| b.get_position() == node.pos)
+                .unwrap();
+            blocks.remove(blocks_index);
+        }
+
+        assert!(blocks.is_empty())
+    }
+
+    fn make_blocks(blocks: Vec<Block>) -> HashMap<Position, Block> {
+        let mut hblocks = HashMap::new();
+        for block in blocks {
+            hblocks.insert(block.get_position(), block);
+        }
+        hblocks
+    }
 }
