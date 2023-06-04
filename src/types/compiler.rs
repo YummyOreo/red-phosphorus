@@ -40,6 +40,7 @@ impl Node {
 pub enum Link {
     // u8 being the distance till the next component
     Power(u8),
+    WeakPower,
 }
 
 pub type Graph = StableDiGraph<Node, Link>;
