@@ -1,15 +1,34 @@
+use std::{
+    collections::hash_map::DefaultHasher,
+    hash::{Hash, Hasher},
+};
+
 use crate::types::{
     block::{redstone::Component, Block, Kind},
     compiler::{Graph, Node, NodeKind},
     contraption::{Position, World},
     PowerLevel,
 };
+use mini_moka::sync::Cache;
 
-pub fn make_nodes<'a, W: World<'a>>(world: &'a W) -> Graph {
+pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: Cache<u64, Option<Node>>) -> Graph {
     let mut graph = Graph::new();
+
     for block in world.get_blocks(world.bounds().0) {
         let block = world.get_block(block);
-        if let Some(node) = match_block(block) {
+
+        let mut hasher = DefaultHasher::new();
+        block.hash(&mut hasher);
+        let hash = hasher.finish();
+
+        if let Some(Some(node)) = cache.get(&hash) {
+            graph.add_node(node);
+            continue;
+        }
+
+        let node = match_block(block);
+        cache.insert(hash, node.clone());
+        if let Some(node) = node {
             graph.add_node(node);
         }
     }

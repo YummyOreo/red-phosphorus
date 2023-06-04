@@ -2,7 +2,7 @@ use petgraph::stable_graph::StableDiGraph;
 
 use super::{contraption::Position, PowerLevel};
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NodeKind {
     Solid,
 
@@ -19,7 +19,7 @@ impl Default for NodeKind {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct Node {
     pub pos: Position,
     pub power: PowerLevel,
