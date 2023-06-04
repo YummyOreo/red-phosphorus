@@ -14,15 +14,15 @@ pub struct Block {
 }
 
 impl Block {
-    pub fn new(pos: Position, kind: Kind) -> Self {
-        Self::new_with_power(pos, kind, 0)
+    pub fn new_simple(pos: Position, kind: Kind) -> Self {
+        Self::new_simple_with_power(pos, kind, 0)
     }
 
-    pub fn new_with_power(pos: Position, kind: Kind, power: PowerLevel) -> Self {
-        Self::new_full(pos, kind, power, true, vec![])
+    pub fn new_simple_with_power(pos: Position, kind: Kind, power: PowerLevel) -> Self {
+        Self::new(pos, kind, power, true, vec![])
     }
 
-    pub fn new_full(
+    pub fn new(
         pos: Position,
         kind: Kind,
         power: PowerLevel,

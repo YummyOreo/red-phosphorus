@@ -22,7 +22,7 @@ pub struct BlockBuilder {
 
 impl BlockBuilder {
     pub fn build(&self) -> Block {
-        Block::new_full(
+        Block::new(
             self.pos,
             self.kind.clone(),
             self.power,
@@ -145,26 +145,26 @@ impl Distribution<Block> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Block {
         match rng.gen_range(0..=5) {
             0 => {
-                let mut block = Block::new(Default::default(), Kind::Block);
+                let mut block = Block::new_simple(Default::default(), Kind::Block);
                 block.set_solid(false);
                 block
             }
-            1 => Block::new(Default::default(), Kind::Block),
-            2 => Block::new(Default::default(), Kind::Component(Component::Block)),
+            1 => Block::new_simple(Default::default(), Kind::Block),
+            2 => Block::new_simple(Default::default(), Kind::Component(Component::Block)),
             3 => {
                 let mut component = Component::Dust;
-                Block::new(Default::default(), Kind::Component(component))
+                Block::new_simple(Default::default(), Kind::Component(component))
             }
             4 => {
                 let mut component = Component::Repeater {
                     delay: rng.gen_range(1..=4),
                     locked: false,
                 };
-                Block::new(Default::default(), Kind::Component(component))
+                Block::new_simple(Default::default(), Kind::Component(component))
             }
             5 => {
                 let mut component = Component::Lamp;
-                Block::new(Default::default(), Kind::Component(component))
+                Block::new_simple(Default::default(), Kind::Component(component))
             }
             _ => unreachable!(),
         }
