@@ -123,10 +123,7 @@ mod test {
         assert_eq!(res, node);
     }
 
-    #[test]
-    fn test_make_nodes() {
-        let mut blocks = vec![
-            make_block!(kind: Kind::Block, solid: true, pos: (1, 0, 0)),
+    #[test_case(vec![make_block!(kind: Kind::Block, solid: true, pos: (1, 0, 0)),
             make_block!(kind: Kind::Block, solid: true, pos: (0, 0, 2)),
             make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
@@ -135,8 +132,9 @@ mod test {
             make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false }), pos: (2, 0, 0)),
             make_block!(kind: Kind::Component(Component::Lever { flicked: false }), pos: (2, 1, 0)),
             make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
-        ];
-
+        ] ; "circit 1")
+    ]
+    fn test_make_nodes(mut blocks: Vec<Block>) {
         let world = FakeWorld {
             bounds: ((0, 0, 0), (100, 100, 100)),
             blocks: make_blocks(blocks.clone()),
