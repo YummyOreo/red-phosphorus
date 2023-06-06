@@ -17,9 +17,8 @@ pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: &mut Cache<u64, Node>) 
 
     let mut starting = world.bounds().0;
     starting.0 -= 1;
-    for block in world.get_blocks(starting) {
-        let block = world.get_block(block);
-        if let Some(block) = block {
+    for pos in world.get_blocks(starting) {
+        if let Some(block) = world.get_block(pos) {
             let mut hasher = DefaultHasher::new();
             block.hash(&mut hasher);
             let hash = hasher.finish();
