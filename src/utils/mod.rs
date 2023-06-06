@@ -3,4 +3,4 @@ mod complier;
 pub mod components;
 
 #[cfg(test)]
-mod test;
+pub mod test;

@@ -6,7 +6,7 @@
 )]
 
 pub mod block;
-mod compiler;
+pub mod compiler;
 pub mod contraption;
 
 pub type PowerLevel = i8;

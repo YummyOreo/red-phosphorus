@@ -1,14 +1,19 @@
-#[derive(Clone)]
+#[derive(Clone, Debug, Hash)]
 pub enum Component {
     Dust,
     Block,
-    Tourch,
+    Tourch {
+        on: bool,
+    },
     Repeater {
         delay: i8,
         locked: bool,
+        powered: bool,
     },
     Comparator,
-    Lever,
+    Lever {
+        flicked: bool,
+    },
     /// Redstone buttons
     /// Change the delay of the button based on the type of button
     ///
