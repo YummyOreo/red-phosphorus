@@ -54,6 +54,24 @@ impl BlockBuilder {
     }
 }
 
+macro_rules! make_block {
+        ($($b:ident : $t:expr),*) => {
+            BlockBuilder {
+                $($b : $t),*,
+                ..Default::default()
+            }.build()
+        };
+    }
+
+macro_rules! make_node {
+        ($($b:ident: $t:expr),*) => {
+            Node {
+                $($b : $t),*,
+                ..Default::default()
+            }
+        };
+    }
+
 pub struct FakeWorld {
     pub bounds: (Position, Position),
     pub blocks: HashMap<Position, Block>,
@@ -70,6 +88,14 @@ impl FakeWorld {
             bounds,
             blocks: blocks_map,
         }
+    }
+
+    pub fn vec_to_blocks(blocks: Vec<Block>) -> HashMap<Position, Block> {
+        let mut hblocks = HashMap::new();
+        for block in blocks {
+            hblocks.insert(block.get_position(), block);
+        }
+        hblocks
     }
 
     pub fn new_random(blocks: Vec<Block>) -> Self {
@@ -227,3 +253,6 @@ pub fn random_world() -> FakeWorld {
     }
     FakeWorld { bounds, blocks }
 }
+
+pub(crate) use make_block;
+pub(crate) use make_node;

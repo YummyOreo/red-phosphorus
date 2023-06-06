@@ -83,26 +83,8 @@ mod test {
     use super::*;
     use crate::{
         types::block::{Block, Facing},
-        utils::test::{BlockBuilder, FakeWorld},
+        utils::test::{make_block, make_node, BlockBuilder, FakeWorld},
     };
-
-    macro_rules! make_block {
-        ($($b:ident : $t:expr),*) => {
-            BlockBuilder {
-                $($b : $t),*,
-                ..Default::default()
-            }.build()
-        };
-    }
-
-    macro_rules! make_node {
-        ($($b:ident: $t:expr),*) => {
-            Node {
-                $($b : $t),*,
-                ..Default::default()
-            }
-        };
-    }
 
     // Blocks
     #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid, power: 0)) ; "solid block with power 0")]
@@ -156,7 +138,7 @@ mod test {
     fn test_make_nodes(mut blocks: Vec<Block>) {
         let world = FakeWorld {
             bounds: ((0, 0, 0), (100, 100, 100)),
-            blocks: make_blocks(blocks.clone()),
+            blocks: FakeWorld::vec_to_blocks(blocks.clone()),
         };
 
         let mut cache = Cache::new(10_000);
@@ -173,13 +155,5 @@ mod test {
 
         dbg!(&blocks);
         assert!(blocks.is_empty())
-    }
-
-    fn make_blocks(blocks: Vec<Block>) -> HashMap<Position, Block> {
-        let mut hblocks = HashMap::new();
-        for block in blocks {
-            hblocks.insert(block.get_position(), block);
-        }
-        hblocks
     }
 }
