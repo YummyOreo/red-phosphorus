@@ -159,6 +159,7 @@ impl Distribution<Block> for Standard {
                 let mut component = Component::Repeater {
                     delay: rng.gen_range(1..=4),
                     locked: false,
+                    powered: false,
                 };
                 Block::new_simple(Default::default(), Kind::Component(component))
             }
@@ -205,7 +206,12 @@ pub fn random_world() -> FakeWorld {
 
     for pos in blocks_pos {
         let mut block: Block = rand::random();
-        if let Kind::Component(Component::Repeater { delay, locked }) = block.get_kind() {
+        if let Kind::Component(Component::Repeater {
+            delay,
+            locked,
+            powered,
+        }) = block.get_kind()
+        {
             let facing = loop {
                 match rand::random::<Facing>() {
                     // Makes sure that its not facing up

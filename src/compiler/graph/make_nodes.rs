@@ -15,7 +15,9 @@ use crate::types::{
 pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: &mut Cache<u64, Node>) -> Graph {
     let mut graph = Graph::new();
 
-    for block in world.get_blocks(world.bounds().0) {
+    let mut starting = world.bounds().0;
+    starting.0 -= 1;
+    for block in world.get_blocks(starting) {
         let block = world.get_block(block);
         if let Some(block) = block {
             let mut hasher = DefaultHasher::new();
@@ -57,13 +59,17 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
         Component::Tourch { on } => {
             Node::new_with_power(pos, NodeKind::ToggleablePowerSource { on: *on }, 15)
         }
-        Component::Repeater { delay, locked } => Node::new_with_power(
+        Component::Repeater {
+            delay,
+            locked,
+            powered,
+        } => Node::new_with_power(
             pos,
             NodeKind::Repeater {
                 delay: *delay * 2, // Converts redstone ticks to ticks
                 locked: *locked,
             },
-            power,
+            15 * i8::from(*powered),
         ),
         _ => unimplemented!(),
     }
@@ -112,9 +118,9 @@ mod test {
     #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
     #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
     // Repeater
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 2, locked: false })) ; "repeater unlocked default delay")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true }), power: 5), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 5)) ; "repeater locked delay power")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false }), power: 15), Some(make_node!(kind: NodeKind::Repeater { delay: 6, locked: false }, power: 15)) ; "repeater unlocked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 2, locked: false })) ; "repeater unlocked default delay")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true, powered: true })), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 15)) ; "repeater locked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false, powered: true })), Some(make_node!(kind: NodeKind::Repeater { delay: 6, locked: false }, power: 15)) ; "repeater unlocked delay power")]
     // Lamp
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
@@ -127,12 +133,26 @@ mod test {
             make_block!(kind: Kind::Block, solid: true, pos: (0, 0, 2)),
             make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
-            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 2), facing: vec![Facing::NegativeY, Facing::NegativeX]),
-            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::NegativeY, Facing::NegativeX]),
-            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false }), pos: (2, 0, 0)),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 2), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
+            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false }), pos: (2, 0, 0)),
             make_block!(kind: Kind::Component(Component::Lever { flicked: false }), pos: (2, 1, 0)),
             make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
         ] ; "circit 1")
+    ]
+    #[test_case(vec![make_block!(kind: Kind::Component(Component::Block), pos: (0, 0, 0)),
+            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: true }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 0), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 15),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 14),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (4, 0, 0), facing: vec![Facing::PositiveZ, Facing::NegativeX], power: 13),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (4, 0, 1), facing: vec![Facing::NegativeZ, Facing::PositiveZ], power: 12),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (4, 0, 2), facing: vec![Facing::NegativeZ, Facing::PositiveZ], power: 11),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (4, 0, 3), facing: vec![Facing::NegativeZ, Facing::NegativeX], power: 10),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 3), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 9),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 3), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 8),
+            make_block!(kind: Kind::Block, pos: (1, 0, 3), power: 8, solid: true),
+            make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 3), power: 8),
+        ] ; "circit 2")
     ]
     fn test_make_nodes(mut blocks: Vec<Block>) {
         let world = FakeWorld {
@@ -152,6 +172,7 @@ mod test {
             blocks.remove(blocks_index);
         }
 
+        dbg!(&blocks);
         assert!(blocks.is_empty())
     }
 

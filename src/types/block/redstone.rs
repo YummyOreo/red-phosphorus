@@ -8,6 +8,7 @@ pub enum Component {
     Repeater {
         delay: i8,
         locked: bool,
+        powered: bool,
     },
     Comparator,
     Lever {
