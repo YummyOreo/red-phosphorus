@@ -1,4 +1,4 @@
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Component {
     Dust,
     Block,

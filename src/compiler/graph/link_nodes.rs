@@ -19,9 +19,9 @@ fn get_connections<'a, W: World<'a>>(
 
 fn get_facing_blocks<'a, W: World<'a>>(
     pos: Position,
-    facing: Vec<Facing>,
+    facing: &'a Vec<Facing>,
     world: &'a W,
-) -> Vec<Option<&Block>> {
+) -> Vec<Option<&'a Block>> {
     let mut blocks = vec![];
     for side in facing {
         let mut new_pos = pos;
@@ -36,4 +36,38 @@ fn get_facing_blocks<'a, W: World<'a>>(
         blocks.push(world.get_block(new_pos));
     }
     blocks
+}
+
+#[cfg(test)]
+mod tests {
+    use test_case::test_case;
+
+    use super::*;
+    use crate::{
+        types::block::{redstone::Component, Kind},
+        utils::test::{make_block, BlockBuilder, FakeWorld},
+    };
+
+    #[test_case(vec![
+        make_block!(kind: Kind::Component(Component::Repeater {delay: 1, locked: false, powered: false}), facing: vec![Facing::PositiveX]),
+        make_block!(kind: Kind::Block, pos: (1, 0, 0))
+    ], 0, vec![1] ; "repeater facing into block")]
+    fn test_get_facing_blocks(blocks: Vec<Block>, selected: usize, expect: Vec<usize>) {
+        let world = FakeWorld {
+            bounds: ((0, 0, 0), (100, 100, 100)),
+            blocks: FakeWorld::vec_to_blocks(blocks.clone()),
+        };
+
+        let block = blocks.get(selected).unwrap();
+
+        let pos = expect
+            .iter()
+            .map(|i| blocks.get(*i).unwrap().get_position());
+
+        let blocks: Vec<Option<&Block>> = pos.map(|pos| world.get_block(pos)).collect();
+
+        let res = get_facing_blocks(block.get_position(), block.get_facing(), &world);
+
+        assert_eq!(res, blocks);
+    }
 }
