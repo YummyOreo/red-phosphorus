@@ -76,8 +76,6 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
 
 #[cfg(test)]
 mod test {
-    use std::{borrow::Borrow, collections::HashMap};
-
     use test_case::test_case;
 
     use super::*;
