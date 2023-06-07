@@ -45,7 +45,7 @@ mod tests {
     use super::*;
     use crate::{
         types::block::{redstone::Component, Kind},
-        utils::test::{make_block, BlockBuilder, FakeWorld},
+        utils::test::*,
     };
 
     #[test_case(vec![

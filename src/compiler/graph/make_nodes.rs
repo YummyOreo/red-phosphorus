@@ -81,7 +81,7 @@ mod test {
     use super::*;
     use crate::{
         types::block::{Block, Facing},
-        utils::test::{make_block, make_node, BlockBuilder, FakeWorld},
+        utils::test::*,
     };
 
     // Blocks
