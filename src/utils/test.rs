@@ -56,7 +56,7 @@ impl BlockBuilder {
 
 macro_rules! make_block {
         ($($b:ident : $t:expr),*) => {
-            BlockBuilder {
+            crate::utils::test::BlockBuilder {
                 $($b : $t),*,
                 ..Default::default()
             }.build()
@@ -65,7 +65,7 @@ macro_rules! make_block {
 
 macro_rules! make_node {
         ($($b:ident: $t:expr),*) => {
-            Node {
+            crate::types::compiler::Node {
                 $($b : $t),*,
                 ..Default::default()
             }
