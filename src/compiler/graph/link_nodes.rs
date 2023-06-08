@@ -39,7 +39,7 @@ fn get_facing_blocks<'a, W: World<'a>>(
 }
 
 #[cfg(test)]
-mod tests {
+mod test {
     use test_case::test_case;
 
     use super::*;
@@ -52,6 +52,11 @@ mod tests {
         make_block!(kind: Kind::Component(Component::Repeater {delay: 1, locked: false, powered: false}), facing: vec![Facing::PositiveX]),
         make_block!(kind: Kind::Block, pos: (1, 0, 0))
     ], 0, vec![1] ; "repeater facing into block")]
+    #[test_case(vec![
+        make_block!(kind: Kind::Component(Component::Block)),
+        make_block!(kind: Kind::Component(Component::Dust), power: 15, facing: vec![Facing::PositiveX, Facing::NegativeX], pos: (1, 0, 0)),
+        make_block!(kind: Kind::Block, solid: false, pos: (2, 0, 0)),
+    ], 1, vec![0, 2] ; "dust facing into transparent and powersource")]
     fn test_get_facing_blocks(blocks: Vec<Block>, selected: usize, expect: Vec<usize>) {
         let world = FakeWorld {
             bounds: ((0, 0, 0), (100, 100, 100)),
@@ -66,8 +71,15 @@ mod tests {
 
         let blocks: Vec<Option<&Block>> = pos.map(|pos| world.get_block(pos)).collect();
 
-        let res = get_facing_blocks(block.get_position(), block.get_facing(), &world);
+        let mut res = get_facing_blocks(block.get_position(), block.get_facing(), &world);
 
-        assert_eq!(res, blocks);
+        dbg!(res.clone());
+        dbg!(blocks.clone());
+        for block in blocks {
+            assert!(res.contains(&block));
+            res.remove(res.iter().position(|b| &block == b).unwrap());
+        }
+
+        assert!(res.is_empty())
     }
 }
