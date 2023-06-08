@@ -1,20 +1,37 @@
 use petgraph::stable_graph::NodeIndex;
 
 use crate::types::{
-    block::{Block, Facing},
+    block::{redstone::Component, Block, Facing, Kind},
     compiler::{Graph, Link, Node},
     contraption::{Position, World},
 };
 
-fn get_connections<'a, W: World<'a>>(
+fn get_links<'a, W: World<'a>>(
     node: Node,
     world: &'a W,
     graph: &'a Graph,
 ) -> Vec<(NodeIndex, Link)> {
-    let block = world
+    let current_block = world
         .get_block(node.pos)
         .expect("all nodes should correspond to a block");
-    todo!()
+
+    let pos = current_block.get_position();
+    let facing = current_block.get_facing();
+
+    let link_check_blocks = get_facing_blocks(pos, facing, world);
+
+    let links = vec![];
+    for link_block in link_check_blocks {
+        let Some(link_block) = link_block else {continue;};
+        if !link_block.get_solid() {
+            continue;
+        }
+
+        let node_index = graph.node_indices().find(|n| {
+            graph.node_weight(*n).expect("should be there").pos == link_block.get_position()
+        });
+    }
+    links
 }
 
 fn get_facing_blocks<'a, W: World<'a>>(
@@ -38,6 +55,10 @@ fn get_facing_blocks<'a, W: World<'a>>(
     blocks
 }
 
+fn get_link_kind(from: &Kind, to: &Kind) -> Option<Link> {
+    todo!()
+}
+
 #[cfg(test)]
 mod test {
     use test_case::test_case;
@@ -57,6 +78,13 @@ mod test {
         make_block!(kind: Kind::Component(Component::Dust), power: 15, facing: vec![Facing::PositiveX, Facing::NegativeX], pos: (1, 0, 0)),
         make_block!(kind: Kind::Block, solid: false, pos: (2, 0, 0)),
     ], 1, vec![0, 2] ; "dust facing into transparent and powersource")]
+    #[test_case(vec![
+        make_block!(kind: Kind::Component(Component::Block), pos: (0, 0, 1)),
+        make_block!(kind: Kind::Component(Component::Block), pos: (1, 0, 0)),
+        make_block!(kind: Kind::Component(Component::Block), pos: (1, 0, 2)),
+        make_block!(kind: Kind::Component(Component::Block), pos: (2, 0, 1)),
+        make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 1), facing: vec![Facing::PositiveX, Facing::PositiveZ, Facing::NegativeX, Facing::NegativeZ]),
+    ], 4, vec![0, 1, 2, 3] ; "dust facing 4 powersources")]
     fn test_get_facing_blocks(blocks: Vec<Block>, selected: usize, expect: Vec<usize>) {
         let world = FakeWorld {
             bounds: ((0, 0, 0), (100, 100, 100)),
