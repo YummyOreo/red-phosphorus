@@ -15,10 +15,7 @@ fn get_links<'a, W: World<'a>>(
         .get_block(node.pos)
         .expect("all nodes should correspond to a block");
 
-    let pos = current_block.get_position();
-    let facing = current_block.get_facing();
-
-    let link_check_blocks = get_facing_blocks(pos, facing, world);
+    let link_check_blocks = get_facing_blocks(current_block.get_position(), current_block.get_facing(), world);
 
     let mut links = vec![];
     for link_block in link_check_blocks {
