@@ -37,14 +37,8 @@ impl Node {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub enum Link {
-    // u8 being the distance till the next component
-    // The vec is the list of blocks that it travels over (used for updating)
-    Power {
-        power: u8,
-        blocks: Option<Vec<Position>>,
-    },
-    WeakPower,
+pub struct Link {
+    pub distance: i8,
 }
 
 pub type Graph = StableDiGraph<Node, Link>;

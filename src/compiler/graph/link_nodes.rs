@@ -2,7 +2,7 @@ use petgraph::stable_graph::NodeIndex;
 
 use crate::types::{
     block::{redstone::Component, Block, Facing, Kind},
-    compiler::{Graph, Link, Node},
+    compiler::{Graph, Link, Node, NodeKind},
     contraption::{Position, World},
 };
 
@@ -20,16 +20,20 @@ fn get_links<'a, W: World<'a>>(
 
     let link_check_blocks = get_facing_blocks(pos, facing, world);
 
-    let links = vec![];
+    let mut links = vec![];
     for link_block in link_check_blocks {
         let Some(link_block) = link_block else {continue;};
         if !link_block.get_solid() {
             continue;
         }
 
-        let node_index = graph.node_indices().find(|n| {
-            graph.node_weight(*n).expect("should be there").pos == link_block.get_position()
-        });
+        let node_index = graph
+            .node_indices()
+            .find(|n| {
+                graph.node_weight(*n).expect("should be there").pos == link_block.get_position()
+            })
+            .unwrap();
+        links.push((node_index, Link { distance: 0 }))
     }
     links
 }
@@ -53,10 +57,6 @@ fn get_facing_blocks<'a, W: World<'a>>(
         blocks.push(world.get_block(new_pos));
     }
     blocks
-}
-
-fn get_link_kind(from: &Kind, to: &Kind) -> Option<Link> {
-    todo!()
 }
 
 #[cfg(test)]
