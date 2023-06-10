@@ -52,12 +52,8 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
         Component::Dust => Node::new_with_power(pos, NodeKind::Dust, power),
         Component::Block => Node::new_with_power(pos, NodeKind::PowerSource, 15),
         Component::Lamp => Node::new_with_power(pos, NodeKind::Lamp, power),
-        Component::Lever { flicked } => {
-            Node::new_with_power(pos, NodeKind::ToggleablePowerSource { on: *flicked }, 15)
-        }
-        Component::Tourch { on } => {
-            Node::new_with_power(pos, NodeKind::ToggleablePowerSource { on: *on }, 15)
-        }
+        Component::Lever { on } => Node::new_with_power(pos, NodeKind::Lever { on: *on }, 15),
+        Component::Tourch { lit } => Node::new_with_power(pos, NodeKind::Tourch { lit: *lit }, 15),
         Component::Repeater {
             delay,
             locked,
@@ -76,8 +72,6 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
 
 #[cfg(test)]
 mod test {
-    use std::{borrow::Borrow, collections::HashMap};
-
     use test_case::test_case;
 
     use super::*;
@@ -93,11 +87,11 @@ mod test {
     // Redstone Block
     #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some(make_node!(kind: NodeKind::PowerSource, power: 15)) ; "redstone block")]
     // Lever
-    #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: false }), solid: false, power: 15), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "lever off")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Lever { flicked: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "lever on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: false }), solid: false, power: 15), Some(make_node!(kind: NodeKind::Lever { on: false }, power: 15)) ; "lever off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::Lever { on: true }, power: 15)) ; "lever on")]
     // Tourch
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: false })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: false }, power: 15)) ; "tourch off")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { on: true })), Some(make_node!(kind: NodeKind::ToggleablePowerSource { on: true }, power: 15)) ; "tourch on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: false })), Some(make_node!(kind: NodeKind::Tourch { lit: false }, power: 15)) ; "tourch off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: true })), Some(make_node!(kind: NodeKind::Tourch { lit: true }, power: 15)) ; "tourch on")]
     // Repeater
     #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 2, locked: false })) ; "repeater unlocked default delay")]
     #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true, powered: true })), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 15)) ; "repeater locked delay power")]
@@ -117,7 +111,7 @@ mod test {
             make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 2), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false }), pos: (2, 0, 0)),
-            make_block!(kind: Kind::Component(Component::Lever { flicked: false }), pos: (2, 1, 0)),
+            make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (2, 1, 0)),
             make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
         ] ; "circit 1")
     ]

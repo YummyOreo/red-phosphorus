@@ -3,7 +3,7 @@ pub enum Component {
     Dust,
     Block,
     Tourch {
-        on: bool,
+        lit: bool,
     },
     Repeater {
         delay: i8,
@@ -12,7 +12,7 @@ pub enum Component {
     },
     Comparator,
     Lever {
-        flicked: bool,
+        on: bool,
     },
     /// Redstone buttons
     /// Change the delay of the button based on the type of button

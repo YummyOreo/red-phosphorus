@@ -7,7 +7,8 @@ pub enum NodeKind {
     Solid,
 
     PowerSource,
-    ToggleablePowerSource { on: bool },
+    Tourch { lit: bool },
+    Lever { on: bool },
     Dust,
     Repeater { delay: i8, locked: bool },
     Lamp,
