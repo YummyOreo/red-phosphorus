@@ -70,7 +70,7 @@ mod utils {
     use crate::types::block::Facing;
 
     /// Gets the way a component needs to face based on block positions
-    fn get_facing(cb: Vec<i32>, ob: Vec<i32>) -> Option<Facing> {
+    pub fn get_facing(cb: Vec<i32>, ob: Vec<i32>) -> Option<Facing> {
         let diff = vec![cb[0] - ob[0], cb[1] - ob[1], cb[2] - ob[2]];
         // TODO: make it so this is not repeatitive
         match diff[0] {
@@ -104,5 +104,26 @@ mod utils {
             _ => unreachable!(),
         }
         None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use test_case::test_case;
+
+    use super::*;
+    use crate::types::block::Facing;
+
+    #[test_case((0, 0, 0), (0, 0, 1), Facing::NegativeZ ; "facing neg z")]
+    #[test_case((0, 0, 1), (0, 0, 0), Facing::PositiveZ ; "facing pos z")]
+    #[test_case((0, 1, 0), (0, 0, 0), Facing::PositiveY ; "facing pos y")]
+    #[test_case((0, 0, 0), (0, 1, 0), Facing::NegativeY ; "facing neg y")]
+    #[test_case((1, 0, 0), (0, 0, 0), Facing::PositiveX ; "facing pos x")]
+    #[test_case((0, 0, 0), (1, 0, 0), Facing::NegativeX ; "facing neg x")]
+    fn test_util_get_facing(pos1: Position, pos2: Position, facing: Facing) {
+        let pos1 = vec![pos1.0, pos1.1, pos1.2];
+        let pos2 = vec![pos2.0, pos2.1, pos2.2];
+
+        assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
 }
