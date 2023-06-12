@@ -16,7 +16,9 @@ pub enum NodeKind {
 
 impl Default for NodeKind {
     fn default() -> Self {
-        Self::Solid { strongly_power: false }
+        Self::Solid {
+            strongly_power: false,
+        }
     }
 }
 
@@ -39,9 +41,8 @@ impl Node {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Link {
-    // u8 being the distance till the next component
-    Power(u8),
-    WeakPower,
+    StrongPower,
+    Power { distance: i8, blocks: Vec<Position> },
 }
 
 pub type Graph = StableDiGraph<Node, Link>;
