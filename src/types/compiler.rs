@@ -4,7 +4,7 @@ use super::{contraption::Position, PowerLevel};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NodeKind {
-    Solid,
+    Solid { strongly_power: bool },
 
     PowerSource,
     Tourch { lit: bool },
@@ -16,7 +16,7 @@ pub enum NodeKind {
 
 impl Default for NodeKind {
     fn default() -> Self {
-        Self::Solid
+        Self::Solid { strongly_power: false }
     }
 }
 

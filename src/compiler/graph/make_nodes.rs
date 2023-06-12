@@ -41,7 +41,13 @@ fn match_block(block: &Block) -> Option<Node> {
     let pos = block.get_position();
     let power = block.get_power();
     match block.get_kind() {
-        Kind::Block if block.get_solid() => Some(Node::new_with_power(pos, NodeKind::Solid, power)),
+        Kind::Block if block.get_solid() => Some(Node::new_with_power(
+            pos,
+            NodeKind::Solid {
+                strongly_power: false,
+            },
+            power,
+        )),
         Kind::Block => None,
         Kind::Component(component) => Some(match_component(component, pos, power)),
     }
@@ -81,8 +87,8 @@ mod test {
     };
 
     // Blocks
-    #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid, power: 0)) ; "solid block with power 0")]
-    #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some(make_node!(kind: NodeKind::Solid, power: 15)) ; "solid block with power 15")]
+    #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 0)) ; "solid block with power 0")]
+    #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some(make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 15)) ; "solid block with power 15")]
     #[test_case(make_block!(kind: Kind::Block, solid: false, power: 15), None ; "non-solid block with power 15")]
     // Redstone Block
     #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some(make_node!(kind: NodeKind::PowerSource, power: 15)) ; "redstone block")]
