@@ -57,6 +57,9 @@ impl Block {
     pub fn get_position(&self) -> Position {
         self.pos
     }
+    pub fn get_vec_pos(&self) -> Vec<i32> {
+        vec![self.pos.0, self.pos.1, self.pos.2]
+    }
     pub fn get_kind(&self) -> &Kind {
         &self.kind
     }

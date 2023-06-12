@@ -1,5 +1,5 @@
 use crate::types::{
-    block::Block,
+    block::{Block, Kind},
     compiler::Graph,
     contraption::{Position, World},
 };
@@ -17,5 +17,23 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 }
 
 fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<Position> {
-    todo!()
+    match block.get_kind() {
+        Kind::Block => {
+            let position = block.get_vec_pos();
+            let mut add_state = (0, 1);
+            while add_state.0 < 3 {
+                if add_state.1 < -1 {
+                    add_state = (add_state.0 + 1, 1);
+                }
+
+                let mut position = position.clone();
+                position[add_state.0] += add_state.1;
+                dbg!(position);
+                // do stuff
+                add_state.1 -= 2;
+            }
+            todo!()
+        }
+        _ => vec![],
+    }
 }
