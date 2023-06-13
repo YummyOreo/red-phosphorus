@@ -4,7 +4,7 @@
 use paste::paste;
 
 use crate::types::{
-    block::{redstone::Component, Block, Kind, Facing},
+    block::{redstone::Component, Block, Facing, Kind},
     compiler::{Graph, Link},
     contraption::{Position, World},
 };
@@ -23,54 +23,66 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 
 fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
     match block.get_kind() {
-        Kind::Block => {
-            let position = block.get_vec_pos();
-            let mut add_state = (0, 1);
-            while add_state.0 < 3 {
-                if add_state.1 < -1 {
-                    add_state = (add_state.0 + 1, 1);
-                }
-
-                let mut position = position.clone();
-                position[add_state.0] += add_state.1;
-
-                if let Some(compair_block) = world.get_block((position[0], position[1], position[2])) {
-                    match compair_block.get_kind() {
-                        Kind::Component(Component::Dust) => {
-                            if compair_block.get_facing().contains(&utils::get_facing(block.get_vec_pos(), compair_block.get_vec_pos()).unwrap()) {
-                                todo!();
-                                // soft power
-                            } else if utils::get_facing(block.get_vec_pos(), compair_block.get_vec_pos()).unwrap() == Facing::NegativeY {
-                                todo!();
-                                // soft power
-                            }
-                        }
-                        Kind::Component(Component::Repeater {
-                            delay,
-                            locked,
-                            powered,
-                        }) => {
-                            // check if its pointing into the block
-                        }
-                        Kind::Component(Component::Lever { on }) => {
-                            // check if its one block
-                        }
-                        Kind::Component(Component::Tourch { lit }) => {
-                            // check if it is point at block
-                        }
-                        _ => {}
-                    }
-                };
-
-                add_state.1 -= 2;
-            }
-            todo!()
-        }
+        Kind::Block => block::get_sources(block, world),
         _ => vec![],
     }
 }
 
-mod block {}
+mod block {
+    use super::*;
+    pub fn get_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
+        let position = block.get_vec_pos();
+        let mut add_state = (0, 1);
+        while add_state.0 < 3 {
+            if add_state.1 < -1 {
+                add_state = (add_state.0 + 1, 1);
+            }
+
+            let mut position = position.clone();
+            position[add_state.0] += add_state.1;
+
+            if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
+                check_block_source(block, adjacent_block);
+            };
+
+            add_state.1 -= 2;
+        }
+        todo!()
+    }
+
+    fn check_block_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+    ) -> Option<(Position, Link)> {
+        let required_facing =
+            utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
+                .expect("should not be the same block");
+        match adjacent_block.get_kind() {
+            Kind::Component(Component::Dust) => {
+                if adjacent_block.get_facing().contains(&required_facing)
+                    || required_facing == Facing::NegativeY
+                {
+                    // soft power
+                }
+            }
+            Kind::Component(Component::Repeater {
+                delay,
+                locked,
+                powered,
+            }) => {
+                // check if its pointing into the block
+            }
+            Kind::Component(Component::Lever { on }) => {
+                // check if its one block
+            }
+            Kind::Component(Component::Tourch { lit }) => {
+                // check if it is point at block
+            }
+            _ => {}
+        }
+        todo!()
+    }
+}
 
 mod utils {
 
