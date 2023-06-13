@@ -1,8 +1,10 @@
 // TODO: remove this
 #![allow(unused, dead_code)]
 
+use paste::paste;
+
 use crate::types::{
-    block::{redstone::Component, Block, Kind},
+    block::{redstone::Component, Block, Kind, Facing},
     compiler::{Graph, Link},
     contraption::{Position, World},
 };
@@ -32,11 +34,16 @@ fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(
                 let mut position = position.clone();
                 position[add_state.0] += add_state.1;
 
-                if let Some(block) = world.get_block((position[0], position[1], position[2])) {
-                    match block.get_kind() {
+                if let Some(compair_block) = world.get_block((position[0], position[1], position[2])) {
+                    match compair_block.get_kind() {
                         Kind::Component(Component::Dust) => {
-                            // check if its pointing into the block (if so then its a weak power)
-                            // check if its ontop, same as above
+                            if compair_block.get_facing().contains(&utils::get_facing(block.get_vec_pos(), compair_block.get_vec_pos()).unwrap()) {
+                                todo!();
+                                // soft power
+                            } else if utils::get_facing(block.get_vec_pos(), compair_block.get_vec_pos()).unwrap() == Facing::NegativeY {
+                                todo!();
+                                // soft power
+                            }
                         }
                         Kind::Component(Component::Repeater {
                             delay,
@@ -66,44 +73,33 @@ fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(
 mod block {}
 
 mod utils {
+
     use super::*;
     use crate::types::block::Facing;
+
+    macro_rules! get_facing_macro {
+        ($num:expr, $direction:ident, $diff:expr) => {
+            paste! {
+                match $diff[$num] {
+                    1 => Some(Facing::[<Positive $direction>]),
+                    -1 => Some(Facing::[<Negative $direction>]),
+                    0 => None,
+                    _ => unreachable!(),
+                }
+            }
+        };
+    }
 
     /// Gets the way a component needs to face based on block positions
     pub fn get_facing(cb: Vec<i32>, ob: Vec<i32>) -> Option<Facing> {
         let diff = vec![cb[0] - ob[0], cb[1] - ob[1], cb[2] - ob[2]];
-        // TODO: make it so this is not repeatitive
-        match diff[0] {
-            1 => {
-                return Some(Facing::PositiveX);
-            }
-            -1 => {
-                return Some(Facing::NegativeX);
-            }
-            0 => {}
-            _ => unreachable!(),
-        }
-        match diff[1] {
-            1 => {
-                return Some(Facing::PositiveY);
-            }
-            -1 => {
-                return Some(Facing::NegativeY);
-            }
-            0 => {}
-            _ => unreachable!(),
-        }
-        match diff[2] {
-            1 => {
-                return Some(Facing::PositiveZ);
-            }
-            -1 => {
-                return Some(Facing::NegativeZ);
-            }
-            0 => {}
-            _ => unreachable!(),
-        }
-        None
+        Some(match get_facing_macro!(0, X, diff) {
+            Some(x) => x,
+            None => match get_facing_macro!(1, Y, diff) {
+                Some(y) => y,
+                None => get_facing_macro!(2, Z, diff)?,
+            },
+        })
     }
 }
 
