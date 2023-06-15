@@ -58,7 +58,7 @@ mod block {
         sources
     }
 
-    fn check_block_source(
+    pub fn check_block_source(
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
@@ -158,5 +158,13 @@ mod test {
         assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
 
-    fn test_solid_block_check_block_source() {}
+    fn test_solid_block_check_block_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+        link: Option<Link>,
+    ) {
+        let mut res_link = block::check_block_source(current_block, adjacent_block);
+        let res_link = res_link.map(|l| l.1);
+        assert_eq!(res_link, link)
+    }
 }
