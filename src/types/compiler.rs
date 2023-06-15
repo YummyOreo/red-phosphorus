@@ -45,4 +45,17 @@ pub enum Link {
     Power { distance: i8, blocks: Vec<Position> },
 }
 
+impl Link {
+    pub fn new_strong() -> Self {
+        Self::StrongPower
+    }
+
+    pub fn new_weak() -> Self {
+        Link::Power {
+            distance: 0,
+            blocks: vec![],
+        }
+    }
+}
+
 pub type Graph = StableDiGraph<Node, Link>;

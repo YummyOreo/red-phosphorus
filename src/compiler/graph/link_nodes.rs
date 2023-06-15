@@ -143,7 +143,7 @@ mod test {
     use test_case::test_case;
 
     use super::*;
-    use crate::types::block::Facing;
+    use crate::{types::block::Facing, utils::test::*};
 
     #[test_case((0, 0, 0), (0, 0, 1), Facing::NegativeZ ; "facing neg z")]
     #[test_case((0, 0, 1), (0, 0, 0), Facing::PositiveZ ; "facing pos z")]
@@ -158,6 +158,7 @@ mod test {
         assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
 
+    #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()) ; "dust pointing into block")]
     fn test_solid_block_check_block_source(
         current_block: &Block,
         adjacent_block: &Block,
