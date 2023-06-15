@@ -24,6 +24,7 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
     match block.get_kind() {
         Kind::Block => block::get_sources(block, world),
+        Kind::Lamp => {todo!()},
         _ => vec![],
     }
 }
@@ -99,6 +100,10 @@ mod block {
         }
         None
     }
+}
+
+mod lamp {
+    use super::*;
 }
 
 mod utils {
