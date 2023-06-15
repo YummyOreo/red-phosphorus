@@ -24,7 +24,9 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
     match block.get_kind() {
         Kind::Block => block::get_sources(block, world),
-        Kind::Lamp => {todo!()},
+        Kind::Component(Component::Lamp) => {
+            todo!()
+        }
         _ => vec![],
     }
 }
@@ -155,4 +157,6 @@ mod test {
 
         assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
+
+    fn test_solid_block_check_block_source() {}
 }
