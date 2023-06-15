@@ -81,10 +81,12 @@ mod block {
                 }
             }
             Kind::Component(Component::Lever { on }) => {
-                // check if its one block
+                if adjacent_block.get_facing().contains(&required_facing) {
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
+                }
             }
             Kind::Component(Component::Tourch { lit }) => {
-                // check if it is point at block
+                // todo
             }
             _ => {}
         }
