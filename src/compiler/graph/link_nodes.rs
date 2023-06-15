@@ -86,7 +86,9 @@ mod block {
                 }
             }
             Kind::Component(Component::Tourch { lit }) => {
-                // todo
+                if required_facing == Facing::PositiveY {
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
+                }
             }
             _ => {}
         }
