@@ -160,7 +160,7 @@ mod test {
 
     // Dust
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()) ; "dust pointing into block")]
-    #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None ; "dust pointing into block")]
+    #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None ; "dust not pointing into block")]
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()) ; "dust ontop of block")]
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, -1, 0)), None ; "dust under block")]
     fn test_solid_block_check_block_source(
