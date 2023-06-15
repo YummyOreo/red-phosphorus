@@ -32,6 +32,9 @@ mod block {
     use super::*;
     pub fn get_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
         let position = block.get_vec_pos();
+
+        let mut sources = vec![];
+
         let mut add_state = (0, 1);
         while add_state.0 < 3 {
             if add_state.1 < -1 {
@@ -42,12 +45,14 @@ mod block {
             position[add_state.0] += add_state.1;
 
             if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
-                check_block_source(block, adjacent_block);
+                if let Some(source) = check_block_source(block, adjacent_block) {
+                    sources.push(source);
+                }
             };
 
             add_state.1 -= 2;
         }
-        todo!()
+        sources
     }
 
     fn check_block_source(
