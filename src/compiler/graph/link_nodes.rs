@@ -92,12 +92,11 @@ mod block {
             }
             _ => {}
         }
-        todo!()
+        None
     }
 }
 
 mod utils {
-
     use super::*;
     use crate::types::block::Facing;
 
