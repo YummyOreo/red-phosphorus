@@ -2,6 +2,7 @@
 pub enum Component {
     Dust,
     Block,
+    /// Facing should be pointing to the wall it is on
     Tourch {
         lit: bool,
     },
@@ -11,6 +12,7 @@ pub enum Component {
         powered: bool,
     },
     Comparator,
+    /// Facing should be pointing to the wall it is on
     Lever {
         on: bool,
     },

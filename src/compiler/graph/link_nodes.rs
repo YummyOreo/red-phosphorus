@@ -62,7 +62,13 @@ mod block {
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY
                 {
-                    // soft power
+                    return Some((
+                        adjacent_block.get_position(),
+                        Link::Power {
+                            distance: 0,
+                            blocks: vec![],
+                        },
+                    ));
                 }
             }
             Kind::Component(Component::Repeater {
@@ -70,7 +76,9 @@ mod block {
                 locked,
                 powered,
             }) => {
-                // check if its pointing into the block
+                if adjacent_block.get_facing().contains(&required_facing) {
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
+                }
             }
             Kind::Component(Component::Lever { on }) => {
                 // check if its one block
