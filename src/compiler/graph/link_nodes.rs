@@ -136,7 +136,10 @@ mod lamp {
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
-        todo!()
+        match adjacent_block.get_kind() {
+            Kind::Block => Some((adjacent_block.get_position(), Link::new_weak())),
+            _ => None,
+        }
     }
 }
 
