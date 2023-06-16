@@ -24,9 +24,7 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
     match block.get_kind() {
         Kind::Block => block::get_sources(block, world),
-        Kind::Component(Component::Lamp) => {
-            todo!()
-        }
+        Kind::Component(Component::Lamp) => lamp::get_sources(block, world),
         _ => vec![],
     }
 }
@@ -136,10 +134,51 @@ mod lamp {
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
+        let required_facing =
+            utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
+                .expect("should not be the same block");
         match adjacent_block.get_kind() {
-            Kind::Block => Some((adjacent_block.get_position(), Link::new_weak())),
-            _ => None,
+            Kind::Block => {
+                return Some((adjacent_block.get_position(), Link::new_weak()));
+            }
+            Kind::Component(Component::Block) => {
+                return Some((adjacent_block.get_position(), Link::new_weak()));
+            }
+            Kind::Component(Component::Dust) => {
+                if adjacent_block.get_facing().contains(&required_facing)
+                    || required_facing == Facing::NegativeY
+                {
+                    return Some((
+                        adjacent_block.get_position(),
+                        Link::Power {
+                            distance: 0,
+                            blocks: vec![],
+                        },
+                    ));
+                }
+            }
+            Kind::Component(Component::Repeater {
+                delay,
+                locked,
+                powered,
+            }) => {
+                if adjacent_block.get_facing().contains(&required_facing) {
+                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                }
+            }
+            Kind::Component(Component::Lever { on }) => {
+                if adjacent_block.get_facing().contains(&required_facing) {
+                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                }
+            }
+            Kind::Component(Component::Tourch { lit }) => {
+                if required_facing == Facing::PositiveY {
+                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                }
+            }
+            _ => {}
         }
+        None
     }
 }
 
