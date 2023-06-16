@@ -106,6 +106,38 @@ mod block {
 
 mod lamp {
     use super::*;
+
+    pub fn get_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
+        let position = block.get_vec_pos();
+
+        let mut sources = vec![];
+
+        let mut add_state = (0, 1);
+        while add_state.0 < 3 {
+            if add_state.1 < -1 {
+                add_state = (add_state.0 + 1, 1);
+            }
+
+            let mut position = position.clone();
+            position[add_state.0] += add_state.1;
+
+            if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
+                if let Some(source) = check_block_source(block, adjacent_block) {
+                    sources.push(source);
+                }
+            };
+
+            add_state.1 -= 2;
+        }
+        sources
+    }
+
+    pub fn check_block_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+    ) -> Option<(Position, Link)> {
+        todo!()
+    }
 }
 
 mod utils {
@@ -169,6 +201,7 @@ mod test {
         link: Option<Link>,
     ) {
         let mut res_link = block::check_block_source(current_block, adjacent_block);
+        // We don't need to check the position, it will always be the adjacent_block
         let res_link = res_link.map(|l| l.1);
         assert_eq!(res_link, link)
     }
