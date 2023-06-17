@@ -214,6 +214,11 @@ mod test {
     // Lever
     #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower) ; "lever on block")]
     #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None ; "lever not on block")]
+    // Tourch
+    // Shouldn't matter where it is facing
+    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, -1, 0)),  Some(Link::StrongPower) ; "tourch under block")]
+    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 1, 0), facing: vec![Facing::NegativeY]),  None ; "tourch ontop block")]
+    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 0, 1), facing: vec![Facing::PositiveZ]),  None ; "tourch next to block")]
     fn test_solid_block_check_block_source(adjacent_block: &Block, link: Option<Link>) {
         let current_block = &make_block!(kind: Kind::Block, solid: true);
         let mut res_link = block::check_block_source(current_block, adjacent_block);
