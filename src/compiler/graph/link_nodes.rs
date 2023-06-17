@@ -211,6 +211,9 @@ mod test {
     // Repeater
     #[test_case(&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::StrongPower) ; "repeater pointing into block")]
     #[test_case(&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 1, 0)), None ; "repeater ontop of block")]
+    // Lever
+    #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower) ; "lever on block")]
+    #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None ; "lever not on block")]
     fn test_solid_block_check_block_source(adjacent_block: &Block, link: Option<Link>) {
         let current_block = &make_block!(kind: Kind::Block, solid: true);
         let mut res_link = block::check_block_source(current_block, adjacent_block);
