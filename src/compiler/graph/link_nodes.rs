@@ -208,6 +208,9 @@ mod test {
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None ; "dust not pointing into block")]
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()) ; "dust ontop of block")]
     #[test_case(&make_block!(kind: Kind::Block, solid: true), &make_block!(kind: Kind::Component(Component::Dust), pos: (0, -1, 0)), None ; "dust under block")]
+    // Repeater
+    #[test_case(&make_block!(kind: Kind::Block), &make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::StrongPower) ; "repeater pointing into block")]
+    #[test_case(&make_block!(kind: Kind::Block), &make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 1, 0), facing: vec![Facing::NegativeZ]), None ; "repeater ontop of block")]
     fn test_solid_block_check_block_source(
         current_block: &Block,
         adjacent_block: &Block,

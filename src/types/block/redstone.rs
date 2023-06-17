@@ -44,6 +44,16 @@ pub enum Component {
     Trapdoor,
 }
 
+impl Component {
+    pub fn new_repeater() -> Self {
+        Self::Repeater {
+            delay: 1,
+            locked: false,
+            powered: false,
+        }
+    }
+}
+
 pub enum UpdateDirection {
     /// From the source out
     FromSource,
