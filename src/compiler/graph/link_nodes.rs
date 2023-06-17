@@ -76,13 +76,7 @@ mod block {
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY
                 {
-                    return Some((
-                        adjacent_block.get_position(),
-                        Link::Power {
-                            distance: 0,
-                            blocks: vec![],
-                        },
-                    ));
+                    return Some((adjacent_block.get_position(), Link::new_weak()));
                 }
             }
             Kind::Component(Component::Repeater {
@@ -131,13 +125,7 @@ mod lamp {
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY
                 {
-                    return Some((
-                        adjacent_block.get_position(),
-                        Link::Power {
-                            distance: 0,
-                            blocks: vec![],
-                        },
-                    ));
+                    return Some((adjacent_block.get_position(), Link::new_weak()));
                 }
             }
             Kind::Component(Component::Repeater {

@@ -45,7 +45,10 @@ impl Node {
 pub enum Link {
     StrongPower,
     // Uses `Arc<[Position]>` because it should be immutable
-    Power { distance: i8, blocks: Arc<[Position]> },
+    Power {
+        distance: i8,
+        blocks: Arc<[Position]>,
+    },
 }
 
 impl Link {
