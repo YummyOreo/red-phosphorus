@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use petgraph::stable_graph::StableDiGraph;
 
 use super::{contraption::Position, PowerLevel};
@@ -42,7 +44,8 @@ impl Node {
 #[derive(Debug, Eq, PartialEq)]
 pub enum Link {
     StrongPower,
-    Power { distance: i8, blocks: Vec<Position> },
+    // Uses `Arc<[Position]>` because it should be immutable
+    Power { distance: i8, blocks: Arc<[Position]> },
 }
 
 impl Link {
@@ -53,7 +56,7 @@ impl Link {
     pub fn new_weak() -> Self {
         Link::Power {
             distance: 0,
-            blocks: vec![],
+            blocks: vec![].into(),
         }
     }
 }
