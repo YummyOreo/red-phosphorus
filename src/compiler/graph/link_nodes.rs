@@ -21,40 +21,48 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
     todo!()
 }
 
-fn get_potential_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
+fn get_potential_sources<'a, W: World<'a>>(
+    block: &'a Block,
+    world: &'a W,
+) -> Vec<(Position, Link)> {
     match block.get_kind() {
-        Kind::Block => block::get_sources(block, world),
-        Kind::Component(Component::Lamp) => lamp::get_sources(block, world),
+        Kind::Block => get_sources(block, world, block::check_block_source),
+        Kind::Component(Component::Lamp) => get_sources(block, world, lamp::check_block_source),
         _ => vec![],
     }
 }
 
+pub fn get_sources<'a, W: World<'a>>(
+    block: &'a Block,
+    world: &'a W,
+    check_block_source: impl Fn(&'a Block, &'a Block) -> Option<(Position, Link)>,
+) -> Vec<(Position, Link)> {
+    let position = block.get_vec_pos();
+
+    let mut sources = vec![];
+
+    let mut add_state = (0, 1);
+    while add_state.0 < 3 {
+        if add_state.1 < -1 {
+            add_state = (add_state.0 + 1, 1);
+        }
+
+        let mut position = position.clone();
+        position[add_state.0] += add_state.1;
+
+        if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
+            if let Some(source) = check_block_source(block, adjacent_block) {
+                sources.push(source);
+            }
+        };
+
+        add_state.1 -= 2;
+    }
+    sources
+}
+
 mod block {
     use super::*;
-    pub fn get_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
-        let position = block.get_vec_pos();
-
-        let mut sources = vec![];
-
-        let mut add_state = (0, 1);
-        while add_state.0 < 3 {
-            if add_state.1 < -1 {
-                add_state = (add_state.0 + 1, 1);
-            }
-
-            let mut position = position.clone();
-            position[add_state.0] += add_state.1;
-
-            if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
-                if let Some(source) = check_block_source(block, adjacent_block) {
-                    sources.push(source);
-                }
-            };
-
-            add_state.1 -= 2;
-        }
-        sources
-    }
 
     pub fn check_block_source(
         current_block: &Block,
@@ -104,31 +112,6 @@ mod block {
 
 mod lamp {
     use super::*;
-
-    pub fn get_sources<'a, W: World<'a>>(block: &Block, world: &'a W) -> Vec<(Position, Link)> {
-        let position = block.get_vec_pos();
-
-        let mut sources = vec![];
-
-        let mut add_state = (0, 1);
-        while add_state.0 < 3 {
-            if add_state.1 < -1 {
-                add_state = (add_state.0 + 1, 1);
-            }
-
-            let mut position = position.clone();
-            position[add_state.0] += add_state.1;
-
-            if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
-                if let Some(source) = check_block_source(block, adjacent_block) {
-                    sources.push(source);
-                }
-            };
-
-            add_state.1 -= 2;
-        }
-        sources
-    }
 
     pub fn check_block_source(
         current_block: &Block,
