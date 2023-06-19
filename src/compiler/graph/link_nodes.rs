@@ -16,20 +16,15 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
         let node = graph.node_weight(index).expect("node should exist");
         let block = world.get_block(node.pos).expect("block should exist");
 
-        let sources = get_potential_sources(block, world);
+        let sources = match block.get_kind() {
+            Kind::Block => get_sources(block, world, block::get_adjacent_source),
+            Kind::Component(Component::Lamp) => {
+                get_sources(block, world, lamp::get_adjacent_source)
+            }
+            _ => vec![],
+        };
     }
     todo!()
-}
-
-fn get_potential_sources<'a, W: World<'a>>(
-    block: &'a Block,
-    world: &'a W,
-) -> Vec<(Position, Link)> {
-    match block.get_kind() {
-        Kind::Block => get_sources(block, world, block::get_adjacent_source),
-        Kind::Component(Component::Lamp) => get_sources(block, world, lamp::get_adjacent_source),
-        _ => vec![],
-    }
 }
 
 pub fn get_sources<'a, W: World<'a>>(
