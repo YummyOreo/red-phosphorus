@@ -143,7 +143,7 @@ mod lamp {
                 }
             }
             Kind::Component(Component::Tourch { lit }) => {
-                if required_facing == Facing::PositiveY {
+                if required_facing != Facing::NegativeY {
                     return Some((adjacent_block.get_position(), Link::new_weak()));
                 }
             }
@@ -222,6 +222,16 @@ mod test {
     fn test_solid_block_check_block_source(adjacent_block: &Block, link: Option<Link>) {
         let current_block = &make_block!(kind: Kind::Block, solid: true);
         let mut res_link = block::check_block_source(current_block, adjacent_block);
+        // We don't need to check the position, it will always be the adjacent_block
+        let res_link = res_link.map(|l| l.1);
+        assert_eq!(res_link, link)
+    }
+
+    // Block
+    #[test_case(&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()) ; "block ontop of lamp")]
+    fn test_lamp_check_block_source(adjacent_block: &Block, link: Option<Link>) {
+        let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
+        let mut res_link = lamp::check_block_source(current_block, adjacent_block);
         // We don't need to check the position, it will always be the adjacent_block
         let res_link = res_link.map(|l| l.1);
         assert_eq!(res_link, link)
