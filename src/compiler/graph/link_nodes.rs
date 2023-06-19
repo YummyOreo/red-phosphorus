@@ -26,8 +26,8 @@ fn get_potential_sources<'a, W: World<'a>>(
     world: &'a W,
 ) -> Vec<(Position, Link)> {
     match block.get_kind() {
-        Kind::Block => get_sources(block, world, block::check_block_source),
-        Kind::Component(Component::Lamp) => get_sources(block, world, lamp::check_block_source),
+        Kind::Block => get_sources(block, world, block::get_adjacent_source),
+        Kind::Component(Component::Lamp) => get_sources(block, world, lamp::get_adjacent_source),
         _ => vec![],
     }
 }
@@ -64,7 +64,7 @@ pub fn get_sources<'a, W: World<'a>>(
 mod block {
     use super::*;
 
-    pub fn check_block_source(
+    pub fn get_adjacent_source(
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
@@ -107,7 +107,7 @@ mod block {
 mod lamp {
     use super::*;
 
-    pub fn check_block_source(
+    pub fn get_adjacent_source(
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
@@ -204,7 +204,7 @@ mod test {
     }
 
     #[test]
-    fn test_solid_block_check_block_source() {
+    fn block_ajacent_source() {
         #[rustfmt::skip]
         let checks = [
             // Dust
@@ -227,7 +227,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Block, solid: true);
-            let mut res_link = block::check_block_source(current_block, check.0);
+            let mut res_link = block::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
@@ -235,7 +235,7 @@ mod test {
     }
 
     #[test]
-    fn test_lamp_check_block_source() {
+    fn lamp_ajacent_source() {
         #[rustfmt::skip]
         let checks = [
             // Block
@@ -249,7 +249,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
-            let mut res_link = lamp::check_block_source(current_block, check.0);
+            let mut res_link = lamp::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
