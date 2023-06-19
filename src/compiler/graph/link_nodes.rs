@@ -1,8 +1,5 @@
 // TODO: remove this
 #![allow(unused, dead_code)]
-
-use std::sync::Arc;
-
 use paste::paste;
 
 use crate::types::{
