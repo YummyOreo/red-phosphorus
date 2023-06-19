@@ -134,17 +134,17 @@ mod lamp {
                 powered,
             }) => {
                 if adjacent_block.get_facing().contains(&required_facing) {
-                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
                 }
             }
             Kind::Component(Component::Lever { on }) => {
                 if adjacent_block.get_facing().contains(&required_facing) {
-                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
                 }
             }
             Kind::Component(Component::Tourch { lit }) => {
                 if required_facing != Facing::NegativeY {
-                    return Some((adjacent_block.get_position(), Link::new_weak()));
+                    return Some((adjacent_block.get_position(), Link::StrongPower));
                 }
             }
             _ => {}
