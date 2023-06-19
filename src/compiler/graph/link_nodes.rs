@@ -1,6 +1,8 @@
 // TODO: remove this
 #![allow(unused, dead_code)]
 
+use std::sync::Arc;
+
 use paste::paste;
 
 use crate::types::{
@@ -32,28 +34,31 @@ pub fn get_sources<'a, W: World<'a>>(
     world: &'a W,
     check_block_source: impl Fn(&'a Block, &'a Block) -> Option<(Position, Link)>,
 ) -> Vec<(Position, Link)> {
-    let position = block.get_vec_pos();
+    let position = block.get_position();
 
     let mut sources = vec![];
 
-    let mut add_state = (0, 1);
-    while add_state.0 < 3 {
-        if add_state.1 < -1 {
-            add_state = (add_state.0 + 1, 1);
-        }
-
-        let mut position = position.clone();
-        position[add_state.0] += add_state.1;
-
-        if let Some(adjacent_block) = world.get_block((position[0], position[1], position[2])) {
+    let adjacent_blocks = get_adjacent_blocks(position);
+    for position in adjacent_blocks {
+        if let Some(adjacent_block) = world.get_block(position) {
             if let Some(source) = check_block_source(block, adjacent_block) {
                 sources.push(source);
             }
         };
-
-        add_state.1 -= 2;
     }
+
     sources
+}
+
+pub fn get_adjacent_blocks(pos: Position) -> [Position; 6] {
+    [
+        (pos.0 - 1, pos.1, pos.2),
+        (pos.0 + 1, pos.1, pos.2),
+        (pos.0, pos.1 - 1, pos.2),
+        (pos.0, pos.1 + 1, pos.2),
+        (pos.0, pos.1, pos.2 - 1),
+        (pos.0, pos.1, pos.2 + 1),
+    ]
 }
 
 mod block {
