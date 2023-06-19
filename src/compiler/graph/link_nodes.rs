@@ -204,7 +204,7 @@ mod test {
     }
 
     #[test]
-    fn block_ajacent_source() {
+    fn block_adjacent_source() {
         #[rustfmt::skip]
         let checks = [
             // Dust
@@ -235,7 +235,7 @@ mod test {
     }
 
     #[test]
-    fn lamp_ajacent_source() {
+    fn lamp_adjacent_source() {
         #[rustfmt::skip]
         let checks = [
             // Block
