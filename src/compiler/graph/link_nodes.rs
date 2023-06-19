@@ -31,11 +31,18 @@ pub fn get_sources<'a, W: World<'a>>(
     world: &'a W,
     check_block_source: impl Fn(&'a Block, &'a Block) -> Option<(Position, Link)>,
 ) -> Vec<(Position, Link)> {
-    let position = block.get_position();
+    let pos = block.get_position();
 
     let mut sources = vec![];
 
-    let adjacent_blocks = get_adjacent_blocks(position);
+    let adjacent_blocks = [
+        (pos.0 - 1, pos.1, pos.2),
+        (pos.0 + 1, pos.1, pos.2),
+        (pos.0, pos.1 - 1, pos.2),
+        (pos.0, pos.1 + 1, pos.2),
+        (pos.0, pos.1, pos.2 - 1),
+        (pos.0, pos.1, pos.2 + 1),
+    ];
     for position in adjacent_blocks {
         if let Some(adjacent_block) = world.get_block(position) {
             if let Some(source) = check_block_source(block, adjacent_block) {
@@ -45,17 +52,6 @@ pub fn get_sources<'a, W: World<'a>>(
     }
 
     sources
-}
-
-pub fn get_adjacent_blocks(pos: Position) -> [Position; 6] {
-    [
-        (pos.0 - 1, pos.1, pos.2),
-        (pos.0 + 1, pos.1, pos.2),
-        (pos.0, pos.1 - 1, pos.2),
-        (pos.0, pos.1 + 1, pos.2),
-        (pos.0, pos.1, pos.2 - 1),
-        (pos.0, pos.1, pos.2 + 1),
-    ]
 }
 
 mod block {
