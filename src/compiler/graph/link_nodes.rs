@@ -62,7 +62,7 @@ mod block {
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
         let required_facing =
-            utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust)
@@ -99,7 +99,7 @@ mod lamp {
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
         let required_facing =
-            utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
             Kind::Block => Some((adjacent_block.get_position(), Link::new_weak())),
@@ -150,8 +150,8 @@ mod utils {
     }
 
     /// Gets the way a component needs to face based on block positions
-    pub fn get_facing(cb: Vec<i32>, ob: Vec<i32>) -> Option<Facing> {
-        let diff = vec![cb[0] - ob[0], cb[1] - ob[1], cb[2] - ob[2]];
+    pub fn get_facing(cb: Position, ob: Position) -> Option<Facing> {
+        let diff = vec![cb.0 - ob.0, cb.1 - ob.1, cb.2 - ob.2];
         Some(match get_facing_macro!(0, X, diff) {
             Some(x) => x,
             None => match get_facing_macro!(1, Y, diff) {
