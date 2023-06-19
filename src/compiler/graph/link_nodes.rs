@@ -132,6 +132,17 @@ mod lamp {
     }
 }
 
+mod dust {
+    use super::*;
+
+    pub fn get_adjacent_source(current_block: &Block, adjacent_block: &Block) -> Option<(Position, Link)> {
+        let required_facing =
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
+                .expect("should be a adjacent block");
+        todo!()
+    }
+}
+
 mod utils {
     use super::*;
     use crate::types::block::Facing;
