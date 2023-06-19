@@ -176,9 +176,6 @@ mod test {
     #[test_case((1, 0, 0), (0, 0, 0), Facing::PositiveX ; "facing pos x")]
     #[test_case((0, 0, 0), (1, 0, 0), Facing::NegativeX ; "facing neg x")]
     fn test_util_get_facing(pos1: Position, pos2: Position, facing: Facing) {
-        let pos1 = vec![pos1.0, pos1.1, pos1.2];
-        let pos2 = vec![pos2.0, pos2.1, pos2.2];
-
         assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
 
