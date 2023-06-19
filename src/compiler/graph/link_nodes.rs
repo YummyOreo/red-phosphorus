@@ -67,7 +67,7 @@ mod block {
     ) -> Option<(Position, Link)> {
         let required_facing =
             utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
-                .expect("should not be the same block");
+                .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust) => {
                 if adjacent_block.get_facing().contains(&required_facing)
@@ -110,7 +110,7 @@ mod lamp {
     ) -> Option<(Position, Link)> {
         let required_facing =
             utils::get_facing(current_block.get_vec_pos(), adjacent_block.get_vec_pos())
-                .expect("should not be the same block");
+                .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
             Kind::Block => {
                 return Some((adjacent_block.get_position(), Link::new_weak()));
