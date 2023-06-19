@@ -204,8 +204,8 @@ mod test {
     }
 
     #[test]
-    #[rustfmt::skip]
-    fn test_solid_block_check_block_sources() {
+    fn test_solid_block_check_block_source() {
+        #[rustfmt::skip]
         let checks = [
             // Dust
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()), "dust pointing into block"),
@@ -234,17 +234,25 @@ mod test {
         }
     }
 
-    // Block
-    #[test_case(&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()) ; "block ontop of lamp")]
-    // Dust
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()) ; "dust ontop of lamp")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_weak()) ; "dust pointing into lamp")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), None ; "dust not pointing into lamp")]
-    fn test_lamp_check_block_source(adjacent_block: &Block, link: Option<Link>) {
-        let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
-        let mut res_link = lamp::check_block_source(current_block, adjacent_block);
-        // We don't need to check the position, it will always be the adjacent_block
-        let res_link = res_link.map(|l| l.1);
-        assert_eq!(res_link, link)
+    #[test]
+    fn test_lamp_check_block_source() {
+        #[rustfmt::skip]
+        let checks = [
+            // Block
+            (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()), "block ontop of lamp"),
+            // Dust
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()), "dust ontop of lamp"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_weak()), "dust pointing into lamp"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), None, "dust not pointing into lamp"),
+        ];
+
+        for check in checks {
+            dbg!(check.2);
+            let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
+            let mut res_link = lamp::check_block_source(current_block, check.0);
+            // We don't need to check the position, it will always be the adjacent_block
+            let res_link = res_link.map(|l| l.1);
+            assert_eq!(res_link, check.1)
+        }
     }
 }
