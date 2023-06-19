@@ -1,3 +1,5 @@
+// TODO: REMOVE
+#![allow(unused, dead_code)]
 use super::{block::Block, compiler::Graph};
 use crate::version::Version;
 
