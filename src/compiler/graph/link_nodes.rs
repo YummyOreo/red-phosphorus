@@ -203,32 +203,43 @@ mod test {
         assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
     }
 
-    // Dust
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()) ; "dust pointing into block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None ; "dust not pointing into block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()) ; "dust ontop of block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, -1, 0)), None ; "dust under block")]
-    // Repeater
-    #[test_case(&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::StrongPower) ; "repeater pointing into block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 1, 0)), None ; "repeater ontop of block")]
-    // Lever
-    #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower) ; "lever on block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None ; "lever not on block")]
-    // Tourch
-    // Shouldn't matter where it is facing
-    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, -1, 0)),  Some(Link::StrongPower) ; "tourch under block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 1, 0), facing: vec![Facing::NegativeY]),  None ; "tourch ontop block")]
-    #[test_case(&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 0, 1), facing: vec![Facing::PositiveZ]),  None ; "tourch next to block")]
-    fn test_solid_block_check_block_source(adjacent_block: &Block, link: Option<Link>) {
-        let current_block = &make_block!(kind: Kind::Block, solid: true);
-        let mut res_link = block::check_block_source(current_block, adjacent_block);
-        // We don't need to check the position, it will always be the adjacent_block
-        let res_link = res_link.map(|l| l.1);
-        assert_eq!(res_link, link)
+    #[test]
+    #[rustfmt::skip]
+    fn test_solid_block_check_block_sources() {
+        let checks = [
+            // Dust
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()), "dust pointing into block"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None, "dust not pointing into block"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()), "dust ontop of block"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, -1, 0)), None, "dust under block"),
+            // Repeater
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::StrongPower), "repeater pointing into block"),
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 1, 0)), None, "repeater ontop of block"),
+            // Lever
+            (&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower), "lever on block"),
+            (&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None, "lever not on block"),
+            // Tourch
+            (&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, -1, 0)),  Some(Link::StrongPower), "tourch under block"),
+            (&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 1, 0), facing: vec![Facing::NegativeY]),  None, "tourch ontop block"),
+            (&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 0, 1), facing: vec![Facing::PositiveZ]),  None, "tourch next to block"),
+        ];
+
+        for check in checks {
+            dbg!(check.2);
+            let current_block = &make_block!(kind: Kind::Block, solid: true);
+            let mut res_link = block::check_block_source(current_block, check.0);
+            // We don't need to check the position, it will always be the adjacent_block
+            let res_link = res_link.map(|l| l.1);
+            assert_eq!(res_link, check.1)
+        }
     }
 
     // Block
     #[test_case(&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()) ; "block ontop of lamp")]
+    // Dust
+    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()) ; "dust ontop of lamp")]
+    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_weak()) ; "dust pointing into lamp")]
+    #[test_case(&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), None ; "dust not pointing into lamp")]
     fn test_lamp_check_block_source(adjacent_block: &Block, link: Option<Link>) {
         let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
         let mut res_link = lamp::check_block_source(current_block, adjacent_block);
