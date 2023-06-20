@@ -139,7 +139,9 @@ mod dust {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block | Kind::Component(Component::Dust) => Some(Link::new_power()),
+            Kind::Block | Kind::Component(Component::Dust) | Kind::Component(Component::Block) => {
+                Some(Link::new_power())
+            }
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
