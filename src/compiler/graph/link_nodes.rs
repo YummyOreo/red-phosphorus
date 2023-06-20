@@ -344,6 +344,7 @@ mod test {
             // Simple
             (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_power()), "block ontop of dust"),
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), Some(Link::new_power()), "dust next to dust"),
+            (&make_block!(kind: Kind::Component(Component::Block), pos: (1, 0, 0)), Some(Link::new_power()), "redstone next to dust"),
             (&make_block!(kind: Kind::Component(Component::Lever { on: true }), pos: (1, 0, 0)), Some(Link::new_power()), "lever next to dust"),
             (&make_block!(kind: Kind::Component(Component::Lamp), pos: (1, 0, 0)), Some(Link::new_power()), "lamp next to dust"),
             (&make_block!(kind: Kind::Component(Component::Tourch { lit: true }), pos: (1, 0, 0)), Some(Link::new_power()), "lamp next to dust"),
@@ -356,6 +357,34 @@ mod test {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::Dust), solid: true);
             let mut res_link = dust::get_adjacent_source(current_block, check.0);
+            // We don't need to check the position, it will always be the adjacent_block
+            let res_link = res_link.map(|l| l.1);
+            assert_eq!(res_link, check.1)
+        }
+    }
+
+    #[test]
+    fn repeater_adjacent_source() {
+        #[rustfmt::skip]
+        let checks = [
+            // NOTE: doesn't check the pos of the block
+            // Simple
+            (&make_block!(kind: Kind::Block, pos: (-1, 0, 0)), Some(Link::new_power()), "block behind repeater"),
+            (&make_block!(kind: Kind::Component(Component::Block), pos: (-1, 0, 0)), Some(Link::new_power()), "redstone block behind repeater"),
+            (&make_block!(kind: Kind::Component(Component::Lamp), pos: (-1, 0, 0)), Some(Link::new_power()), "lamp behind repeater"),
+            (&make_block!(kind: Kind::Component(Component::Tourch { lit: true }), pos: (-1, 0, 0)), Some(Link::new_power()), "tourch behind repeater"),
+            (&make_block!(kind: Kind::Component(Component::Lever { on: true }), pos: (-1, 0, 0)), Some(Link::new_power()), "lever behind repeater"),
+            // // Complex
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), Some(Link::new_power()), "repeater facing into repeater"),
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), None, "repeater facing away repeater"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), Some(Link::new_power()), "dust facing into repeater"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), None, "dust facing away repeater"),
+        ];
+
+        for check in checks {
+            dbg!(check.2);
+            let current_block = &make_block!(kind: Kind::Component(Component::new_repeater()), solid: true, facing: vec![Facing::PositiveX]);
+            let mut res_link = repeater::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
