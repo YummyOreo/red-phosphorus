@@ -56,7 +56,7 @@ impl Link {
         Self::StrongPower
     }
 
-    pub fn new_weak() -> Self {
+    pub fn new_power() -> Self {
         Link::Power {
             distance: 0,
             blocks: vec![].into(),

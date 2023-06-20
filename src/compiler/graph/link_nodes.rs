@@ -69,7 +69,7 @@ mod block {
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY =>
             {
-                Some(Link::new_weak())
+                Some(Link::new_power())
             }
             Kind::Component(Component::Repeater {
                 delay,
@@ -101,13 +101,13 @@ mod lamp {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block | Kind::Component(Component::Lamp) => Some(Link::new_weak()),
-            Kind::Component(Component::Block) => Some(Link::new_weak()),
+            Kind::Block | Kind::Component(Component::Lamp) => Some(Link::new_power()),
+            Kind::Component(Component::Block) => Some(Link::new_power()),
             Kind::Component(Component::Dust)
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY =>
             {
-                Some(Link::new_weak())
+                Some(Link::new_power())
             }
             Kind::Component(Component::Repeater {
                 delay,
@@ -139,7 +139,7 @@ mod dust {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block => Some(Link::new_weak()),
+            Kind::Block | Kind::Component(Component::Dust) => Some(Link::new_power()),
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
@@ -198,9 +198,9 @@ mod test {
         #[rustfmt::skip]
         let checks = [
             // Dust
-            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_weak()), "dust pointing into block"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::new_power()), "dust pointing into block"),
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 0, 1), facing: vec![Facing::PositiveX]), None, "dust not pointing into block"),
-            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()), "dust ontop of block"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_power()), "dust ontop of block"),
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, -1, 0)), None, "dust under block"),
             // Repeater
             (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 0, 1), facing: vec![Facing::NegativeZ]), Some(Link::StrongPower), "repeater pointing into block"),
@@ -229,14 +229,14 @@ mod test {
         #[rustfmt::skip]
         let checks = [
             // Block/Lamp
-            (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()), "block ontop of lamp"),
-            (&make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 1, 0)), Some(Link::new_weak()), "lamp ontop of lamp"),
+            (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_power()), "block ontop of lamp"),
+            (&make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 1, 0)), Some(Link::new_power()), "lamp ontop of lamp"),
             // Dust
-            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()), "dust ontop of lamp"),
-            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_weak()), "dust pointing into lamp"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_power()), "dust ontop of lamp"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_power()), "dust pointing into lamp"),
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), None, "dust not pointing into lamp"),
             // Redstone Block
-            (&make_block!(kind: Kind::Component(Component::Block), pos: (0, 1, 0)), Some(Link::new_weak()), "redstoneblock ontop of lamp"),
+            (&make_block!(kind: Kind::Component(Component::Block), pos: (0, 1, 0)), Some(Link::new_power()), "redstoneblock ontop of lamp"),
             // Repeater
             (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (0, 1, 0)), None, "repeater ontop of lamp"),
             (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower), "repeater facing into lamp"),
