@@ -101,7 +101,7 @@ mod lamp {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block => Some(Link::new_weak()),
+            Kind::Block | Kind::Component(Component::Lamp) => Some(Link::new_weak()),
             Kind::Component(Component::Block) => Some(Link::new_weak()),
             Kind::Component(Component::Dust)
                 if adjacent_block.get_facing().contains(&required_facing)
@@ -228,8 +228,9 @@ mod test {
     fn lamp_adjacent_source() {
         #[rustfmt::skip]
         let checks = [
-            // Block
+            // Block/Lamp
             (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_weak()), "block ontop of lamp"),
+            (&make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 1, 0)), Some(Link::new_weak()), "lamp ontop of lamp"),
             // Dust
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)), Some(Link::new_weak()), "dust ontop of lamp"),
             (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_weak()), "dust pointing into lamp"),
