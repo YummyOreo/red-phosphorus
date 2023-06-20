@@ -277,14 +277,21 @@ mod test {
     fn dust_adjacent_source() {
         #[rustfmt::skip]
         let checks = [
-            // Block
+            // Simple
             (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_power()), "block ontop of dust"),
+            (&make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0)), Some(Link::new_power()), "dust next to dust"),
+            (&make_block!(kind: Kind::Component(Component::Lever { on: true }), pos: (1, 0, 0)), Some(Link::new_power()), "lever next to dust"),
+            (&make_block!(kind: Kind::Component(Component::Lamp), pos: (1, 0, 0)), Some(Link::new_power()), "lamp next to dust"),
+            (&make_block!(kind: Kind::Component(Component::Tourch { lit: true }), pos: (1, 0, 0)), Some(Link::new_power()), "lamp next to dust"),
+            // Complex
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::new_power()), "repeater facing into dust"),
+            (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None, "repeater facing away dust"),
         ];
 
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::Dust), solid: true);
-            let mut res_link = lamp::get_adjacent_source(current_block, check.0);
+            let mut res_link = dust::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
