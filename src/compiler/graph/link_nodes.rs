@@ -157,7 +157,9 @@ mod lamp {
                 | Component::Lever { on: _ },
             ) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
             Kind::Component(Component::Lever { on: _ }) => Some(Link::new_power()),
-            Kind::Component(Component::Tourch { lit: _ }) if required_facing != Facing::NegativeY => {
+            Kind::Component(Component::Tourch { lit: _ })
+                if required_facing != Facing::NegativeY =>
+            {
                 Some(Link::StrongPower)
             }
             _ => None,
@@ -183,16 +185,16 @@ mod repeater {
             Facing::NegativeX => (pos.0 + 1, pos.1, pos.2),
             Facing::PositiveZ => (pos.0, pos.1, pos.2 - 1),
             Facing::NegativeZ => (pos.0, pos.1, pos.2 + 1),
+            // Should never be facing up
             _ => unreachable!(),
         };
 
-        let mut sources = vec![];
         if let Some(adjacent_block) = world.get_block(adjacent_block) {
             if let Some(source) = get_adjacent_source(block, adjacent_block) {
-                sources.push(source);
+                return vec![source];
             }
         }
-        sources
+        vec![]
     }
 
     /// Assumes that the adjacent_block is behind it
