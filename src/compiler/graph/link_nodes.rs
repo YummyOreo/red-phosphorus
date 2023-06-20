@@ -23,9 +23,11 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
             Kind::Component(Component::Lamp) => {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
-            Kind::Component(Component::Repeater { delay, locked, powered }) => {
-                get_sources(block, world, repeater::get_adjacent_source)
-            }
+            Kind::Component(Component::Repeater {
+                delay,
+                locked,
+                powered,
+            }) => repeater::repeater_get_sources(block, world),
             _ => vec![],
         };
     }
@@ -166,13 +168,41 @@ mod lamp {
 mod repeater {
     use super::*;
 
+    pub fn repeater_get_sources<'a, W: World<'a>>(
+        block: &'a Block,
+        world: &'a W,
+    ) -> Vec<(Position, Link)> {
+        let pos = block.get_position();
+        let adjacent_block = match block
+            .get_facing()
+            .get(0)
+            .expect("should be facing a direction")
+        {
+            Facing::PositiveX => (pos.0 - 1, pos.1, pos.2),
+            Facing::NegativeX => (pos.0 + 1, pos.1, pos.2),
+            Facing::PositiveZ => (pos.0, pos.1, pos.2 - 1),
+            Facing::NegativeZ => (pos.0, pos.1, pos.2 + 1),
+            _ => unreachable!(),
+        };
+
+        let mut sources = vec![];
+        if let Some(adjacent_block) = world.get_block(adjacent_block) {
+            if let Some(source) = get_adjacent_source(block, adjacent_block) {
+                sources.push(source);
+            }
+        }
+        sources
+    }
+
+    /// Assumes that the adjacent_block is behind it
     pub fn get_adjacent_source(
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
-        let required_facing =
-            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
-                .expect("should be a adjacent block");
+        let required_facing = current_block
+            .get_facing()
+            .get(0)
+            .expect("should be facing a direction");
         match adjacent_block.get_kind() {
             Kind::Block => Some(Link::new_power()),
             _ => None,
