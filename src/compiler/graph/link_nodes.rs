@@ -135,11 +135,18 @@ mod lamp {
 mod dust {
     use super::*;
 
-    pub fn get_adjacent_source(current_block: &Block, adjacent_block: &Block) -> Option<(Position, Link)> {
+    pub fn get_adjacent_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+    ) -> Option<(Position, Link)> {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        todo!()
+        match adjacent_block.get_kind() {
+            Kind::Block => Some(Link::new_weak()),
+            _ => None,
+        }
+        .map(|l| (adjacent_block.get_position(), l))
     }
 }
 
