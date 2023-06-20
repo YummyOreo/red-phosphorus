@@ -271,4 +271,22 @@ mod test {
             assert_eq!(res_link, check.1)
         }
     }
+
+    #[test]
+    fn dust_adjacent_source() {
+        #[rustfmt::skip]
+        let checks = [
+            // Block
+            (&make_block!(kind: Kind::Block, pos: (0, 1, 0)), Some(Link::new_power()), "block ontop of dust"),
+        ];
+
+        for check in checks {
+            dbg!(check.2);
+            let current_block = &make_block!(kind: Kind::Component(Component::Dust), solid: true);
+            let mut res_link = lamp::get_adjacent_source(current_block, check.0);
+            // We don't need to check the position, it will always be the adjacent_block
+            let res_link = res_link.map(|l| l.1);
+            assert_eq!(res_link, check.1)
+        }
+    }
 }
