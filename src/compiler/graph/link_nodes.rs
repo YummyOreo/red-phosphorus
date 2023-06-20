@@ -146,6 +146,7 @@ mod dust {
             Kind::Block
             | Kind::Component(Component::Dust)
             | Kind::Component(Component::Block)
+            | Kind::Component(Component::Lamp)
             | Kind::Component(Component::Lever { on: _ })
             | Kind::Component(Component::Tourch { lit: _ }) => Some(Link::new_power()),
             Kind::Component(Component::Repeater {
