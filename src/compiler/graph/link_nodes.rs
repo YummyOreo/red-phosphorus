@@ -24,9 +24,9 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
             Kind::Component(Component::Repeater {
-                delay,
-                locked,
-                powered,
+                delay: _,
+                locked: _,
+                powered: _,
             }) => repeater::repeater_get_sources(block, world),
             _ => vec![],
         };
@@ -87,7 +87,9 @@ mod block {
                 }
                 | Component::Lever { on: _ },
             ) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
-            Kind::Component(Component::Tourch { lit }) if required_facing == Facing::PositiveY => {
+            Kind::Component(Component::Tourch { lit: _ })
+                if required_facing == Facing::PositiveY =>
+            {
                 Some(Link::StrongPower)
             }
             _ => None,
@@ -116,9 +118,9 @@ mod dust {
                 | Component::Tourch { lit: _ },
             ) => Some(Link::new_power()),
             Kind::Component(Component::Repeater {
-                delay,
-                locked,
-                powered,
+                delay: _,
+                locked: _,
+                powered: _,
             }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::new_power()),
             _ => None,
         }
@@ -154,8 +156,8 @@ mod lamp {
                 }
                 | Component::Lever { on: _ },
             ) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
-            Kind::Component(Component::Lever { on }) => Some(Link::new_power()),
-            Kind::Component(Component::Tourch { lit }) if required_facing != Facing::NegativeY => {
+            Kind::Component(Component::Lever { on: _ }) => Some(Link::new_power()),
+            Kind::Component(Component::Tourch { lit: _ }) if required_facing != Facing::NegativeY => {
                 Some(Link::StrongPower)
             }
             _ => None,
