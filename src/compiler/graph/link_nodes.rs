@@ -17,11 +17,14 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
 
         let sources = match block.get_kind() {
             Kind::Block => get_sources(block, world, block::get_adjacent_source),
+            Kind::Component(Component::Dust) => {
+                get_sources(block, world, dust::get_adjacent_source)
+            }
             Kind::Component(Component::Lamp) => {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
-            Kind::Component(Component::Dust) => {
-                get_sources(block, world, dust::get_adjacent_source)
+            Kind::Component(Component::Repeater { delay, locked, powered }) => {
+                get_sources(block, world, repeater::get_adjacent_source)
             }
             _ => vec![],
         };
@@ -93,6 +96,34 @@ mod block {
     }
 }
 
+mod dust {
+    use super::*;
+
+    pub fn get_adjacent_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+    ) -> Option<(Position, Link)> {
+        let required_facing =
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
+                .expect("should be a adjacent block");
+        match adjacent_block.get_kind() {
+            Kind::Block
+            | Kind::Component(Component::Dust)
+            | Kind::Component(Component::Block)
+            | Kind::Component(Component::Lamp)
+            | Kind::Component(Component::Lever { on: _ })
+            | Kind::Component(Component::Tourch { lit: _ }) => Some(Link::new_power()),
+            Kind::Component(Component::Repeater {
+                delay,
+                locked,
+                powered,
+            }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::new_power()),
+            _ => None,
+        }
+        .map(|l| (adjacent_block.get_position(), l))
+    }
+}
+
 mod lamp {
     use super::*;
 
@@ -132,7 +163,7 @@ mod lamp {
     }
 }
 
-mod dust {
+mod repeater {
     use super::*;
 
     pub fn get_adjacent_source(
@@ -143,17 +174,7 @@ mod dust {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block
-            | Kind::Component(Component::Dust)
-            | Kind::Component(Component::Block)
-            | Kind::Component(Component::Lamp)
-            | Kind::Component(Component::Lever { on: _ })
-            | Kind::Component(Component::Tourch { lit: _ }) => Some(Link::new_power()),
-            Kind::Component(Component::Repeater {
-                delay,
-                locked,
-                powered,
-            }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::new_power()),
+            Kind::Block => Some(Link::new_power()),
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
