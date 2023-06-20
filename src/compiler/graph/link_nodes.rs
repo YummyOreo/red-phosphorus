@@ -20,6 +20,9 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
             Kind::Component(Component::Lamp) => {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
+            Kind::Component(Component::Dust) => {
+                get_sources(block, world, dust::get_adjacent_source)
+            }
             _ => vec![],
         };
     }
