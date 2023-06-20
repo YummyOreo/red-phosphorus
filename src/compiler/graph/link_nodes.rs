@@ -69,25 +69,24 @@ mod block {
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY =>
             {
-                Some((adjacent_block.get_position(), Link::new_weak()))
+                Some(Link::new_weak())
             }
             Kind::Component(Component::Repeater {
                 delay,
                 locked,
                 powered,
-            }) if adjacent_block.get_facing().contains(&required_facing) => {
-                Some((adjacent_block.get_position(), Link::StrongPower))
-            }
+            }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
             Kind::Component(Component::Lever { on })
                 if adjacent_block.get_facing().contains(&required_facing) =>
             {
-                Some((adjacent_block.get_position(), Link::StrongPower))
+                Some(Link::StrongPower)
             }
             Kind::Component(Component::Tourch { lit }) if required_facing == Facing::PositiveY => {
-                Some((adjacent_block.get_position(), Link::StrongPower))
+                Some(Link::StrongPower)
             }
             _ => None,
         }
+        .map(|l| (adjacent_block.get_position(), l))
     }
 }
 
@@ -102,33 +101,30 @@ mod lamp {
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
         match adjacent_block.get_kind() {
-            Kind::Block => Some((adjacent_block.get_position(), Link::new_weak())),
-            Kind::Component(Component::Block) => {
-                Some((adjacent_block.get_position(), Link::new_weak()))
-            }
+            Kind::Block => Some(Link::new_weak()),
+            Kind::Component(Component::Block) => Some(Link::new_weak()),
             Kind::Component(Component::Dust)
                 if adjacent_block.get_facing().contains(&required_facing)
                     || required_facing == Facing::NegativeY =>
             {
-                Some((adjacent_block.get_position(), Link::new_weak()))
+                Some(Link::new_weak())
             }
             Kind::Component(Component::Repeater {
                 delay,
                 locked,
                 powered,
-            }) if adjacent_block.get_facing().contains(&required_facing) => {
-                Some((adjacent_block.get_position(), Link::StrongPower))
-            }
+            }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
             Kind::Component(Component::Lever { on })
                 if adjacent_block.get_facing().contains(&required_facing) =>
             {
-                Some((adjacent_block.get_position(), Link::StrongPower))
+                Some(Link::StrongPower)
             }
             Kind::Component(Component::Tourch { lit }) if required_facing != Facing::NegativeY => {
-                Some((adjacent_block.get_position(), Link::StrongPower))
+                Some(Link::StrongPower)
             }
             _ => None,
         }
+        .map(|l| (adjacent_block.get_position(), l))
     }
 }
 
