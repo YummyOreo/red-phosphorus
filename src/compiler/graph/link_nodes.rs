@@ -204,7 +204,21 @@ mod repeater {
             .get(0)
             .expect("should be facing a direction");
         match adjacent_block.get_kind() {
-            Kind::Block => Some(Link::new_power()),
+            Kind::Block
+            | Kind::Component(
+                Component::Lamp
+                | Component::Lever { on: _ }
+                | Component::Tourch { lit: _ }
+                | Component::Block,
+            ) => Some(Link::new_power()),
+            Kind::Component(
+                Component::Dust
+                | Component::Repeater {
+                    delay: _,
+                    locked: _,
+                    powered: _,
+                },
+            ) if adjacent_block.get_facing().contains(required_facing) => Some(Link::new_power()),
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
