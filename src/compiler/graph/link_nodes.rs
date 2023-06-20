@@ -119,6 +119,7 @@ mod lamp {
             {
                 Some(Link::StrongPower)
             }
+            Kind::Component(Component::Lever { on }) => Some(Link::new_power()),
             Kind::Component(Component::Tourch { lit }) if required_facing != Facing::NegativeY => {
                 Some(Link::StrongPower)
             }
@@ -244,7 +245,7 @@ mod test {
             (&make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower), "repeater facing into lamp"),
             // Lever
             (&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::NegativeX]), Some(Link::StrongPower), "lever on lamp"),
-            (&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), None, "lever not on lamp"),
+            (&make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]), Some(Link::new_power()), "lever not on lamp"),
             // Tourch
             (&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, -1, 0)),  Some(Link::StrongPower), "tourch under lamp"),
             (&make_block!(kind: Kind::Component(Component::Tourch { lit: false }), pos: (0, 1, 0), facing: vec![Facing::NegativeY]),  None, "tourch ontop lamp"),
