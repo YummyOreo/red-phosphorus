@@ -28,6 +28,9 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
                 locked: _,
                 powered: _,
             }) => repeater::repeater_get_sources(block, world),
+            Kind::Component(Component::Tourch { lit: _ }) => {
+                tourch::tourch_get_sources(block, world)
+            }
             _ => vec![],
         };
     }
