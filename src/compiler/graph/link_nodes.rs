@@ -23,14 +23,14 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
             Kind::Component(Component::Lamp) => {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
+            Kind::Component(Component::Tourch { lit: _ }) => {
+                tourch::tourch_get_sources(block, world)
+            }
             Kind::Component(Component::Repeater {
                 delay: _,
                 locked: _,
                 powered: _,
             }) => repeater::repeater_get_sources(block, world),
-            Kind::Component(Component::Tourch { lit: _ }) => {
-                tourch::tourch_get_sources(block, world)
-            }
             _ => vec![],
         };
     }
@@ -171,6 +171,54 @@ mod lamp {
     }
 }
 
+mod tourch {
+    use super::*;
+
+    pub fn tourch_get_sources<'a, W: World<'a>>(
+        block: &'a Block,
+        world: &'a W,
+    ) -> Vec<(Position, Link)> {
+        let pos = block.get_position();
+        let adjacent_block = match block
+            .get_facing()
+            .get(0)
+            .expect("should be facing a direction")
+        {
+            Facing::PositiveX => (pos.0 + 1, pos.1, pos.2),
+            Facing::NegativeX => (pos.0 - 1, pos.1, pos.2),
+            Facing::PositiveZ => (pos.0, pos.1, pos.2 + 1),
+            Facing::NegativeZ => (pos.0, pos.1, pos.2 - 1),
+            Facing::PositiveY => (pos.0, pos.1 + 1, pos.2),
+            Facing::NegativeY => (pos.0, pos.1 - 1, pos.2),
+        };
+
+        if let Some(adjacent_block) = world.get_block(adjacent_block) {
+            if let Some(source) = get_adjacent_source(block, adjacent_block) {
+                return vec![source];
+            }
+        }
+        vec![]
+    }
+
+    /// Assumes that the adjacent_block is behind it
+    pub fn get_adjacent_source(
+        current_block: &Block,
+        adjacent_block: &Block,
+    ) -> Option<(Position, Link)> {
+        let required_facing = current_block
+            .get_facing()
+            .get(0)
+            .expect("should be facing a direction");
+        match adjacent_block.get_kind() {
+            Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
+                Some(Link::new_power())
+            }
+            _ => None,
+        }
+        .map(|l| (adjacent_block.get_position(), l))
+    }
+}
+
 mod repeater {
     use super::*;
 
@@ -225,54 +273,6 @@ mod repeater {
                     powered: _,
                 },
             ) if adjacent_block.get_facing().contains(required_facing) => Some(Link::new_power()),
-            _ => None,
-        }
-        .map(|l| (adjacent_block.get_position(), l))
-    }
-}
-
-mod tourch {
-    use super::*;
-
-    pub fn tourch_get_sources<'a, W: World<'a>>(
-        block: &'a Block,
-        world: &'a W,
-    ) -> Vec<(Position, Link)> {
-        let pos = block.get_position();
-        let adjacent_block = match block
-            .get_facing()
-            .get(0)
-            .expect("should be facing a direction")
-        {
-            Facing::PositiveX => (pos.0 + 1, pos.1, pos.2),
-            Facing::NegativeX => (pos.0 - 1, pos.1, pos.2),
-            Facing::PositiveZ => (pos.0, pos.1, pos.2 + 1),
-            Facing::NegativeZ => (pos.0, pos.1, pos.2 - 1),
-            Facing::PositiveY => (pos.0, pos.1 + 1, pos.2),
-            Facing::NegativeY => (pos.0, pos.1 - 1, pos.2),
-        };
-
-        if let Some(adjacent_block) = world.get_block(adjacent_block) {
-            if let Some(source) = get_adjacent_source(block, adjacent_block) {
-                return vec![source];
-            }
-        }
-        vec![]
-    }
-
-    /// Assumes that the adjacent_block is behind it
-    pub fn get_adjacent_source(
-        current_block: &Block,
-        adjacent_block: &Block,
-    ) -> Option<(Position, Link)> {
-        let required_facing = current_block
-            .get_facing()
-            .get(0)
-            .expect("should be facing a direction");
-        match adjacent_block.get_kind() {
-            Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
-                Some(Link::new_power())
-            }
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
