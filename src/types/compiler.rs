@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Display, sync::Arc};
 
 use petgraph::stable_graph::StableDiGraph;
 
@@ -24,6 +24,12 @@ impl Default for NodeKind {
     }
 }
 
+impl Display for NodeKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Default)]
 pub struct Node {
     pub pos: Position,
@@ -41,7 +47,13 @@ impl Node {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl Display for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Link {
     StrongPower,
     // Uses `Arc<[Position]>` because it should be immutable
@@ -61,6 +73,12 @@ impl Link {
             distance: 0,
             blocks: vec![].into(),
         }
+    }
+}
+
+impl Display for Link {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
     }
 }
 
