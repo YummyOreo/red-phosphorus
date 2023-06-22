@@ -1,7 +1,7 @@
 // TODO: REMOVE
 #![allow(unused, dead_code)]
 use super::{block::Block, compiler::Graph};
-use crate::version::Version;
+use crate::{compiler, version::Version};
 
 pub type Position = (i32, i32, i32);
 
@@ -61,30 +61,26 @@ pub trait World<'a> {
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
 /// contraption. This allows for you to use multi-threading
-pub struct Contraption<'a, T: World<'a>> {
-    world: &'a mut T,
+pub struct Contraption {
     verson: Version,
     graph: Option<Graph>,
 }
 
-impl<'a, T: World<'a>> Contraption<'a, T> {
-    pub fn new(world: &'a mut T) -> Self {
+impl Default for Contraption {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Contraption {
+    pub fn new() -> Self {
         Self {
-            world,
             verson: Version::default(),
             graph: None,
         }
     }
-
-    pub fn get_world(&'a self) -> &'a T {
-        self.world
-    }
-    pub fn get_world_mut(&'a mut self) -> &'a mut T {
-        self.world
-    }
-
     /// Get the MC version for the contraption
-    pub fn get_version(&'a self) -> &'a Version {
+    pub fn get_version(&self) -> &Version {
         &self.verson
     }
 
@@ -99,11 +95,23 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
         todo!()
     }
 
-    fn get_graph(&self) -> Option<&Graph> {
+    // TODO REMOVE THIS AND FIX THESE
+    #[allow(
+        clippy::missing_panics_doc,
+        clippy::missing_errors_doc,
+        clippy::result_unit_err
+    )]
+    pub fn compile<'a, W: World<'a>>(&'a mut self, world: &'a W) -> Result<(), ()> {
+        let graph = compiler::complie(world);
+        self.set_graph(graph);
+        Ok(())
+    }
+
+    pub fn get_graph(&self) -> Option<&Graph> {
         self.graph.as_ref()
     }
 
-    fn has_graph(&self) -> bool {
-        self.graph.is_some()
+    pub fn set_graph(&mut self, graph: Graph) {
+        self.graph = Some(graph);
     }
 }
