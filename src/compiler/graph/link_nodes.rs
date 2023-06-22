@@ -8,9 +8,9 @@ use crate::types::{
     contraption::{Position, World},
 };
 
-pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
+pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
     let indices = graph.node_indices();
-
+    let mut links = vec![];
     for index in indices {
         let node = graph.node_weight(index).expect("node should exist");
         let block = world.get_block(node.pos).expect("block should exist");
@@ -33,8 +33,20 @@ pub fn link_nodes<'a, W: World<'a>>(graph: Graph, world: &'a W) -> Graph {
             }) => repeater::repeater_get_sources(block, world),
             _ => vec![],
         };
+
+        for (pos, link) in sources {
+            let source_index = graph
+                .node_indices()
+                .find(|&i| graph.node_weight(i).unwrap().pos == pos)
+                .unwrap();
+
+            links.push((source_index, index, link));
+        }
     }
-    todo!()
+    for link in links {
+        graph.add_edge(link.0, link.1, link.2);
+    }
+    graph
 }
 
 pub fn get_sources<'a, W: World<'a>>(
