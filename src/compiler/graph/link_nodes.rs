@@ -335,25 +335,6 @@ mod test {
         utils::test::*,
     };
 
-    #[test]
-    fn test_linking() {
-        let world = FakeWorld {
-            bounds: ((0, 0, 0), (100, 100, 100)),
-            blocks: FakeWorld::vec_to_blocks(vec![
-                make_block!(kind: Kind::Block),
-                make_block!(kind: Kind::Component(Component::Dust), pos: (0, 1, 0)),
-            ]),
-        };
-
-        let mut graph = Graph::new();
-        graph.add_node(make_node!(kind: NodeKind::Solid { strongly_power: false }, pos: (0, 0, 0)));
-        graph.add_node(make_node!(kind: NodeKind::Dust, pos: (0, 1, 0)));
-        let graph_res = link_nodes(graph, &world);
-
-        dbg!(Dot::new(&graph_res));
-        assert_eq!(true, false)
-    }
-
     #[test_case((0, 0, 0), (0, 0, 1), Facing::NegativeZ ; "facing neg z")]
     #[test_case((0, 0, 1), (0, 0, 0), Facing::PositiveZ ; "facing pos z")]
     #[test_case((0, 1, 0), (0, 0, 0), Facing::PositiveY ; "facing pos y")]
