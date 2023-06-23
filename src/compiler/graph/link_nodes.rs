@@ -1,5 +1,3 @@
-// TODO: remove this
-#![allow(unused, dead_code)]
 use paste::paste;
 
 use crate::types::{
@@ -160,8 +158,7 @@ mod lamp {
                 Some(Link::new_power())
             }
             Kind::Component(Component::Dust)
-                if is_facing_required
-                    || required_facing == Facing::NegativeY =>
+                if is_facing_required || required_facing == Facing::NegativeY =>
             {
                 Some(Link::new_power())
             }
@@ -207,7 +204,7 @@ mod tourch {
         };
 
         if let Some(adjacent_block) = world.get_block(adjacent_block) {
-            if let Some(source) = get_adjacent_source(block, adjacent_block) {
+            if let Some(source) = get_adjacent_source(adjacent_block) {
                 return vec![source];
             }
         }
@@ -215,10 +212,7 @@ mod tourch {
     }
 
     /// Assumes that the adjacent_block is behind it
-    pub fn get_adjacent_source(
-        current_block: &Block,
-        adjacent_block: &Block,
-    ) -> Option<(Position, Link)> {
+    pub fn get_adjacent_source(adjacent_block: &Block) -> Option<(Position, Link)> {
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
                 Some(Link::new_power())
@@ -267,7 +261,7 @@ mod repeater {
             .get_facing()
             .get(0)
             .expect("should be facing a direction");
-        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
+        let is_facing_required = adjacent_block.get_facing().contains(required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
@@ -322,17 +316,10 @@ mod utils {
 
 #[cfg(test)]
 mod test {
-    use petgraph::{dot::Dot, visit::EdgeRef};
     use test_case::test_case;
 
     use super::*;
-    use crate::{
-        types::{
-            block::Facing,
-            compiler::{Node, NodeKind},
-        },
-        utils::test::*,
-    };
+    use crate::{types::block::Facing, utils::test::*};
 
     #[test_case((0, 0, 0), (0, 0, 1), Facing::NegativeZ ; "facing neg z")]
     #[test_case((0, 0, 1), (0, 0, 0), Facing::PositiveZ ; "facing pos z")]
@@ -368,7 +355,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Block, solid: true);
-            let mut res_link = block::get_adjacent_source(current_block, check.0);
+            let res_link = block::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
@@ -403,7 +390,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::Lamp), solid: true);
-            let mut res_link = lamp::get_adjacent_source(current_block, check.0);
+            let res_link = lamp::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
@@ -429,7 +416,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::Dust), solid: true);
-            let mut res_link = dust::get_adjacent_source(current_block, check.0);
+            let res_link = dust::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
@@ -457,7 +444,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::new_repeater()), solid: true, facing: vec![Facing::PositiveX]);
-            let mut res_link = repeater::get_adjacent_source(current_block, check.0);
+            let res_link = repeater::get_adjacent_source(current_block, check.0);
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)

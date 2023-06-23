@@ -11,7 +11,6 @@ pub mod single_threaded {
     };
 
     pub fn create_graph<'a, W: World<'a>>(world: &'a W, cache: &mut Cache<u64, Node>) -> Graph {
-        let graph = make_nodes::make_nodes(world, cache);
-        link_nodes(graph, world)
+        link_nodes(make_nodes::make_nodes(world, cache), world)
     }
 }
