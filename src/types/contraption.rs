@@ -1,6 +1,9 @@
 use mini_moka::sync::Cache;
 
-use super::{block::Block, compiler::{Graph, Node}};
+use super::{
+    block::Block,
+    compiler::{Graph, Node},
+};
 use crate::{compiler, version::Version};
 
 pub type Position = (i32, i32, i32);
