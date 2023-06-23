@@ -1,3 +1,5 @@
+use std::{fmt::Display, sync::Arc};
+
 use petgraph::stable_graph::StableDiGraph;
 
 use super::{contraption::Position, PowerLevel};
@@ -16,7 +18,15 @@ pub enum NodeKind {
 
 impl Default for NodeKind {
     fn default() -> Self {
-        Self::Solid { strongly_power: false }
+        Self::Solid {
+            strongly_power: false,
+        }
+    }
+}
+
+impl Display for NodeKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
     }
 }
 
@@ -37,11 +47,39 @@ impl Node {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+impl Display for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum Link {
-    // u8 being the distance till the next component
-    Power(u8),
-    WeakPower,
+    StrongPower,
+    // Uses `Arc<[Position]>` because it should be immutable
+    Power {
+        distance: i8,
+        blocks: Arc<[Position]>,
+    },
+}
+
+impl Link {
+    pub fn new_strong() -> Self {
+        Self::StrongPower
+    }
+
+    pub fn new_power() -> Self {
+        Link::Power {
+            distance: 0,
+            blocks: vec![].into(),
+        }
+    }
+}
+
+impl Display for Link {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 pub type Graph = StableDiGraph<Node, Link>;

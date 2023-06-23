@@ -2,6 +2,7 @@
 pub enum Component {
     Dust,
     Block,
+    /// Facing should be pointing to the wall it is on
     Tourch {
         lit: bool,
     },
@@ -11,6 +12,7 @@ pub enum Component {
         powered: bool,
     },
     Comparator,
+    /// Facing should be pointing to the wall it is on
     Lever {
         on: bool,
     },
@@ -40,6 +42,16 @@ pub enum Component {
     DoorUpper,
     DoorLower,
     Trapdoor,
+}
+
+impl Component {
+    pub fn new_repeater() -> Self {
+        Self::Repeater {
+            delay: 1,
+            locked: false,
+            powered: false,
+        }
+    }
 }
 
 pub enum UpdateDirection {

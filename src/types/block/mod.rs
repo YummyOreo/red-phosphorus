@@ -103,7 +103,7 @@ pub enum Movable {
     PistonPushable,
 }
 
-#[derive(Clone, Debug, Hash)]
+#[derive(Clone, Debug, Hash, PartialEq, PartialOrd, Ord, Eq)]
 /// Defining a direction that a block is facing
 /// Some blocks may be facing multiple directions (such as rail). So it should be stored in a
 /// vector

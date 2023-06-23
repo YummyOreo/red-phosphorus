@@ -116,13 +116,13 @@ mod test {
             make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 2), facing: vec![Facing::PositiveX, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 2), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::NegativeZ, Facing::NegativeX]),
-            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false }), pos: (2, 0, 0)),
+            make_block!(kind: Kind::Component(Component::new_repeater()), pos: (2, 0, 0)),
             make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (2, 1, 0)),
             make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
         ] ; "circit 1")
     ]
     #[test_case(vec![make_block!(kind: Kind::Component(Component::Block), pos: (0, 0, 0)),
-            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: true }), pos: (1, 0, 0), facing: vec![Facing::PositiveX]),
+            make_block!(kind: Kind::Component(Component::new_repeater()), pos: (1, 0, 0), facing: vec![Facing::PositiveX]),
             make_block!(kind: Kind::Component(Component::Dust), pos: (2, 0, 0), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 15),
             make_block!(kind: Kind::Component(Component::Dust), pos: (3, 0, 0), facing: vec![Facing::PositiveX, Facing::NegativeX], power: 14),
             make_block!(kind: Kind::Component(Component::Dust), pos: (4, 0, 0), facing: vec![Facing::PositiveZ, Facing::NegativeX], power: 13),
