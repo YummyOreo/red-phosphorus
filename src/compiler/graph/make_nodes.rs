@@ -5,14 +5,20 @@ use std::{
 
 use mini_moka::sync::Cache;
 
-use crate::types::{
-    block::{redstone::Component, Block, Kind},
-    compiler::{Graph, Node, NodeKind},
-    contraption::{Position, World},
-    PowerLevel,
+use crate::{
+    error::compiler::CompileError,
+    types::{
+        block::{redstone::Component, Block, Kind},
+        compiler::{Graph, Node, NodeKind},
+        contraption::{Position, World},
+        PowerLevel,
+    },
 };
 
-pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: &mut Cache<u64, Node>) -> Graph {
+pub fn make_nodes<'a, W: World<'a>>(
+    world: &'a W,
+    cache: &mut Cache<u64, Node>,
+) -> Result<Graph, CompileError> {
     let mut graph = Graph::new();
 
     let mut starting = world.bounds().0;
@@ -28,19 +34,19 @@ pub fn make_nodes<'a, W: World<'a>>(world: &'a W, cache: &mut Cache<u64, Node>) 
                 continue;
             }
 
-            if let Some(node) = match_block(block) {
+            if let Some(node) = match_block(block)? {
                 cache.insert(hash, node.clone());
                 graph.add_node(node);
             }
         }
     }
-    graph
+    Ok(graph)
 }
 
-fn match_block(block: &Block) -> Option<Node> {
+fn match_block(block: &Block) -> Result<Option<Node>, CompileError> {
     let pos = block.get_position();
     let power = block.get_power();
-    match block.get_kind() {
+    Ok(match block.get_kind() {
         Kind::Block if block.get_solid() => Some(Node::new_with_power(
             pos,
             NodeKind::Solid {
@@ -49,12 +55,16 @@ fn match_block(block: &Block) -> Option<Node> {
             power,
         )),
         Kind::Block => None,
-        Kind::Component(component) => Some(match_component(component, pos, power)),
-    }
+        Kind::Component(component) => Some(match_component(component, pos, power)?),
+    })
 }
 
-fn match_component(component: &Component, pos: Position, power: PowerLevel) -> Node {
-    match component {
+fn match_component(
+    component: &Component,
+    pos: Position,
+    power: PowerLevel,
+) -> Result<Node, CompileError> {
+    Ok(match component {
         Component::Dust => Node::new_with_power(pos, NodeKind::Dust, power),
         Component::Block => Node::new_with_power(pos, NodeKind::PowerSource, 15),
         Component::Lamp => Node::new_with_power(pos, NodeKind::Lamp, power),
@@ -72,8 +82,8 @@ fn match_component(component: &Component, pos: Position, power: PowerLevel) -> N
             },
             15 * i8::from(*powered),
         ),
-        _ => unimplemented!(),
-    }
+        _ => return Err(CompileError::ComponentNotImplemented(component.clone())),
+    })
 }
 
 #[cfg(test)]
@@ -106,7 +116,7 @@ mod test {
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
     #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
     fn test_block_match(block: Block, node: Option<Node>) {
-        let res = match_block(&block);
+        let res = match_block(&block).unwrap();
         assert_eq!(res, node);
     }
 
@@ -143,7 +153,7 @@ mod test {
 
         let mut cache = Cache::new(10_000);
 
-        let res = make_nodes(&world, &mut cache);
+        let res = make_nodes(&world, &mut cache).unwrap();
         for node_i in res.node_indices() {
             let node = res.node_weight(node_i).unwrap();
             let blocks_index = blocks
