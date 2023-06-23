@@ -87,10 +87,10 @@ mod block {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
+        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust)
-                if adjacent_block.get_facing().contains(&required_facing)
-                    || required_facing == Facing::NegativeY =>
+                if is_facing_required || required_facing == Facing::NegativeY =>
             {
                 Some(Link::new_power())
             }
@@ -101,7 +101,7 @@ mod block {
                     powered: _,
                 }
                 | Component::Lever { on: _ },
-            ) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
+            ) if is_facing_required => Some(Link::StrongPower),
             Kind::Component(Component::Tourch { lit: _ })
                 if required_facing == Facing::PositiveY =>
             {
@@ -123,6 +123,7 @@ mod dust {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
+        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
@@ -136,7 +137,7 @@ mod dust {
                 delay: _,
                 locked: _,
                 powered: _,
-            }) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::new_power()),
+            }) if is_facing_required => Some(Link::new_power()),
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
@@ -153,12 +154,13 @@ mod lamp {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
+        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
                 Some(Link::new_power())
             }
             Kind::Component(Component::Dust)
-                if adjacent_block.get_facing().contains(&required_facing)
+                if is_facing_required
                     || required_facing == Facing::NegativeY =>
             {
                 Some(Link::new_power())
@@ -170,7 +172,7 @@ mod lamp {
                     powered: _,
                 }
                 | Component::Lever { on: _ },
-            ) if adjacent_block.get_facing().contains(&required_facing) => Some(Link::StrongPower),
+            ) if is_facing_required => Some(Link::StrongPower),
             Kind::Component(Component::Lever { on: _ }) => Some(Link::new_power()),
             Kind::Component(Component::Tourch { lit: _ })
                 if required_facing != Facing::NegativeY =>
@@ -217,10 +219,6 @@ mod tourch {
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
-        let required_facing = current_block
-            .get_facing()
-            .get(0)
-            .expect("should be facing a direction");
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
                 Some(Link::new_power())
@@ -269,6 +267,7 @@ mod repeater {
             .get_facing()
             .get(0)
             .expect("should be facing a direction");
+        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
@@ -284,7 +283,7 @@ mod repeater {
                     locked: _,
                     powered: _,
                 },
-            ) if adjacent_block.get_facing().contains(required_facing) => Some(Link::new_power()),
+            ) if is_facing_required => Some(Link::new_power()),
             _ => None,
         }
         .map(|l| (adjacent_block.get_position(), l))
