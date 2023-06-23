@@ -1,4 +1,6 @@
-use super::{block::Block, compiler::Graph};
+use mini_moka::sync::Cache;
+
+use super::{block::Block, compiler::{Graph, Node}};
 use crate::{compiler, version::Version};
 
 pub type Position = (i32, i32, i32);
@@ -62,6 +64,7 @@ pub trait World<'a> {
 pub struct Contraption {
     verson: Version,
     graph: Option<Graph>,
+    cache: Cache<u64, Node>,
 }
 
 impl Default for Contraption {
@@ -75,6 +78,7 @@ impl Contraption {
         Self {
             verson: Version::default(),
             graph: None,
+            cache: Cache::new(10_000),
         }
     }
     /// Get the MC version for the contraption
@@ -100,7 +104,7 @@ impl Contraption {
         clippy::result_unit_err
     )]
     pub fn compile<'a, W: World<'a>>(&'a mut self, world: &'a W) -> Result<(), ()> {
-        let graph = compiler::complie(world);
+        let graph = compiler::complie(world, &mut self.cache);
         self.set_graph(graph);
         Ok(())
     }
