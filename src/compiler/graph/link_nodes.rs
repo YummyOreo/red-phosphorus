@@ -1,17 +1,22 @@
 use paste::paste;
 
-use crate::types::{
-    block::{redstone::Component, Block, Facing, Kind},
-    compiler::{Graph, Link},
-    contraption::{Position, World},
+use crate::{
+    error::compiler::CompileError,
+    types::{
+        block::{redstone::Component, Block, Facing, Kind},
+        compiler::{Graph, Link},
+        contraption::{Position, World},
+    },
 };
 
-pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
+pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Result<Graph, CompileError> {
     let indices = graph.node_indices();
     let mut links = vec![];
     for index in indices {
         let node = graph.node_weight(index).expect("node should exist");
-        let block = world.get_block(node.pos).expect("block should exist");
+        let block = world
+            .get_block(node.pos)
+            .ok_or(CompileError::BlockDoesNotExist(node.pos))?;
 
         let sources = match block.get_kind() {
             Kind::Block => get_sources(block, world, block::get_adjacent_source),
@@ -22,13 +27,13 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
                 get_sources(block, world, lamp::get_adjacent_source)
             }
             Kind::Component(Component::Tourch { lit: _ }) => {
-                tourch::tourch_get_sources(block, world)
+                tourch::tourch_get_sources(block, world)?
             }
             Kind::Component(Component::Repeater {
                 delay: _,
                 locked: _,
                 powered: _,
-            }) => repeater::repeater_get_sources(block, world),
+            }) => repeater::repeater_get_sources(block, world)?,
             _ => vec![],
         };
 
@@ -36,7 +41,7 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
             let source_index = graph
                 .node_indices()
                 .find(|&i| graph.node_weight(i).unwrap().pos == pos)
-                .unwrap();
+                .ok_or(CompileError::BlockDoesNotExist(pos))?;
 
             links.push((source_index, index, link));
         }
@@ -44,7 +49,7 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
     for link in links {
         graph.add_edge(link.0, link.1, link.2);
     }
-    graph
+    Ok(graph)
 }
 
 pub fn get_sources<'a, W: World<'a>>(
@@ -188,12 +193,12 @@ mod tourch {
     pub fn tourch_get_sources<'a, W: World<'a>>(
         block: &'a Block,
         world: &'a W,
-    ) -> Vec<(Position, Link)> {
+    ) -> Result<Vec<(Position, Link)>, CompileError> {
         let pos = block.get_position();
         let adjacent_block = match block
             .get_facing()
             .get(0)
-            .expect("should be facing a direction")
+            .ok_or(CompileError::BlockNotFacingADirection(pos))?
         {
             Facing::PositiveX => (pos.0 + 1, pos.1, pos.2),
             Facing::NegativeX => (pos.0 - 1, pos.1, pos.2),
@@ -205,10 +210,10 @@ mod tourch {
 
         if let Some(adjacent_block) = world.get_block(adjacent_block) {
             if let Some(source) = get_adjacent_source(adjacent_block) {
-                return vec![source];
+                return Ok(vec![source]);
             }
         }
-        vec![]
+        Ok(vec![])
     }
 
     /// Assumes that the adjacent_block is behind it
@@ -229,12 +234,12 @@ mod repeater {
     pub fn repeater_get_sources<'a, W: World<'a>>(
         block: &'a Block,
         world: &'a W,
-    ) -> Vec<(Position, Link)> {
+    ) -> Result<Vec<(Position, Link)>, CompileError> {
         let pos = block.get_position();
         let adjacent_block = match block
             .get_facing()
             .get(0)
-            .expect("should be facing a direction")
+            .ok_or(CompileError::BlockNotFacingADirection(pos))?
         {
             Facing::PositiveX => (pos.0 - 1, pos.1, pos.2),
             Facing::NegativeX => (pos.0 + 1, pos.1, pos.2),
@@ -245,24 +250,27 @@ mod repeater {
         };
 
         if let Some(adjacent_block) = world.get_block(adjacent_block) {
-            if let Some(source) = get_adjacent_source(block, adjacent_block) {
-                return vec![source];
+            if let Some(source) = get_adjacent_source(block, adjacent_block)? {
+                return Ok(vec![source]);
             }
         }
-        vec![]
+        Ok(vec![])
     }
 
     /// Assumes that the adjacent_block is behind it
     pub fn get_adjacent_source(
         current_block: &Block,
         adjacent_block: &Block,
-    ) -> Option<(Position, Link)> {
-        let required_facing = current_block
-            .get_facing()
-            .get(0)
-            .expect("should be facing a direction");
+    ) -> Result<Option<(Position, Link)>, CompileError> {
+        let required_facing =
+            current_block
+                .get_facing()
+                .get(0)
+                .ok_or(CompileError::BlockNotFacingADirection(
+                    current_block.get_position(),
+                ))?;
         let is_facing_required = adjacent_block.get_facing().contains(required_facing);
-        match adjacent_block.get_kind() {
+        Ok(match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
                 Component::Lamp
@@ -280,7 +288,7 @@ mod repeater {
             ) if is_facing_required => Some(Link::new_power()),
             _ => None,
         }
-        .map(|l| (adjacent_block.get_position(), l))
+        .map(|l| (adjacent_block.get_position(), l)))
     }
 }
 
@@ -444,7 +452,7 @@ mod test {
         for check in checks {
             dbg!(check.2);
             let current_block = &make_block!(kind: Kind::Component(Component::new_repeater()), solid: true, facing: vec![Facing::PositiveX]);
-            let res_link = repeater::get_adjacent_source(current_block, check.0);
+            let res_link = repeater::get_adjacent_source(current_block, check.0).unwrap();
             // We don't need to check the position, it will always be the adjacent_block
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)

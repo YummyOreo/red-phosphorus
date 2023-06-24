@@ -4,7 +4,7 @@ use super::{
     block::Block,
     compiler::{Graph, Node},
 };
-use crate::{compiler, version::Version};
+use crate::{compiler, error::compiler::CompileError, version::Version};
 
 pub type Position = (i32, i32, i32);
 
@@ -106,8 +106,8 @@ impl Contraption {
         clippy::missing_errors_doc,
         clippy::result_unit_err
     )]
-    pub fn compile<'a, W: World<'a>>(&'a mut self, world: &'a W) -> Result<(), ()> {
-        let graph = compiler::complie(world, &mut self.cache);
+    pub fn compile<'a, W: World<'a>>(&'a mut self, world: &'a W) -> Result<(), CompileError> {
+        let graph = compiler::complie(world, &mut self.cache)?;
         self.set_graph(graph);
         Ok(())
     }
