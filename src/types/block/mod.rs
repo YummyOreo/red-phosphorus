@@ -10,7 +10,8 @@ pub struct Block {
     power: PowerLevel,
     kind: Kind,
     solid: bool,
-    facing: Vec<Facing>,
+    // -x +x -y +y -z +z
+    facing: [bool; 6],
 }
 
 impl Block {
@@ -19,7 +20,7 @@ impl Block {
     }
 
     pub fn new_simple_with_power(pos: Position, kind: Kind, power: PowerLevel) -> Self {
-        Self::new(pos, kind, power, true, vec![])
+        Self::new(pos, kind, power, true, Default::default())
     }
 
     pub fn new(
@@ -27,7 +28,8 @@ impl Block {
         kind: Kind,
         power: PowerLevel,
         solid: bool,
-        facing: Vec<Facing>,
+        // -x +x -y +y -z +z
+        facing: [bool; 6],
     ) -> Self {
         Self {
             pos,
@@ -47,7 +49,7 @@ impl Block {
     pub fn set_solid(&mut self, solid: bool) {
         self.solid = solid;
     }
-    pub fn set_facing(&mut self, facing: Vec<Facing>) {
+    pub fn set_facing(&mut self, facing: [bool; 6]) {
         self.facing = facing;
     }
     pub fn set_power(&mut self, power: PowerLevel) {
@@ -63,11 +65,26 @@ impl Block {
     pub fn get_solid(&self) -> bool {
         self.solid
     }
-    pub fn get_facing(&self) -> &Vec<Facing> {
+    pub fn get_facing(&self) -> &[bool; 6] {
         &self.facing
     }
     pub fn get_power(&self) -> PowerLevel {
         self.power
+    }
+
+    pub fn facing_from_vec(facing: Vec<Facing>) -> [bool; 6] {
+        let mut f: [bool; 6] = Default::default();
+        for face in facing {
+            match face {
+                Facing::NegativeX => f[0] = true,
+                Facing::PositiveX => f[1] = true,
+                Facing::NegativeY => f[2] = true,
+                Facing::PositiveY => f[3] = true,
+                Facing::NegativeZ => f[4] = true,
+                Facing::PositiveZ => f[5] = true,
+            }
+        }
+        f
     }
 }
 
@@ -124,4 +141,33 @@ pub enum Facing {
     PositiveY,
     /// Down
     NegativeY,
+}
+
+impl Facing {
+    // Converts it to the number in the list
+    pub fn to_number(&self) -> usize {
+        match self {
+            Self::NegativeX => 0,
+            Self::PositiveX => 1,
+            Self::NegativeY => 2,
+            Self::PositiveY => 3,
+            Self::NegativeZ => 4,
+            Self::PositiveZ => 5,
+        }
+    }
+
+    // Converts it from the number in the list
+    // # Panics
+    // Panics if you provide a number > 5
+    pub fn from_number(num: usize) -> Self {
+        match num {
+            0 => Self::NegativeX,
+            1 => Self::PositiveX,
+            2 => Self::NegativeY,
+            3 => Self::PositiveY,
+            4 => Self::NegativeZ,
+            5 => Self::PositiveZ,
+            _ => unreachable!(),
+        }
+    }
 }
