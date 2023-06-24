@@ -1,17 +1,22 @@
 use paste::paste;
 
-use crate::types::{
-    block::{redstone::Component, Block, Facing, Kind},
-    compiler::{Graph, Link},
-    contraption::{Position, World},
+use crate::{
+    error::compiler::CompileError,
+    types::{
+        block::{redstone::Component, Block, Facing, Kind},
+        compiler::{Graph, Link},
+        contraption::{Position, World},
+    },
 };
 
-pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
+pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Result<Graph, CompileError> {
     let indices = graph.node_indices();
     let mut links = vec![];
     for index in indices {
         let node = graph.node_weight(index).expect("node should exist");
-        let block = world.get_block(node.pos).expect("block should exist");
+        let block = world
+            .get_block(node.pos)
+            .ok_or(CompileError::BlockDoesNotExist(node.pos))?;
 
         let sources = match block.get_kind() {
             Kind::Block => get_sources(block, world, block::get_adjacent_source),
@@ -36,7 +41,7 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
             let source_index = graph
                 .node_indices()
                 .find(|&i| graph.node_weight(i).unwrap().pos == pos)
-                .unwrap();
+                .ok_or(CompileError::BlockDoesNotExist(node.pos))?;
 
             links.push((source_index, index, link));
         }
@@ -44,7 +49,7 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Graph {
     for link in links {
         graph.add_edge(link.0, link.1, link.2);
     }
-    graph
+    Ok(graph)
 }
 
 pub fn get_sources<'a, W: World<'a>>(
