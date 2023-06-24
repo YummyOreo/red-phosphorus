@@ -4,7 +4,7 @@ use super::{
     block::Block,
     compiler::{Graph, Node},
 };
-use crate::{compiler, version::Version, error::compiler::CompileError};
+use crate::{compiler, error::compiler::CompileError, version::Version};
 
 pub type Position = (i32, i32, i32);
 
