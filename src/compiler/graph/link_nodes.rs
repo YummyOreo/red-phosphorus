@@ -41,7 +41,7 @@ pub fn link_nodes<'a, W: World<'a>>(mut graph: Graph, world: &'a W) -> Result<Gr
             let source_index = graph
                 .node_indices()
                 .find(|&i| graph.node_weight(i).unwrap().pos == pos)
-                .ok_or(CompileError::BlockDoesNotExist(node.pos))?;
+                .ok_or(CompileError::BlockDoesNotExist(pos))?;
 
             links.push((source_index, index, link));
         }
