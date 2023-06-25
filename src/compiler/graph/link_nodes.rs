@@ -309,14 +309,9 @@ mod utils {
     /// Gets the way a component needs to face based on block positions
     pub fn get_facing(cb: Position, ob: Position) -> Facing {
         let diff = vec![cb.0 - ob.0, cb.1 - ob.1, cb.2 - ob.2];
-        Some(match get_facing_macro!(0, X, diff) {
-            Some(x) => x,
-            None => match get_facing_macro!(1, Y, diff) {
-                Some(y) => y,
-                None => get_facing_macro!(2, Z, diff).expect("should have a adjacent block"),
-            },
+        get_facing_macro!(0, X, diff).unwrap_or_else(|| {
+            get_facing_macro!(1, Y, diff).unwrap_or_else(|| get_facing_macro!(2, Z, diff).unwrap())
         })
-        .expect("should have a adjacent block")
     }
 }
 
