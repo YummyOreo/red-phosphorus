@@ -72,6 +72,10 @@ impl Block {
         self.power
     }
 
+    pub fn is_facing(&self, facing: &Facing) -> bool {
+        self.facing[facing.to_number()]
+    }
+
     pub fn facing_from_vec(facing: Vec<Facing>) -> [bool; 6] {
         let mut f: [bool; 6] = Default::default();
         for face in facing {
