@@ -22,7 +22,7 @@ impl BlockBuilder {
             self.kind.clone(),
             self.power,
             self.solid,
-            self.facing.clone(),
+            Block::facing_from_vec(self.facing.clone()),
         )
     }
 

@@ -90,7 +90,7 @@ mod block {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust)
                 if is_facing_required || required_facing == Facing::NegativeY =>
@@ -126,7 +126,7 @@ mod dust {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
@@ -157,7 +157,7 @@ mod lamp {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing().contains(&required_facing);
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
                 Some(Link::new_power())
@@ -195,11 +195,13 @@ mod tourch {
         world: &'a W,
     ) -> Result<Vec<(Position, Link)>, CompileError> {
         let pos = block.get_position();
-        let adjacent_block = match block
-            .get_facing()
-            .get(0)
-            .ok_or(CompileError::BlockNotFacingADirection(pos))?
-        {
+        let adjacent_block = match Facing::from_number(
+            block
+                .get_facing()
+                .iter()
+                .position(|x| *x)
+                .ok_or(CompileError::BlockNotFacingADirection(pos))?,
+        ) {
             Facing::PositiveX => (pos.0 + 1, pos.1, pos.2),
             Facing::NegativeX => (pos.0 - 1, pos.1, pos.2),
             Facing::PositiveZ => (pos.0, pos.1, pos.2 + 1),
@@ -236,11 +238,13 @@ mod repeater {
         world: &'a W,
     ) -> Result<Vec<(Position, Link)>, CompileError> {
         let pos = block.get_position();
-        let adjacent_block = match block
-            .get_facing()
-            .get(0)
-            .ok_or(CompileError::BlockNotFacingADirection(pos))?
-        {
+        let adjacent_block = match Facing::from_number(
+            block
+                .get_facing()
+                .iter()
+                .position(|x| *x)
+                .ok_or(CompileError::BlockNotFacingADirection(pos))?,
+        ) {
             Facing::PositiveX => (pos.0 - 1, pos.1, pos.2),
             Facing::NegativeX => (pos.0 + 1, pos.1, pos.2),
             Facing::PositiveZ => (pos.0, pos.1, pos.2 - 1),
@@ -262,14 +266,10 @@ mod repeater {
         current_block: &Block,
         adjacent_block: &Block,
     ) -> Result<Option<(Position, Link)>, CompileError> {
-        let required_facing =
-            current_block
-                .get_facing()
-                .get(0)
-                .ok_or(CompileError::BlockNotFacingADirection(
-                    current_block.get_position(),
-                ))?;
-        let is_facing_required = adjacent_block.get_facing().contains(required_facing);
+        let required_facing = current_block.get_facing().iter().position(|x| *x).ok_or(
+            CompileError::BlockNotFacingADirection(current_block.get_position()),
+        )?;
+        let is_facing_required = adjacent_block.get_facing()[required_facing];
         Ok(match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
