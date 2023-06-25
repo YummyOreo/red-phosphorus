@@ -90,7 +90,7 @@ mod block {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing()[required_facing.to_number()];
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust)
                 if is_facing_required || required_facing == Facing::NegativeY =>
@@ -126,7 +126,7 @@ mod dust {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing()[required_facing.to_number()];
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
             | Kind::Component(
@@ -157,7 +157,7 @@ mod lamp {
         let required_facing =
             utils::get_facing(current_block.get_position(), adjacent_block.get_position())
                 .expect("should be a adjacent block");
-        let is_facing_required = adjacent_block.get_facing()[required_facing.to_number()];
+        let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
                 Some(Link::new_power())
