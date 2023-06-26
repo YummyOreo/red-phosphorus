@@ -6,6 +6,7 @@ use crate::{
     },
 };
 mod graph;
+mod optimization;
 
 pub fn complie<'a, W: World<'a>>(
     world: &'a W,
