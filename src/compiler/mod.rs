@@ -11,7 +11,7 @@ mod graph;
 
 pub fn complie<'a, W: World<'a>>(
     world: &'a W,
-    cache: &mut Cache<u64, Node>,
+    cache: &mut Cache<u64, (Node, bool)>,
 ) -> Result<Graph, CompileError> {
     if world.get_has_updated() {
         let _graph = graph::single_threaded::create_graph(world, cache)?;

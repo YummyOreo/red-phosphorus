@@ -15,8 +15,8 @@ pub mod single_threaded {
 
     pub fn create_graph<'a, W: World<'a>>(
         world: &'a W,
-        cache: &mut Cache<u64, Node>,
+        cache: &mut Cache<u64, (Node, bool)>,
     ) -> Result<Graph, CompileError> {
-        link_nodes(make_nodes::make_nodes(world, cache)?, world)
+        link_nodes(make_nodes::make_nodes(world, cache)?.0, world)
     }
 }

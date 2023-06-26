@@ -67,7 +67,7 @@ pub trait World<'a> {
 pub struct Contraption {
     verson: Version,
     graph: Option<Graph>,
-    cache: Cache<u64, Node>,
+    cache: Cache<u64, (Node, bool)>,
 }
 
 impl Default for Contraption {

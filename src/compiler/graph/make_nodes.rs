@@ -9,7 +9,7 @@ use crate::{
     error::compiler::CompileError,
     types::{
         block::{redstone::Component, Block, Kind},
-        compiler::{Graph, Node, NodeKind},
+        compiler::{Graph, Node, NodeKind, Sources},
         contraption::{Position, World},
         PowerLevel,
     },
@@ -17,9 +17,11 @@ use crate::{
 
 pub fn make_nodes<'a, W: World<'a>>(
     world: &'a W,
-    cache: &mut Cache<u64, Node>,
-) -> Result<Graph, CompileError> {
+    cache: &mut Cache<u64, (Node, bool)>,
+) -> Result<(Graph, Sources), CompileError> {
     let mut graph = Graph::new();
+
+    let mut sources = vec![];
 
     let mut starting = world.bounds().0;
     starting.0 -= 1;
@@ -29,30 +31,39 @@ pub fn make_nodes<'a, W: World<'a>>(
             block.hash(&mut hasher);
             let hash = hasher.finish();
 
-            if let Some(node) = cache.get(&hash) {
-                graph.add_node(node);
+            if let Some((node, source)) = cache.get(&hash) {
+                let index = graph.add_node(node);
+                if source {
+                    sources.push(index);
+                }
                 continue;
             }
 
-            if let Some(node) = match_block(block)? {
-                cache.insert(hash, node.clone());
-                graph.add_node(node);
+            if let Some((node, source)) = match_block(block)? {
+                cache.insert(hash, (node.clone(), source));
+                let index = graph.add_node(node);
+                if source {
+                    sources.push(index);
+                }
             }
         }
     }
-    Ok(graph)
+    Ok((graph, sources))
 }
 
-fn match_block(block: &Block) -> Result<Option<Node>, CompileError> {
+fn match_block(block: &Block) -> Result<Option<(Node, bool)>, CompileError> {
     let pos = block.get_position();
     let power = block.get_power();
     Ok(match block.get_kind() {
-        Kind::Block if block.get_solid() => Some(Node::new_with_power(
-            pos,
-            NodeKind::Solid {
-                strongly_power: false,
-            },
-            power,
+        Kind::Block if block.get_solid() => Some((
+            Node::new_with_power(
+                pos,
+                NodeKind::Solid {
+                    strongly_power: false,
+                },
+                power,
+            ),
+            false,
         )),
         Kind::Block => None,
         Kind::Component(component) => Some(match_component(component, pos, power)?),
@@ -63,24 +74,33 @@ fn match_component(
     component: &Component,
     pos: Position,
     power: PowerLevel,
-) -> Result<Node, CompileError> {
+) -> Result<(Node, bool), CompileError> {
     Ok(match component {
-        Component::Dust => Node::new_with_power(pos, NodeKind::Dust, power),
-        Component::Block => Node::new_with_power(pos, NodeKind::PowerSource, 15),
-        Component::Lamp => Node::new_with_power(pos, NodeKind::Lamp, power),
-        Component::Lever { on } => Node::new_with_power(pos, NodeKind::Lever { on: *on }, 15),
-        Component::Tourch { lit } => Node::new_with_power(pos, NodeKind::Tourch { lit: *lit }, 15),
+        Component::Dust => (Node::new_with_power(pos, NodeKind::Dust, power), false),
+        Component::Block => (Node::new_with_power(pos, NodeKind::PowerSource, 15), true),
+        Component::Lamp => (Node::new_with_power(pos, NodeKind::Lamp, power), false),
+        Component::Lever { on } => (
+            Node::new_with_power(pos, NodeKind::Lever { on: *on }, 15),
+            true,
+        ),
+        Component::Tourch { lit } => (
+            Node::new_with_power(pos, NodeKind::Tourch { lit: *lit }, 15),
+            true,
+        ),
         Component::Repeater {
             delay,
             locked,
             powered,
-        } => Node::new_with_power(
-            pos,
-            NodeKind::Repeater {
-                delay: *delay * 2, // Converts redstone ticks to ticks
-                locked: *locked,
-            },
-            15 * i8::from(*powered),
+        } => (
+            Node::new_with_power(
+                pos,
+                NodeKind::Repeater {
+                    delay: *delay * 2, // Converts redstone ticks to ticks
+                    locked: *locked,
+                },
+                15 * i8::from(*powered),
+            ),
+            false,
         ),
         _ => return Err(CompileError::ComponentNotImplemented(component.clone())),
     })
@@ -97,25 +117,25 @@ mod test {
     };
 
     // Blocks
-    #[test_case(make_block!(kind: Kind::Block, solid: true), Some(make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 0)) ; "solid block with power 0")]
-    #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some(make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 15)) ; "solid block with power 15")]
+    #[test_case(make_block!(kind: Kind::Block, solid: true), Some((make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 0), false)) ; "solid block with power 0")]
+    #[test_case(make_block!(kind: Kind::Block, solid: true, power: 15), Some((make_node!(kind: NodeKind::Solid { strongly_power: false }, power: 15), false)) ; "solid block with power 15")]
     #[test_case(make_block!(kind: Kind::Block, solid: false, power: 15), None ; "non-solid block with power 15")]
     // Redstone Block
-    #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some(make_node!(kind: NodeKind::PowerSource, power: 15)) ; "redstone block")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Block), solid: false), Some((make_node!(kind: NodeKind::PowerSource, power: 15), true)) ; "redstone block")]
     // Lever
-    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: false }), solid: false, power: 15), Some(make_node!(kind: NodeKind::Lever { on: false }, power: 15)) ; "lever off")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: true }), solid: false, power: 0), Some(make_node!(kind: NodeKind::Lever { on: true }, power: 15)) ; "lever on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: false }), solid: false, power: 15), Some((make_node!(kind: NodeKind::Lever { on: false }, power: 15), true)) ; "lever off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lever { on: true }), solid: false, power: 0), Some((make_node!(kind: NodeKind::Lever { on: true }, power: 15), true)) ; "lever on")]
     // Tourch
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: false })), Some(make_node!(kind: NodeKind::Tourch { lit: false }, power: 15)) ; "tourch off")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: true })), Some(make_node!(kind: NodeKind::Tourch { lit: true }, power: 15)) ; "tourch on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: false })), Some((make_node!(kind: NodeKind::Tourch { lit: false }, power: 15), true)) ; "tourch off")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Tourch { lit: true })), Some((make_node!(kind: NodeKind::Tourch { lit: true }, power: 15), true)) ; "tourch on")]
     // Repeater
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false })), Some(make_node!(kind: NodeKind::Repeater { delay: 2, locked: false })) ; "repeater unlocked default delay")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true, powered: true })), Some(make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 15)) ; "repeater locked delay power")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false, powered: true })), Some(make_node!(kind: NodeKind::Repeater { delay: 6, locked: false }, power: 15)) ; "repeater unlocked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false })), Some((make_node!(kind: NodeKind::Repeater { delay: 2, locked: false }), false)) ; "repeater unlocked default delay")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 2, locked: true, powered: true })), Some((make_node!(kind: NodeKind::Repeater { delay: 4, locked: true }, power: 15), false)) ; "repeater locked delay power")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Repeater { delay: 3, locked: false, powered: true })), Some((make_node!(kind: NodeKind::Repeater { delay: 6, locked: false }, power: 15), false)) ; "repeater unlocked delay power")]
     // Lamp
-    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some(make_node!(kind: NodeKind::Lamp, power: 1)) ; "lamp on")]
-    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some(make_node!(kind: NodeKind::Lamp, power: 0)) ; "lamp off")]
-    fn test_block_match(block: Block, node: Option<Node>) {
+    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 1), Some((make_node!(kind: NodeKind::Lamp, power: 1), false)) ; "lamp on")]
+    #[test_case(make_block!(kind: Kind::Component(Component::Lamp), power: 0), Some((make_node!(kind: NodeKind::Lamp, power: 0), false)) ; "lamp off")]
+    fn test_block_match(block: Block, node: Option<(Node, bool)>) {
         let res = match_block(&block).unwrap();
         assert_eq!(res, node);
     }
@@ -153,7 +173,7 @@ mod test {
 
         let mut cache = Cache::new(10_000);
 
-        let res = make_nodes(&world, &mut cache).unwrap();
+        let res = make_nodes(&world, &mut cache).unwrap().0;
         for node_i in res.node_indices() {
             let node = res.node_weight(node_i).unwrap();
             let blocks_index = blocks
