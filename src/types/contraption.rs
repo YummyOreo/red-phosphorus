@@ -1,8 +1,6 @@
-use mini_moka::sync::Cache;
-
 use super::{
     block::Block,
-    compiler::{Graph, Node},
+    compiler::{Graph, GraphCache},
 };
 use crate::{compiler, error::compiler::CompileError, version::Version};
 
@@ -67,7 +65,7 @@ pub trait World<'a> {
 pub struct Contraption {
     verson: Version,
     graph: Option<Graph>,
-    cache: Cache<u64, (Node, bool)>,
+    cache: GraphCache,
 }
 
 impl Default for Contraption {
@@ -81,7 +79,7 @@ impl Contraption {
         Self {
             verson: Version::default(),
             graph: None,
-            cache: Cache::new(10_000),
+            cache: GraphCache::new(10_000),
         }
     }
     /// Get the MC version for the contraption

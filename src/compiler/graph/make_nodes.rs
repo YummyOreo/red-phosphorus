@@ -3,13 +3,11 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use mini_moka::sync::Cache;
-
 use crate::{
     error::compiler::CompileError,
     types::{
         block::{redstone::Component, Block, Kind},
-        compiler::{Graph, Node, NodeKind, Sources},
+        compiler::{Graph, GraphCache, Node, NodeKind, Sources},
         contraption::{Position, World},
         PowerLevel,
     },
@@ -17,7 +15,7 @@ use crate::{
 
 pub fn make_nodes<'a, W: World<'a>>(
     world: &'a W,
-    cache: &mut Cache<u64, (Node, bool)>,
+    cache: &mut GraphCache,
 ) -> Result<(Graph, Sources), CompileError> {
     let mut graph = Graph::new();
 
@@ -171,7 +169,7 @@ mod test {
             blocks: FakeWorld::vec_to_blocks(blocks.clone()),
         };
 
-        let mut cache = Cache::new(10_000);
+        let mut cache = GraphCache::new(10_000);
 
         let res = make_nodes(&world, &mut cache).unwrap().0;
         for node_i in res.node_indices() {

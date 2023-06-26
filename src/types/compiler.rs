@@ -1,5 +1,6 @@
 use std::{fmt::Display, sync::Arc};
 
+use mini_moka::sync::Cache;
 use petgraph::stable_graph::{NodeIndex, StableDiGraph};
 
 use super::{contraption::Position, PowerLevel};
@@ -84,3 +85,4 @@ impl Display for Link {
 
 pub type Graph = StableDiGraph<Node, Link>;
 pub type Sources = Vec<NodeIndex>;
+pub type GraphCache = Cache<u64, (Node, bool)>;
