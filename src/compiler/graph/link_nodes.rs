@@ -88,8 +88,7 @@ mod block {
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
         let required_facing =
-            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
-                .expect("should be a adjacent block");
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position());
         let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Component(Component::Dust)
@@ -124,8 +123,7 @@ mod dust {
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
         let required_facing =
-            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
-                .expect("should be a adjacent block");
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position());
         let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block
@@ -155,8 +153,7 @@ mod lamp {
         adjacent_block: &Block,
     ) -> Option<(Position, Link)> {
         let required_facing =
-            utils::get_facing(current_block.get_position(), adjacent_block.get_position())
-                .expect("should be a adjacent block");
+            utils::get_facing(current_block.get_position(), adjacent_block.get_position());
         let is_facing_required = adjacent_block.is_facing(&required_facing);
         match adjacent_block.get_kind() {
             Kind::Block | Kind::Component(Component::Lamp | Component::Block) => {
@@ -310,14 +307,10 @@ mod utils {
     }
 
     /// Gets the way a component needs to face based on block positions
-    pub fn get_facing(cb: Position, ob: Position) -> Option<Facing> {
+    pub fn get_facing(cb: Position, ob: Position) -> Facing {
         let diff = vec![cb.0 - ob.0, cb.1 - ob.1, cb.2 - ob.2];
-        Some(match get_facing_macro!(0, X, diff) {
-            Some(x) => x,
-            None => match get_facing_macro!(1, Y, diff) {
-                Some(y) => y,
-                None => get_facing_macro!(2, Z, diff)?,
-            },
+        get_facing_macro!(0, X, diff).unwrap_or_else(|| {
+            get_facing_macro!(1, Y, diff).unwrap_or_else(|| get_facing_macro!(2, Z, diff).unwrap())
         })
     }
 }
@@ -336,7 +329,7 @@ mod test {
     #[test_case((1, 0, 0), (0, 0, 0), Facing::PositiveX ; "facing pos x")]
     #[test_case((0, 0, 0), (1, 0, 0), Facing::NegativeX ; "facing neg x")]
     fn test_util_get_facing(pos1: Position, pos2: Position, facing: Facing) {
-        assert_eq!(utils::get_facing(pos1, pos2).unwrap(), facing);
+        assert_eq!(utils::get_facing(pos1, pos2), facing);
     }
 
     #[test]
