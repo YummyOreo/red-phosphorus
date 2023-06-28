@@ -1,7 +1,4 @@
-use petgraph::{
-    stable_graph::{EdgeIndex, NodeIndex},
-    visit::Dfs,
-};
+use petgraph::{stable_graph::NodeIndex, visit::Dfs};
 
 use crate::types::compiler::{Graph, Sources};
 
