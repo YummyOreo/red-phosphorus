@@ -13,7 +13,8 @@ pub fn complie<'a, W: World<'a>>(
     cache: &mut GraphCache,
 ) -> Result<Graph, CompileError> {
     if world.get_has_updated() {
-        let (_graph, _sources) = graph::single_threaded::create_graph(world, cache)?;
+        let (graph, sources) = graph::single_threaded::create_graph(world, cache)?;
+        let _graph = optimization::optimize(graph, sources);
     }
     todo!()
 }

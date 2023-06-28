@@ -20,7 +20,7 @@ pub fn remove_unused_links(mut graph: Graph, power_sources: Sources) -> Graph {
     graph
 }
 
-pub fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> {
+fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> {
     let mut keep_nodes: Vec<NodeIndex> = vec![];
     for source in power_sources {
         let mut dfs = Dfs::new(&graph, source);
