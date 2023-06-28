@@ -1,4 +1,7 @@
-use petgraph::stable_graph::{EdgeIndex, NodeIndex};
+use petgraph::{
+    stable_graph::{EdgeIndex, NodeIndex},
+    visit::Dfs,
+};
 
 use crate::types::compiler::{Graph, Sources};
 
@@ -6,8 +9,17 @@ use crate::types::compiler::{Graph, Sources};
 // be reached via a power source
 // Then remove the edges that are going out of that node and into that node
 pub fn remove_unused_links(graph: Graph, power_sources: Sources) -> Graph {
-    for node_index in graph.node_indices() {
-        // do stuff
-    }
+    let mut keep_nodes = get_reachable_nodes(&graph, power_sources);
     todo!()
+}
+
+pub fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> {
+    let mut keep_nodes: Vec<NodeIndex> = vec![];
+    for source in power_sources {
+        let mut dfs = Dfs::new(&graph, source);
+        while let Some(nx) = dfs.next(&graph) {
+            keep_nodes.push(nx);
+        }
+    }
+    keep_nodes
 }
