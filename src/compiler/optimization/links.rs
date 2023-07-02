@@ -30,3 +30,7 @@ fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> 
     }
     keep_nodes
 }
+
+#[cfg(test)]
+mod tests {
+}
