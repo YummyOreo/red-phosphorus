@@ -33,4 +33,39 @@ fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> 
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::{
+        types::compiler::{Graph, Node},
+        utils::test::{graph::graph_eq, make_node},
+    };
+
+    #[test]
+    fn simple_test() {
+        let mut simple_graph = Graph::new();
+        let source = simple_graph.add_node(make_node!(pos: (0, 0, 0)));
+        let link_to_source = [
+            simple_graph.add_node(make_node!(pos: (0, 1, 0))),
+            simple_graph.add_node(make_node!(pos: (0, 2, 0))),
+            simple_graph.add_node(make_node!(pos: (0, 3, 0))),
+        ];
+        for node in link_to_source {
+            simple_graph.add_edge(source, node, crate::types::compiler::Link::StrongPower);
+        }
+
+        let node_not_reachable = simple_graph.add_node(make_node!(pos: (1, 0, 0)));
+        simple_graph.add_edge(
+            node_not_reachable,
+            source,
+            crate::types::compiler::Link::StrongPower,
+        );
+
+        let res = remove_unused_links(simple_graph.clone(), vec![source]);
+
+        simple_graph.remove_node(node_not_reachable);
+
+        assert!(graph_eq(
+            &res.try_into().unwrap(),
+            &simple_graph.try_into().unwrap()
+        ));
+    }
 }
