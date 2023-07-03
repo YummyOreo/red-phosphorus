@@ -68,4 +68,13 @@ mod tests {
             &simple_graph.try_into().unwrap()
         ));
     }
+
+    #[test]
+    fn more_complex_test_1() {
+        let graph = Graph::new();
+        // Source:
+        // Lever --> Block --> Dust --> Dust --> Dust --> Lamp <-- Repeater <--  Block
+        // Not connected to source, so should be removed
+        // Lamp -- Dust -- Block
+    }
 }
