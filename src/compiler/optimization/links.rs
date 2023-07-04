@@ -70,7 +70,7 @@ mod tests {
     }
 
     #[test]
-    fn more_complex_test_1() {
+    fn test_1() {
         let mut graph = Graph::new();
         // Source:
         // Lever --> Block --> Dust --> Dust --> Dust --> Lamp <-- Repeater <--  Block
@@ -96,5 +96,39 @@ mod tests {
             let last = link_to_prev[last];
             graph.add_edge(last, *nx, Link::new_power());
         }
+
+        let link_to_last_source = [
+            graph.add_node(make_node!(kind: NodeKind::Repeater { delay: 1, locked: false })),
+            graph.add_node(make_node!(kind: NodeKind::Solid { strongly_power: false })),
+        ];
+
+        for (pos, nx) in link_to_last_source.iter().enumerate() {
+            let last = match pos.checked_sub(1) {
+                Some(i) => link_to_last_source[i],
+                None => *link_to_prev.last().expect("Should have a last"),
+            };
+            graph.add_edge(last, *nx, Link::new_power());
+        }
+
+        let link_not_connected = [
+            graph.add_node(make_node!(kind: NodeKind::Lamp)),
+            graph.add_node(make_node!(kind: NodeKind::Dust)),
+            graph.add_node(make_node!(kind: NodeKind::Solid { strongly_power: false })),
+        ];
+        for (pos, nx) in link_not_connected.iter().enumerate() {
+            let Some(last) = pos.checked_sub(1) else {
+                continue;
+            };
+            let last = link_not_connected[last];
+            graph.add_edge(last, *nx, Link::new_power());
+        }
+
+        let res = remove_unused_links(graph.clone(), vec![source]);
+        // remove unused links
+        for nx in link_not_connected {
+            graph.remove_node(nx);
+        }
+
+        assert!(graph_eq(&res.into(), &graph.into()));
     }
 }
