@@ -35,7 +35,7 @@ fn get_reachable_nodes(graph: &Graph, power_sources: Sources) -> Vec<NodeIndex> 
 mod tests {
     use super::*;
     use crate::{
-        types::compiler::{Graph, Node},
+        types::compiler::{Graph, Link, Node, NodeKind},
         utils::test::{graph::graph_eq, make_node},
     };
 
@@ -49,7 +49,7 @@ mod tests {
             simple_graph.add_node(make_node!(pos: (0, 3, 0))),
         ];
         for node in link_to_source {
-            simple_graph.add_edge(source, node, crate::types::compiler::Link::StrongPower);
+            simple_graph.add_edge(source, node, Link::new_power());
         }
 
         let node_not_reachable = simple_graph.add_node(make_node!(pos: (1, 0, 0)));
@@ -71,10 +71,30 @@ mod tests {
 
     #[test]
     fn more_complex_test_1() {
-        let graph = Graph::new();
+        let mut graph = Graph::new();
         // Source:
         // Lever --> Block --> Dust --> Dust --> Dust --> Lamp <-- Repeater <--  Block
         // Not connected to source, so should be removed
         // Lamp -- Dust -- Block
+
+        // Make the source
+        let source = graph.add_node(make_node!(kind: NodeKind::Lever { on: false }));
+
+        // Make the rest of the graph
+        let link_to_prev = [
+            source,
+            graph.add_node(make_node!(kind: NodeKind::Solid { strongly_power: false })),
+            graph.add_node(make_node!(kind: NodeKind::Dust)),
+            graph.add_node(make_node!(kind: NodeKind::Dust)),
+            graph.add_node(make_node!(kind: NodeKind::Dust)),
+            graph.add_node(make_node!(kind: NodeKind::Lamp)),
+        ];
+        for (pos, nx) in link_to_prev.iter().enumerate() {
+            let Some(last) = pos.checked_sub(1) else {
+                continue;
+            };
+            let last = link_to_prev[last];
+            graph.add_edge(last, *nx, Link::new_power());
+        }
     }
 }
