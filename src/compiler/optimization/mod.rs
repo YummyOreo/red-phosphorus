@@ -4,5 +4,5 @@ mod links;
 mod combine;
 
 pub fn optimize(graph: Graph, sources: Sources) -> Graph {
-    links::remove_unused_links(graph, sources)
+    combine::combine_redstone_dust(links::remove_unused_links(graph, sources))
 }
