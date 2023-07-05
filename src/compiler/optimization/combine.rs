@@ -1,6 +1,6 @@
 use petgraph::{stable_graph::NodeIndex, visit::Dfs};
 
-use crate::types::compiler::{Graph, Sources, NodeKind};
+use crate::types::compiler::{Graph, NodeKind, Sources};
 
 // Go through and find dust that are connected and that are more than 2 long
 // Then add them to a list of list:
