@@ -116,3 +116,28 @@ impl<'a> World<'a> for FakeWorld {
 
 pub(crate) use make_block;
 pub(crate) use make_node;
+
+pub mod graph {
+    pub fn graph_eq<N, E, Ty, Ix>(
+        a: &petgraph::Graph<N, E, Ty, Ix>,
+        b: &petgraph::Graph<N, E, Ty, Ix>,
+    ) -> bool
+    where
+        N: PartialEq,
+        E: PartialEq,
+        Ty: petgraph::EdgeType,
+        Ix: petgraph::graph::IndexType + PartialEq,
+    {
+        let a_ns = a.raw_nodes().iter().map(|n| &n.weight);
+        let b_ns = b.raw_nodes().iter().map(|n| &n.weight);
+        let a_es = a
+            .raw_edges()
+            .iter()
+            .map(|e| (e.source(), e.target(), &e.weight));
+        let b_es = b
+            .raw_edges()
+            .iter()
+            .map(|e| (e.source(), e.target(), &e.weight));
+        a_ns.eq(b_ns) && a_es.eq(b_es)
+    }
+}

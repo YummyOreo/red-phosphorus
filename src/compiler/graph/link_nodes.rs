@@ -320,7 +320,13 @@ mod test {
     use test_case::test_case;
 
     use super::*;
-    use crate::{types::block::Facing, utils::test::*};
+    use crate::{
+        types::{
+            block::Facing,
+            compiler::{Node, NodeKind},
+        },
+        utils::test::*, compiler::graph::make_nodes::{self, make_nodes},
+    };
 
     #[test_case((0, 0, 0), (0, 0, 1), Facing::NegativeZ ; "facing neg z")]
     #[test_case((0, 0, 1), (0, 0, 0), Facing::PositiveZ ; "facing pos z")]
@@ -450,5 +456,21 @@ mod test {
             let res_link = res_link.map(|l| l.1);
             assert_eq!(res_link, check.1)
         }
+    }
+
+    #[test]
+    fn graph_linking() {
+        // Lever --> Block --> Lamp
+        //            |
+        //          Dust --> Repeater --> Lamp
+        let blocks = vec![
+            make_block!(kind: Kind::Component(Component::Lever { on: false }), pos: (0, 1, 0), facing: vec![Facing::NegativeY]),
+            make_block!(kind: Kind::Block, pos: (0, 0, 0)),
+            make_block!(kind: Kind::Component(Component::Lamp), pos: (0, 0, 1)),
+            make_block!(kind: Kind::Component(Component::Dust), pos: (1, 0, 0), facing: vec![Facing::NegativeX, Facing::PositiveX]),
+            make_block!(kind: Kind::Component(Component::Repeater { delay: 1, locked: false, powered: false }), pos: (2, 0, 0), facing: vec![Facing::PositiveX]),
+            make_block!(kind: Kind::Component(Component::Lamp), pos: (3, 0, 0))
+        ];
+        let world = FakeWorld::new(blocks, ((0, 0, 0), (4, 2, 4)));
     }
 }
