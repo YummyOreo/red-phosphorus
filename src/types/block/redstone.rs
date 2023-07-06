@@ -1,14 +1,21 @@
-#[derive(Clone)]
+#[derive(Clone, Debug, Hash)]
 pub enum Component {
     Dust,
     Block,
-    Tourch,
+    /// Facing should be pointing to the wall it is on
+    Tourch {
+        lit: bool,
+    },
     Repeater {
         delay: i8,
         locked: bool,
+        powered: bool,
     },
     Comparator,
-    Lever,
+    /// Facing should be pointing to the wall it is on
+    Lever {
+        on: bool,
+    },
     /// Redstone buttons
     /// Change the delay of the button based on the type of button
     ///
@@ -35,6 +42,16 @@ pub enum Component {
     DoorUpper,
     DoorLower,
     Trapdoor,
+}
+
+impl Component {
+    pub fn new_repeater() -> Self {
+        Self::Repeater {
+            delay: 1,
+            locked: false,
+            powered: false,
+        }
+    }
 }
 
 pub enum UpdateDirection {

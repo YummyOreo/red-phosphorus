@@ -1,5 +1,8 @@
-use super::block::Block;
-use crate::version::Version;
+use super::{
+    block::Block,
+    compiler::{Graph, GraphCache},
+};
+use crate::{compiler, error::compiler::CompileError, version::Version};
 
 pub type Position = (i32, i32, i32);
 
@@ -59,28 +62,28 @@ pub trait World<'a> {
 /// Modling the blocks supplied for the contraption
 /// Warning: You should not supplie the whole world, this will be slow. You should supplie each
 /// contraption. This allows for you to use multi-threading
-pub struct Contraption<'a, T: World<'a>> {
-    world: &'a mut T,
+pub struct Contraption {
     verson: Version,
+    graph: Option<Graph>,
+    cache: GraphCache,
 }
 
-impl<'a, T: World<'a>> Contraption<'a, T> {
-    pub fn new(world: &'a mut T) -> Self {
+impl Default for Contraption {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Contraption {
+    pub fn new() -> Self {
         Self {
-            world,
             verson: Version::default(),
+            graph: None,
+            cache: GraphCache::new(10_000),
         }
     }
-
-    pub fn get_world(&'a self) -> &'a T {
-        self.world
-    }
-    pub fn get_world_mut(&'a mut self) -> &'a mut T {
-        self.world
-    }
-
     /// Get the MC version for the contraption
-    pub fn get_version(&'a self) -> &'a Version {
+    pub fn get_version(&self) -> &Version {
         &self.verson
     }
 
@@ -93,5 +96,25 @@ impl<'a, T: World<'a>> Contraption<'a, T> {
     /// To be called each tick
     pub fn tick(&mut self) {
         todo!()
+    }
+
+    // TODO REMOVE THIS AND FIX THESE
+    #[allow(
+        clippy::missing_panics_doc,
+        clippy::missing_errors_doc,
+        clippy::result_unit_err
+    )]
+    pub fn compile<'a, W: World<'a>>(&'a mut self, world: &'a W) -> Result<(), CompileError> {
+        let graph = compiler::complie(world, &mut self.cache)?;
+        self.set_graph(graph);
+        Ok(())
+    }
+
+    pub fn get_graph(&self) -> Option<&Graph> {
+        self.graph.as_ref()
+    }
+
+    pub fn set_graph(&mut self, graph: Graph) {
+        self.graph = Some(graph);
     }
 }
